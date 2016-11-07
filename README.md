@@ -1,4 +1,4 @@
-![YouPin (ยุพิน)](https://raw.githubusercontent.com/youpin-city/youpin-web-admin/master/public/image/logo.png)
+![YouPin (ยุพิน)](https://raw.githubusercontent.com/youpin-city/youpin-web-admin/master/public/img/logo.png)
 
 # Admin For YouPin
 
