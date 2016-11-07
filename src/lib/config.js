@@ -137,7 +137,6 @@ const yaml_config = _.chain(fs.readdirSync(yaml_dir))
 
 // Load current configuration
 // @path {app_root}/config/current/config.yaml
-console.log(process.env.NODE_ENV);
 const env = process.env.NODE_ENV || 'current';
 // Load current configuration from config/current/*
 const env_yaml_dir = pathlib.join(conf.get('app_root'), 'config', env);
