@@ -19,7 +19,7 @@
     "build": "echo '=> building...' && npm run build:css -s && npm run build:tag -s && npm run build:js -s",
     "watch": "parallelshell 'npm run watch:tag -s' 'npm run watch:css -s' 'npm run watch:js -s'",
     "lint": "echo '=> linting' && eslint . && echo 'lint ok.'",
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive",
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive ./test/server && NODE_ENV=test wdio",
     "posttest": "npm run lint",
     "preversion": "npm test",
     "version": "npm run build && git add -u",
@@ -103,7 +103,11 @@
     "sinon-chai": "^2.8.0",
     "slick-carousel": "^1.6.0",
     "slick-lightbox": "^0.2.0",
-    "uglify-js": "^2.6.2"
+    "uglify-js": "^2.6.2",
+    "wdio-dot-reporter": "0.0.6",
+    "wdio-mocha-framework": "^0.5.2",
+    "wdio-selenium-standalone-service": "0.0.7",
+    "webdriverio": "^4.3.0"
   },
   "browser": {
     "slick-lightbox": "./node_modules/slick-lightbox/dist/slick-lightbox.js"
