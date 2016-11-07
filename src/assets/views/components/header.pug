@@ -71,7 +71,6 @@ nav#mobile-nav.modal
     for nav in sitemap
       - nav_route = nav.name.replace(/^sitenav\./, '');
       - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
-      - console.log(page.fullpath, nav_route);
       li(class={ active: is_active })
         a(href=site_url(nav.href))
           | #{__(nav.name)}
