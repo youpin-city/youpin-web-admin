@@ -1,0 +1,59 @@
+.input-field.col {
+  label {
+    color: $cl-gray;
+    font-size: $fs-xs;
+
+    &.active {
+      font-size: $fs-sm;
+    }
+
+  }
+  &.required {
+    &:before {
+      content: '*';
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: -0.5rem;
+      color: $cl-danger;
+      font-size: $fs-lg;
+      line-height: $lh-normal;
+    }
+  }
+}
+
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=time],
+input[type=date],
+input[type=datetime],
+input[type=datetime-local],
+input[type=tel],
+input[type=number],
+input[type=search],
+textarea.materialize-textarea {
+  + label:after {
+    top: 3rem;
+  }
+  &.flat {
+    &:focus {
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+select {
+  border-color: $cl-border;
+}
+
+.select-wrapper {
+
+  input.select-dropdown {
+    border-color: $cl-secondary;
+  }
+
+}

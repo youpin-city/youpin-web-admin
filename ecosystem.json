@@ -1,0 +1,25 @@
+{
+  "apps": [
+    {
+      "name": "youpin-web-admin",
+      "script": "index.js",
+      "args": [],
+      "no-daemon": false,
+      "log_date_format" : "YYYY-MM-DD HH:mm",
+      "watch": true,
+
+      "ignore_watch": [
+        "[\\/\\\\]\\./",
+        ".git",
+        "node_modules",
+        "bin",
+        "data",
+        "public",
+        "src/assets"
+      ],
+
+      "min_uptime": 10000,
+      "max_restarts": 1
+    }
+  ]
+}

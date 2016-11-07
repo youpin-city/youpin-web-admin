@@ -1,0 +1,18 @@
+
+ul#desktop-menu.fixed.clearfix
+  for nav in _.get(_.find(sitemap, ['name', nav_root_name]), 'children', [])
+    - var dd_name = 'dd-' + nav.name.replace(/[. ]/g, '-');
+    - var nav_href = nav.href.split('?')[0];
+    - var href_parent_child = [nav_href.slice(1)].concat(_.map(nav.children || [], list => list.href.slice(1)));
+    - var is_active = page.logical_path === nav_href || href_parent_child.indexOf(page.fullpath) >= 0;
+    li(class={ active: is_active })
+      a.dropdown-button.btn(href=nav.href, target='_self', data-activates=dd_name, data-hover='true')
+        span #{__(nav.name)}
+      if nav.children && nav.children.length > 0
+        ul.dropdown-content(id=dd_name)
+          li
+            a.first-level(href=nav.href, target='_self') #{__(nav.name)}
+          for sub in nav.children
+            li
+              a(href=sub.href, target='_self')
+                span #{__(sub.name)}

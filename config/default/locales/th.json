@@ -1,0 +1,52 @@
+{
+  "site": {
+    "name": "YouPin Web Admin",
+    "fullname": "YouPin Web Admin",
+    "description": "",
+    "copyright": "© 2016 YouPin."
+  },
+  "format": {
+    "date_full": "D MMMM YYYY",
+    "date": "D MMM YYYY",
+    "time": "H:mm น.",
+    "datetime": "D MMM YYYY, H:mm น."
+  },
+  "sitenav": {
+    "home": "หน้าแรก",
+    "dashboard": "Dashboard",
+    "privacy": "ความเป็นส่วนตัว",
+    "terms": "เงื่อนไข",
+    "contact": "ติดต่อ",
+    "issue": "Issue",
+    "archive": "Archive",
+    "report": "Report",
+    "settings": "Settings"
+  },
+  "action": {
+    "read": "อ่านต่อ",
+    "showall": "ดูทั้งหมด",
+    "download": "ดาวน์โหลด",
+    "submit": "ส่งแบบฟอร์ม",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "login": "เข้าสู่ระบบ",
+    "logout": "ออกจากระบบ"
+  },
+  "error": {
+    "404": "ไม่พบหน้าที่ต้องการ",
+    "pagenotfound": "ไม่พบหน้าที่ต้องการ",
+    "pagenotfound_description": "ลองตรวจสอบใหม่อีกครั้ง"
+  },
+  "word": {
+    "language": "ภาษา",
+    "published_at": "แผยแพร่",
+    "by_author": "โดย"
+  },
+  "%s item": {
+    "one": "%s item",
+    "other": "%s items"
+  },
+  "team": {
+    "saraban": "ทีมสารบรรณ"
+  }
+}

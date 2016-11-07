@@ -1,0 +1,260 @@
+.lean-overlay {
+  background-color: $cl-white;
+}
+
+.modal {
+  top: 5vh !important;
+  max-height: 90% !important;
+  width: 60%;
+  // background-image: linear-gradient(to bottom, $cl-side 70px, $cl-white 70px);
+  // background-repeat: no-repeat;
+  // background-attachment: local;
+  background-color: $cl-white;
+
+  @media #{$medium-and-down} {
+    width: 80%;
+  }
+
+  @media #{$small-and-down} {
+    width: 100%;
+  }
+
+  .modal-header {
+    position: relative;
+    // position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    // background: $cl-white;
+    color: $cl-white;
+    background-color: $cl-primary;
+    padding: 2rem 2rem 1rem;
+
+    .row {
+      margin-bottom: 0;
+    }
+
+    nav {
+      @include flexbox;
+      @include flex-direction(row);
+      @include flex-wrap(nowrap);
+      @include justify-content(space-between);
+      @include align-items(stretch);
+      @include align-content(stretch);
+
+      // margin: 1rem 0;
+      background-color: transparent;
+      box-shadow: none;
+
+      .left {
+        @include flex(0, 1, 33%);
+      }
+      .right {
+        @include flex(0, 1, 33%);
+        text-align: right;
+        li {
+          float: none;
+        }
+      }
+      .center {
+        @include flex(1, 0, 33%);
+      }
+
+      a {
+        font-size: $fs-lg;
+        color: $cl-primary;
+      }
+
+      .modal-title {
+        font-size: $fs-lg;
+        color: $cl-default;
+      }
+    }
+  }
+  .modal-footer {
+    padding: 0px 24px;
+    background-color: $cl-white;
+  }
+  .modal-content {
+    &.no-padding-s {
+      padding: 0;
+    }
+  }
+}
+
+.modal.full-sheet {
+  display: -webkit-box !important;
+  display: -webkit-flex !important;
+  display: -moz-flex !important;
+  display: -ms-flexbox !important;
+  display: flexbox !important;
+  @include flexbox;
+  @include flex-direction(column);
+  @include flex-wrap(nowrap);
+  @include justify-content(space-between);
+  @include align-items(stretch);
+  @include align-content(stretch);
+
+  max-height: initial;
+  height: 100vh;
+  // height: calc(100vh - 56px);
+
+  .modal-header {
+    @include flex(0, 0, 56px);
+    position: relative;
+  }
+  .modal-footer {
+    @include flex(0, 0, 56px);
+    position: relative;
+  }
+  .modal-content {
+    @include flex(1, 0, 200px);
+    position: relative;
+  }
+
+  .modal-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background: $cl-white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .modal-content {
+    margin-top: 64px;
+  }
+}
+
+.modal.form-modal {
+  .modal-header {
+    background-color: $cl-side;
+  }
+}
+
+// Date picker
+.picker {
+  .picker__box {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    .picker__date-display, .picker__weekday-display, .picker__day--selected, .picker__day--selected:hover, .picker--focused .picker__day--selected {
+      background-color: $cl-side;
+    }
+    .picker__day {
+      line-height: 23px;
+      height: 40px !important;
+    }
+    .picker__day--today {
+      color: $cl-side;
+    }
+  }
+}
+
+// User feedback modal
+// Service request modal
+#side-menu-service,
+#side-menu-feedback {
+  .row:last-child {
+    margin-bottom: 0px;
+  }
+
+  /* label focus color */
+  .input-field input[type]:focus + label,
+  .input-field textarea.materialize-textarea:focus + label {
+    color: $cl-primary;
+  }
+  /* label underline focus color */
+  .input-field input[type]:focus,
+  .input-field textarea.materialize-textarea:focus {
+    border-bottom: 1px solid $cl-primary;
+    box-shadow: 0 1px 0 0 $cl-primary;
+  }
+  .input-field input.valid {
+    border-bottom: 1px solid $cl-side;
+    box-shadow: 0 1px 0 0 $cl-side;
+  }
+
+  $icon-size: 56px;
+
+  input.image[type="radio"] + label:before,
+  input.image[type="radio"] + label:after {
+    width: $icon-size;
+    height: $icon-size;
+    line-height: $icon-size;
+    margin: 0;
+    color: rgba(255,255,255,0);
+    border: none;
+  }
+
+  input.image[type="radio"] + label {
+    width: $icon-size;
+    height: $icon-size;
+    line-height: $icon-size;
+    margin: 0;
+    padding: 0;
+    color: rgba(255,255,255,0);
+    border: none;
+    &.image4 {
+      background-image: url('../img/feedback_icon/great.png');
+      border-radius: 50%
+    }
+    &.image3 {
+      background-image: url('../img/feedback_icon/good.png');
+      border-radius: 50%
+    }
+    &.image2 {
+      background-image: url('../img/feedback_icon/ok.png');
+      border-radius: 50%
+    }
+    &.image1 {
+      background-image: url('../img/feedback_icon/bad.png');
+      border-radius: 50%
+    }
+  }
+
+  input.image[type="radio"]:checked + label:after {
+    background: none;
+    // border: 5px solid $cl-primary;
+    box-shadow: 0px 0px 0px 5px $cl-primary;
+  }
+
+}
+
+#shelf-location {
+  .modal-header {
+    background-color: $cl-primary;
+
+    .row {
+      margin-bottom: 0;
+    }
+
+    .page-subtitle {
+      font-size: $fs-xs;
+    }
+
+    .page-title {
+      font-size: $fs-h5;
+      margin: 0;
+      color: $cl-white;
+    }
+
+    .item-author {
+      font-size: $fs-xs;
+      margin-right: 1rem;
+      .item-author-list {
+        display: inline-block;
+        margin: 0;
+        color: $cl-white;
+        a {
+          @include text-hover($cl-secondary, $cl-secondary-active);
+        }
+      }
+    }
+  }
+
+}

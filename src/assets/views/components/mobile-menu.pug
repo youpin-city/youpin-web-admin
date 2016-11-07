@@ -1,0 +1,13 @@
+
+a#mobile-menu-btn.btn.btn-block.dropdown-button(data-activates='mobile-menu', data-hover='false')
+  | #{__('sitenav.home')}
+  i.icon.material-icons arrow_drop_down
+
+ul#mobile-menu.dropdown-content.fixed
+  for nav in _.get(_.find(sitemap, ['name', nav_root_name]), 'children', [])
+    - var dd_name = 'mdd-' + nav.name.replace(/[. ]/g, '-');
+    - var href_parent_child = [nav.href.slice(1)].concat(_.map(nav.children || [], list => list.href.slice(1)));
+    - var is_active = href_parent_child.indexOf(page.fullpath) >= 0;
+    li
+      a.dropdown-button.btn.btn-block(class=is_active ? 'active' : '', href=nav.href, target='_self', data-activates=dd_name, data-hover='true')
+        span #{__(nav.name)}

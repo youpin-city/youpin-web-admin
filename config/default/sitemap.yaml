@@ -1,0 +1,25 @@
+---
+sitemap:
+  - name: sitenav.dashboard
+    href: "/"
+    children: []
+  - name: sitenav.issue
+    href: "/issue"
+    children: []
+  - name: sitenav.archive
+    href: "/archive"
+    children: []
+  - name: sitenav.report
+    href: "/report"
+    children: []
+  - name: sitenav.settings
+    href: "/settings"
+    children: []
+
+footer_link: []
+  # - name: sitenav.privacy
+  #   href: "/privacy"
+  # - name: sitenav.terms
+  #   href: "/terms"
+  # - name: sitenav.contact
+  #   href: "/contact"

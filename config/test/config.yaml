@@ -1,0 +1,10 @@
+---
+env: test
+port: 8081
+site:
+  protocol: http
+  hostname: localhost:8081
+debug: true
+service:
+  api:
+    url: http://localhost:8081/api

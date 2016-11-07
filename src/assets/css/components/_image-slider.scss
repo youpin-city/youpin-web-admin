@@ -1,0 +1,60 @@
+
+// Default Variables
+
+$slick-font-path: './fonts/' !default;
+$slick-font-family: 'Material Icons' !default;
+$slick-loader-path: './' !default;
+$slick-arrow-color: $cl-white !default;
+$slick-dot-color: $cl-white !default;
+$slick-dot-color-active: $slick-dot-color !default;
+$slick-prev-character: 'navigate_before' !default;
+$slick-next-character: 'navigate_next' !default;
+$slick-dot-character: 'fiber_manual_record' !default;
+$slick-dot-size: 2rem !default;
+$slick-opacity-default: 0.75 !default;
+$slick-opacity-on-hover: 1 !default;
+$slick-opacity-not-active: 0.25 !default;
+
+@import "../dep/slick";
+
+image-slider {
+  display: block;
+  .slider-list {
+    display: block;
+    .slider-item {
+      display: block;
+      margin: 0;
+      .image {
+        padding-top: 0;
+        background-color: $cl-verylightgray;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+    }
+    .slick-dots {
+      bottom: 0;
+      li {
+        margin: 0;
+        float: none;
+      }
+    }
+  }
+
+  .slider-list:not(.slick-initialized) {
+    display: block;
+    .slider-item:not(:first-child) {
+      display: none;
+    }
+  }
+
+  &.fit {
+    .slider-list {
+      .slider-item {
+        .image {
+          // background-size: contain;
+        }
+      }
+    }
+  }
+}

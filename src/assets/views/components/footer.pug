@@ -1,0 +1,9 @@
+
+footer#footer.page-footer
+
+  .container
+    .colophon
+      .item #{__('site.copyright')}
+      for link in footer_link
+        .item
+          a(href=site_url(link.href))= __(link.name)

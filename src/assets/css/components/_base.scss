@@ -1,0 +1,84 @@
+
+/*------------------------------------------------------------------------------------------
+Basic Component
+------------------------------------------------------------------------------------------*/
+
+html {
+  // Font size with rem unit
+  // @see http://snook.ca/archives/html_and_css/font-size-with-rem
+  font-size: 62.5%;
+  font-family: $ff-default;
+  margin: 0;
+  padding: 0;
+}
+
+/* Typography */
+body {
+  margin: 0;
+  padding: 0;
+  color: $cl-default;
+  // font-size: $fs-md;
+  font-family: $ff-default;
+  line-height: $lh-normal;
+  font-size: $fs-p;
+  font-weight: $fw-normal;
+
+  background-color: $cl-veryverylightgray;
+  // letter-spacing: 0.01em; // greater readability
+  -webkit-font-smoothing: antialiased; // subpixel-antialiased;
+}
+
+
+nav {
+  background: none;
+
+  ul {
+    a {
+      font-size: $fs-p;
+      height: $navbar-height-mobile;
+      .icon {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+// List
+ol {
+  li {
+    list-style-type: decimal;
+  }
+}
+
+// Link
+a {
+  &.plain {
+    @include text-hover($cl-default, $cl-primary);
+  }
+}
+
+
+// Icon
+i.icon {
+  &.tiny {
+    font-size: 1.3rem;
+  }
+}
+
+strong {
+  font-weight: $fw-black;
+}
+
+em {
+
+}
+
+hr {
+  border: 1px solid $cl-verylightgray;
+  border-bottom: none;
+}
+
+main {
+  overflow: hidden;
+}

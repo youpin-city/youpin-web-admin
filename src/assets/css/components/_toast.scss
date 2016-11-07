@@ -1,0 +1,37 @@
+#toast-container {
+  top: 3%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.toast {
+  display: block;
+  width: 500px;
+  float: none;
+  margin: 0 auto 1rem;
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+  color: $cl-white;
+  background-color: $cl-secondary; // $cl-primary;
+  word-break: break-word;
+
+  &.dialog-error {
+    background-color: $cl-error;
+  }
+  &.dialog-warning {
+    background-color: $cl-warning;
+  }
+
+  @media #{$small-and-down} {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  a {
+    @include text-hover($cl-white);
+    text-decoration: underline;
+  }
+}

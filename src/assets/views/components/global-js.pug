@@ -1,0 +1,57 @@
+script.
+  // common javascript for all pages
+  $(function() {
+    // start router and tags
+    riot.route.base('/')
+    riot.mount('preloader');
+    riot.mount('image-slider');
+    riot.mount('search-box', {
+      path: util.site_url('/search'),
+      placeholder: 'Search anything'
+    });
+
+    // fit videos
+    $('.fitvids').fitVids();
+
+    // check broken item image
+    app.check_image();
+
+    // enable font size button
+    init_font_size_button();
+
+  });
+
+  function init_font_size_button() {
+    //- function change_size() {
+    //-   font_size = sizes[(sizes.indexOf(font_size) + 1) % sizes.length];
+    //- }
+
+    //- function apply_size() {
+    //-   $('html').css('font-size', size_config[font_size]);
+    //-   Cookie.set(prop_name, font_size);
+    //- }
+
+    //- const prop_name = 'fs';
+    //- let font_size = Cookie.get(prop_name) || 'm';
+    //- const size_config = app.config.font_size || {};
+    //- const sizes = _.keys(size_config);
+    //- const $btn = $('.adjust-font-size-btn');
+    //- $btn.on('click', e => {
+    //-   e.preventDefault();
+    //-   change_size();
+    //-   apply_size();
+    //- });
+    //- apply_size();
+  }
+
+  $(function() {
+    $('body')
+    .on('click', '#mobile-nav-btn', function(e) {
+      $('#mobile-nav').openModal();
+      $('body').addClass('mobile-nav-active');
+    })
+    .on('click', '#mobile-nav .modal-close', function(e) {
+      $('#mobile-nav').closeModal();
+      $('body').removeClass('mobile-nav-active');
+    });
+  })

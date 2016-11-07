@@ -1,0 +1,24 @@
+
+mixin card_item(item, view, options = {})
+  if item
+    - card_view = item.meta_type
+    if view
+      - card_view = view
+    case card_view
+      when 'card'
+      default
+        a.card.flat.flex.no-spacing(href=util.item_url(item, ''), class={ landscape: options.landscape })
+          .card-image.responsive.waves-effect.waves-block.waves-light
+            .image(data-item-type=item.meta_type, style='background-image: url("' + site_url(item.thumbnail_image) + '");')
+          .card-content
+            .card-type= __('type.' + item.meta_type)
+            h6.card-title.activator= item.name
+
+            if options.summary
+              div!= item.summary
+
+            .card-meta
+              if item.published_at
+                .meta.meta-time
+                  span.label= __('word.published_at')
+                  | #{moment(item.published_at).format(__('format.datetime'))}

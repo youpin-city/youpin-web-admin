@@ -1,0 +1,13 @@
+
+mixin modal(title)
+  .modal-header
+    .row
+      .col.s12
+        .row
+          h4.modal-title.col.s12= title
+            i.material-icons.right.primary-text.modal-action.modal-close close
+  .modal-content
+    .row
+      .col.s12
+        if block
+          block

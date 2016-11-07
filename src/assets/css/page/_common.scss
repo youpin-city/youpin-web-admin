@@ -1,0 +1,44 @@
+.opaque-bg {
+  background-color: $cl-white;
+}
+
+.empty-result {
+  padding: 2rem;
+}
+
+.metric-box {
+  .metric-value {
+    font-family: $ff-header;
+    font-size: $fs-h3;
+    font-weight: $fw-light;
+    color: $cl-primary;
+  }
+  .metric-label {
+    font-family: $ff-header;
+    font-size: $fs-xs;
+  }
+  .metric-action {
+    a {
+      @include text-hover($cl-tertiary, $cl-tertiary-active);
+    }
+  }
+}
+
+
+#shelf-location {
+  top: 5% !important;
+}
+
+.tool-container {
+  .tool-select {
+    margin: 0 1rem;
+
+    select {
+
+    }
+
+    label {
+      color: $cl-gray;
+    }
+  }
+}

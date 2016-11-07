@@ -1,0 +1,39 @@
+extends components/layout
+
+prepend document
+  - hide_header = true;
+
+append head
+  style
+    :scss
+      .page {
+        .site-logo {
+          width: 100px;
+          height: 60px;
+          margin: 2rem auto;
+          background-image: url('/public/img/logo-l.png');
+        }
+      }
+
+append content
+  #page-login.page
+    .container
+      .row
+        .col.s12.m8.offset-m2
+
+          #login-box.content-padding.opaque-bg
+
+            .site-logo.bg
+
+            h1.page-title= _.startCase(__('action.login'))
+
+            form(action='/?login=1', method='GET')
+              .input-field
+                input#login-email(type='email', name='email')
+                label(for='login-email') Email
+              .input-field
+                input#login-password(type='password', name='password')
+                label(for='login-password') Password
+              .input-field
+                input(type='hidden', name='login', value='1')
+                button.btn(type='submit')= __('action.login')

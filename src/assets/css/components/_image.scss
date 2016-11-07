@@ -1,0 +1,59 @@
+.bg {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+
+.image {
+  display: block;
+  padding-top: 100%;
+  @extend .bg;
+
+  &.align-bottom {
+    background-position: bottom center;
+  }
+  &.align-top {
+    background-position: top center;
+  }
+
+  &.r1x1 {
+    padding-top: 100%;
+  }
+  &.r1x2 {
+    padding-top: 200%;
+  }
+  &.r1x3 {
+    padding-top: 300%;
+  }
+  &.r1x4 {
+    padding-top: 400%;
+  }
+  &.r2x1 {
+    padding-top: 50%;
+  }
+  &.r3x1 {
+    padding-top: 33.33%;
+  }
+  &.r3x2 {
+    padding-top: 66.66%;
+  }
+  &.r4x1 {
+    padding-top: 25%;
+  }
+}
+
+.image-hidden {
+  visibility: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.profile-image {
+  $size: 36px;
+  display: inline-block;
+  padding: 0;
+  width: $size;
+  height: $size;
+  border-radius: $size;
+  background-color: $cl-verylightgray;
+}

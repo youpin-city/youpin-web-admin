@@ -1,0 +1,31 @@
+$nav-left-width: 200px;
+
+main {
+  .page {
+    margin-left: $nav-left-width;
+    @media #{$small-and-down} {
+      margin-left: 0;
+    }
+
+    .page-title {
+      font-size: $fs-h3;
+      color: $cl-primary;
+    }
+  }
+}
+
+// Mobile nav modal
+body.hide-header {
+  main {
+    .page {
+      margin-left: 0;
+    }
+  }
+}
+
+// Mobile nav modal
+body.mobile-nav-active {
+  main {
+    filter: blur(5px);
+  }
+}

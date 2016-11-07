@@ -1,0 +1,67 @@
+.btn-block {
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  text-transform: none;
+  i {
+    font-size: 2.4rem;// $fs-icon-h5;
+    line-height: 1;
+    vertical-align: middle;
+  }
+}
+.btn-large {
+  font-size: $fs-md;
+  i {
+    font-size: $fs-icon-h4;
+    line-height: 1;
+  }
+}
+
+.btn-plain {
+  color: $cl-darkgray;
+  @include background-hover($cl-lightgray, lighten($cl-lightgray, 4%));
+}
+
+.btn-native {
+  color: $cl-primary;
+  @include background-hover($cl-white, darken($cl-white, 4%));
+  border: 1px solid $cl-verylightgray;
+  box-shadow: none !important;
+}
+
+.btn-flat {
+  color: $cl-primary;
+  @include background-hover($cl-white, darken($cl-white, 10%));
+  border: 1px solid $cl-primary;
+  @include border-hover($cl-primary, $cl-primary-active);
+  box-shadow: none !important;
+}
+
+.btn-flat-white {
+  @include text-hover($cl-white, $cl-white);
+  // background-color: transparent;
+  @include background-hover(transprent, rgba($cl-white, 0.3));
+  border: 1px solid $cl-white;
+  // @include border-hover($cl-primary, $cl-primary-active);
+  box-shadow: none !important;
+}
+
+
+.btn-ghost {
+  color: $cl-primary;
+  @include text-hover($cl-primary, $cl-primary-active);
+  @include background-hover(transparent, $cl-verylightgray);
+  border: 1px solid $cl-primary;
+  @include border-hover($cl-primary, $cl-primary-active);
+  box-shadow: none !important;
+}
+
+.btn-ghost-white {
+  color: $cl-primary;
+  @include background-hover(transparent, rgba($cl-white, 0.1));
+  border: 1px solid $cl-white;
+  @include border-hover($cl-white, rgba($cl-white, 0.7));
+  box-shadow: none !important;
+}

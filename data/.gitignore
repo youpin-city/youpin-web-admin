@@ -1,0 +1,4 @@
+*.nedb
+*.json
+
+dump

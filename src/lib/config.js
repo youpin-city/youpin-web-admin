@@ -1,0 +1,188 @@
+/* eslint no-console: off */
+import convict from 'convict';
+import urllib from 'url';
+import pathlib from 'path';
+import yaml from 'js-yaml';
+import fs from 'fs';
+import _ from 'lodash';
+import Promise from 'bluebird';
+// HACK: enable cancellation to avoid this bug https://github.com/KyleAMathews/superagent-bluebird-promise/issues/50
+Promise.config({ cancellation: true });
+
+// Define a schema
+const conf = convict({
+  app_name: {
+    doc: 'The application name',
+    format: String,
+    default: 'youpin-web-admin',
+    env: 'APP_NAME'
+  },
+  version: {
+    doc: 'The application version',
+    format: String,
+    default: '0.0.0',
+    env: 'PACKAGE_VERSION'
+  },
+  ip: {
+    doc: 'The IP address to bind.',
+    format: 'ipaddress',
+    default: '127.0.0.1',
+    env: 'IP_ADDRESS',
+  },
+  port: {
+    doc: 'The port to bind.',
+    format: 'port',
+    default: 8080,
+    env: 'PORT'
+  },
+  debug: {
+    doc: 'Debug mode.',
+    format: Boolean,
+    default: false,
+    env: 'DEBUG_MODE'
+  },
+  debug_livereload: {
+    doc: 'Enable live-reloading in debug mode.',
+    format: Boolean,
+    default: false,
+    env: 'DEBUG_LIVERELOAD'
+  },
+  logger: {
+    doc: 'Logger options.',
+    format: Object,
+    default: {},
+    env: 'LOGGER'
+  },
+  site: {
+    host: {
+      doc: 'Domain name',
+      format: String,
+      default: '',
+      env: 'SITE_HOST'
+    },
+    protocol: {
+      doc: 'Protocol for website. Default to HTTPS',
+      format: String,
+      default: 'https',
+      env: 'SITE_PROTOCOL'
+    },
+    hostname: {
+      doc: 'Public hostname for website. Default to IP address if blank',
+      format: String,
+      default: '',
+      env: 'SITE_HOSTNAME'
+    },
+    title: {
+      doc: 'Website name',
+      format: String,
+      default: 'YouPin Web Admin',
+      env: 'SITE_TITLE'
+    },
+    subtitle: {
+      doc: 'Website subtitle name',
+      format: String,
+      default: 'Social reporting platform',
+      env: 'SITE_SUBTITLE'
+    },
+    description: {
+      doc: 'Website description',
+      format: String,
+      default: '',
+      env: 'SITE_DESCRIPTION'
+    },
+    keywords: {
+      doc: 'Website keywords',
+      format: Array,
+      default: [
+        'admin'
+      ],
+      env: 'SITE_KEYWORDS'
+    }
+  },
+
+  feature: {
+    doc: 'Server feature configuration',
+    format: Object,
+    default: {},
+    env: 'FEATURE'
+  },
+
+  service: {
+    doc: 'Third-part service config',
+    format: Object,
+    default: {},
+    env: 'SERVICE'
+  }
+
+});
+
+/**
+ * app_root App project root directory
+ * @type {String}
+ */
+conf.set('app_root', pathlib.resolve(__dirname, '..', '..'));
+
+// Load default configuration from config/default/*
+const yaml_dir = pathlib.join(conf.get('app_root'), 'config/default');
+console.log('load config:', pathlib.join(yaml_dir, '*.yaml'));
+const yaml_config = _.chain(fs.readdirSync(yaml_dir))
+.filter(filename => filename.indexOf('.yaml') >= 0 && filename[0] !== '.')
+.map(filename => yaml.safeLoad(fs.readFileSync(pathlib.join(yaml_dir, filename), 'utf8')))
+.map(config => {
+  conf.load(config);
+  return config;
+})
+.value();
+
+
+// Load current configuration
+// @path {app_root}/config/current/config.yaml
+console.log(process.env.NODE_ENV);
+const env = process.env.NODE_ENV || 'current';
+// Load current configuration from config/current/*
+const env_yaml_dir = pathlib.join(conf.get('app_root'), 'config', env);
+console.log('load config:', pathlib.join(env_yaml_dir, '*.yaml'));
+try {
+  const env_yaml_config = _.chain(fs.readdirSync(env_yaml_dir))
+  .filter(filename => filename.indexOf('.yaml') >= 0 && filename[0] !== '.')
+  .map(filename => yaml.safeLoad(fs.readFileSync(pathlib.join(env_yaml_dir, filename), 'utf8')))
+  .map(config => {
+    conf.load(config);
+    return config;
+  })
+  .value();
+} catch (err) {
+  if (err.code !== 'ENOENT') {
+    console.error('Load environment config failed:', err);
+    process.exit(2);
+  } else {
+    console.error('You need to create config/current configuration folder. '
+      + 'Copy from predefined config/* directories or create your own and try again.'
+    );
+    process.exit(2);
+  }
+}
+
+// // Perform validation
+// conf.validate({ strict: true });
+
+// Calculated value
+/**
+ * site.host Derived fully qualified host string [protocol]://[hostname|ip](:[port])
+ * @type {String}
+ */
+if (!conf.get('site.host')) {
+  conf.set('site.host', urllib.format({
+    protocol: conf.get('site.protocol'),
+    host: conf.get('site.hostname') || conf.get('ip')
+  }));
+}
+
+// Load app version from package.json
+const package_info = require('../../package.json');
+conf.set('version', package_info.version);
+
+// Success
+console.log('load config ok');
+
+module.exports = conf;

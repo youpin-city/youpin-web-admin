@@ -1,0 +1,52 @@
+{
+  "site": {
+    "name": "YouPin Web Admin",
+    "fullname": "YouPin Web Admin",
+    "description": "",
+    "copyright": "© 2016 YouPin."
+  },
+  "format": {
+    "date_full": "D MMMM YYYY",
+    "date": "D MMM YYYY",
+    "time": "H:mm",
+    "datetime": "D MMM YYYY, H:mm"
+  },
+  "sitenav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "issue": "Issue",
+    "archive": "Archive",
+    "report": "Report",
+    "settings": "Settings"
+  },
+  "action": {
+    "read": "Read More",
+    "showall": "View All",
+    "download": "Download",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "login": "Login",
+    "logout": "Log Out"
+  },
+  "error": {
+    "404": "Page not found",
+    "pagenotfound": "Page not found",
+    "pagenotfound_description": "Check if you've got correct address"
+  },
+  "word": {
+    "language": "Language",
+    "published_at": "Published At",
+    "by_author": "By"
+  },
+  "%s item": {
+    "one": "%s item",
+    "other": "%s items"
+  },
+  "team": {
+    "saraban": "Saraban Team"
+  }
+}

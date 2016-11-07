@@ -1,0 +1,111 @@
+
+header#header
+
+  //- nav#site-nav-mobile
+  //-   a.brand-logo(href=site_url(''))
+  //-     img(src=site_url('/public/img/logo.png'))
+  //-   .brand-slogan
+  //-     .title= __('site.name')
+
+  //-   //- preloader(class='small')
+
+  //-   a#mobile-nav-btn.button-collapse.modal-trigger(href='#mobile-nav')
+  //-     i.icon.material-icons menu
+
+  nav#site-nav-top
+    .nav-wrapper
+
+      a#mobile-nav-btn.waves-effect.waves-light(href='#mobile-nav')
+        i.icon.material-icons menu
+
+      a.brand-logo(href=site_url('/'))
+        img(src=site_url('/public/img/logo.png'))
+
+      //- preloader(class='small')
+
+      ul#site-nav-top-menu.nav-list.right.hide-on-small-and-down
+        li
+          search-box
+
+        if user
+          li
+            a#desktop-logout-btn.hide-on-global-search(href=site_url('', null, { 'logout': '1' }))
+              .image.profile-image(style='background-image: url("' + user.image + '")')
+        else
+          li
+            a#desktop-login-btn.hide-on-global-search(href=site_url('', null, { 'login': '1' }))= __('action.login')
+
+
+  nav#site-nav-left
+    - site_nav_active = page.route;
+    if user && user.team
+      #team-name= _.startCase(__('team.' + user.team))
+
+    ul#site-nav-left-menu.nav-list.hide-on-small-and-down
+      for nav in sitemap
+        - nav_route = nav.name.replace(/^sitenav\./, '');
+        - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+        li(class={ active: is_active })
+          a(href=site_url(nav.href))
+            | #{__(nav.name)}
+
+
+nav#mobile-nav.modal
+  .site-title
+    .right
+      a.close-btn.modal-close(href='#!')
+        i.icon.material-icons close
+    a.brand-logo(href=site_url('/'))
+      img(src=site_url('/public/img/logo.png'))
+
+  .search-container
+    i.icon.material-icons search
+    form(action='/search')
+      input(type='search', name='q', placeholder='Title, keyword, author', tabindex='-1')
+
+  if user && user.team
+    #team-name= _.startCase(__('team.' + user.team))
+
+  //- Main menu
+  ul.site-nav.nav-list.clearfix
+    for nav in sitemap
+      - nav_route = nav.name.replace(/^sitenav\./, '');
+      - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+      - console.log(page.fullpath, nav_route);
+      li(class={ active: is_active })
+        a(href=site_url(nav.href))
+          | #{__(nav.name)}
+
+  .service-container
+    .row
+      .col.s12.no-padding
+        .profile-container
+          if user
+            a.link.center(href=site_url('', null, { 'logout': '1' }))
+              .image.profile-image(style='background-image: url("' + user.image + '")')
+              .profile-name.center #{ user.name }
+              .center #{__('action.logout')}
+
+          else
+            a.link.center(href=site_url('', null, { 'login': '1' }))
+              i.icon.material-icons person
+              | #{__('action.login')}
+
+  //- block header_nav
+  //-   nav#desktop-nav.nav-wrapper
+
+  //-     #window-shopping.large.primary
+  //-       block page_hero
+  //-         image-slider.background-slider.fit(fade='false', arrows='false', dots='true', viewer='false')
+  //-           for item, i in site_cover_images || []
+  //-             if item.action_url
+  //-               a.slider-item.background(href=item.action_url, style={display: (i > 0 ? 'none' : 'block'),'background-image':'url("' + site_url(item.featured_image) + '")'})
+  //-             else
+  //-               .slider-item.background(style={ display: (i > 0 ? 'none' : 'block'),'background-image':'url("' + site_url(item.featured_image) + '")' })
+
+  //-         .brand-slogan
+  //-           .title= __('site.name')
+
+
+  include ../components/desktop-menu
+  include ../components/mobile-menu

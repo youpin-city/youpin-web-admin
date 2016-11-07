@@ -1,0 +1,39 @@
+---
+env: local
+logger:
+  console:
+    level: 'debug'
+    colorize: true
+    timestamp: true
+    # json: true
+    # stringify: true
+    humanReadableUnhandledException: true
+feature:
+  enabled_email: true
+  enabled_sms: false
+service:
+  api:
+    url: http://localhost:8324/api
+  ga:
+    id:
+  facebook:
+    app_id:
+    page: https://www.facebook.com/youpin.city
+  mail_recipient:
+    email:
+      - '"YouPin Saraban" <saraban@youpin.city>'
+  mail_sender:
+    service: sendgrid
+    config:
+      auth:
+        api_user: ''
+        api_key: ''
+    signature:
+      from_email: noreply@byoupin.city
+      from_name: YouPin
+      from: '"YouPin" <noreply@youpin.city>'
+      footer: |
+
+        ---------------------------------------------------------------------------------
+        Do not reply to this email. This is an automated response email.
+

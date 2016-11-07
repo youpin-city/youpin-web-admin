@@ -1,0 +1,126 @@
+.clearfix {
+  &:before,
+  &:after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+}
+
+.spacing {
+  // margin-top: 3rem;
+  padding-top: 3rem;
+}
+.spacing-small {
+  // margin-top: 1rem;
+  padding-top: 1rem;
+}
+.spacing-large {
+  // margin-top: 6rem;
+  padding-top: 6rem;
+}
+
+.no-spacing {
+  margin: 0;
+  padding-top: 0;
+}
+
+.content-padding {
+  padding: 4rem 2rem;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.pre { white-space: pre; }
+.pre-line { white-space: pre-line; }
+.pre-wrap { white-space: pre-wrap; }
+
+.hidden {
+  display: none;
+  // visibility: hidden;
+}
+
+.section-row {
+  font-family: $ff-header;
+  font-size: $fs-h6;
+  color: $cl-primary;
+  background-color: $cl-verylightgray;
+  @include background-horizontal($cl-verylightgray, $cl-lightgray);
+  padding: 0.5rem 0;
+  a {
+    @include text-hover($cl-tertiary, $cl-tertiary-active);
+  }
+}
+
+.section-name {
+  font-family: $ff-header;
+  color: $cl-primary;
+}
+
+.container,
+.full-container {
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+  }
+}
+// Override
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+  width: 90%;
+}
+@media #{$medium-and-up} {
+  .container {
+    width: 95%;
+  }
+}
+@media #{$large-and-up} {
+  .container {
+    width: 85%;
+    max-width: 912px;
+  }
+}
+
+// Custom
+.container {
+  &.no-padding-s {
+    @media #{$small-and-down} {
+      width: 100%;
+      max-width: 100%;
+      > .row {
+        margin-left: 0;
+        margin-right: 0;
+        > .col {
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    }
+  }
+}
+
+// Override
+$full-container-max-width: 1440px;
+.full-container {
+  margin: 0 auto;
+  max-width: $full-container-max-width;
+  width: 100%;
+
+  @media #{$medium-and-up} {
+    width: 100%;
+  }
+  @media #{$large-and-up} {
+    width: 100%;
+    max-width: $full-container-max-width;
+  }
+
+  > .section-title {
+    margin-top: $ps-xs;
+    margin-bottom: $ps-xs;
+    margin-left: $ps-default;
+    margin-right: $ps-default;
+  }
+}
+

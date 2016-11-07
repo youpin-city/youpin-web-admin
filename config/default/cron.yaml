@@ -1,0 +1,8 @@
+---
+cron:
+  - rule: '30 * * * * *' # run at 30th second of every minute
+    job: hello
+    enabled: false
+    start: true
+    data:
+      param1: anything is good
