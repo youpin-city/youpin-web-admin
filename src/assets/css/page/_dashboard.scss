@@ -1,0 +1,136 @@
+#page-dashboard {
+    .left-panel {
+        width: 70%;
+        float: left;
+        border-right: solid $cl-verylightgray $ps-xxs;
+    }
+
+    .right-panel {
+        width: 30%;
+        float: right;
+        height: 100%;
+    }
+
+    .summary {
+        border-bottom: $ps-xxs solid $cl-verylightgray;
+
+        th {
+            border-left: solid $ps-xs;
+            background: $cl-verylightgray;
+            vertical-align: top;
+
+            &.team {
+                boder-left-color: $cl-darkgreen;
+            }
+
+            &.assigned {
+                border-left-color: $cl-blue;
+            }
+
+            &.processing {
+                border-left-color: $cl-orange;
+            }
+
+            &.resolved {
+                border-left-color: $cl-green;
+            }
+
+            &.rejected {
+                border-left-color: $cl-red;
+            }
+
+            &.performance {
+                border: none;
+            }
+
+        }
+
+        .row {
+            border-bottom: 1px solid $cl-verylightgray;
+
+            .team {
+                color: $cl-primary;
+                width: 20%;
+            }
+
+            .performance {
+                background:  $cl-lightgray;
+                width: 15%;
+
+                &.positive::after {
+                    float: right;
+                    color: $cl-green;
+                    content: '▲'
+                }
+                &.negative::after {
+                    float: right;
+                    color: $cl-red;
+                    content: '▼';
+                }
+            }
+
+            .numeric-col {
+                 text-align: right;
+                 padding-right: $ps-small;
+            }
+        }
+    }
+
+    .recent-activity {
+        padding: $ps-xs;
+
+        $li-height: 40px;
+        li.activity {
+            margin-top: $ps-small;
+            height: $li-height;
+            padding: 0px;
+
+            img {
+              $size: 30px;
+              display: inline-block;
+              padding: 0;
+              width: $size;
+              height: $size;
+              border-radius: $size;
+              background-color: $cl-verylightgray;
+              line-height: $li-height;
+              vertical-align: middle;
+            }
+
+            span {
+                display: inline-block;
+                line-height: $li-height/2;
+                height: $li-height;
+                margin-left: $ps-xs;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .new-issue-list {
+        padding: $ps-xs;
+
+        $li-height: 80px;
+        li.item {
+            margin-top: $ps-small;
+            height: $li-height;
+            padding: 0px;
+
+            img {
+              $size: $li-height;
+              width: $size;
+              height: $size;
+              vertical-align: middle;
+            }
+
+            span {
+                display: inline-block;
+                // line-height: $li-height/2;
+                // height: $li-height;
+                margin-left: $ps-xs;
+                vertical-align: middle;
+            }
+        }
+    }
+
+}
