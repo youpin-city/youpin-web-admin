@@ -19,6 +19,10 @@
     width: 100%;
   }
 
+  h5 {
+    color: $cl-primary;
+  }
+
   .modal-header {
     position: relative;
     // position: fixed;
@@ -27,8 +31,8 @@
     right: 0;
     z-index: 1;
     // background: $cl-white;
-    color: $cl-white;
-    background-color: $cl-primary;
+    // background-color: $cl-primary;
+    color: $cl-primary; //$cl-white;
     padding: 2rem 2rem 1rem;
 
     .row {

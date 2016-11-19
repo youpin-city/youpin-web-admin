@@ -1,0 +1,128 @@
+extends components/layout
+
+append content
+
+  #page-dashboard.page
+    .container.content-padding
+      h1.page-title Test
+      a.btn(href="#manage-issue-modal") Manage Issue
+
+  .modal#manage-issue-modal
+    .modal-header
+      .row
+        .col.s6
+          h4 Manage Issue
+        .col.s6
+          a.btn-flat Reset
+          | &nbsp;
+          a.btn-flat Cancel
+          | &nbsp;
+          a.btn Confirm
+      .row
+        .col.s12
+          p
+          .divider
+    .modal-content
+      .row
+        .col.s12
+          h5 ID
+            span#id
+      .row
+        .col.s8
+          .row
+            .col.s6#reporter
+              p Image
+              h5 Reported
+              p by&nbsp;
+                span
+              p on&nbsp;
+                span
+              a.btn-flat Contact
+            .col.s6#details
+              h5 Description
+              .input-field
+                textarea.materialize-textarea
+              h5 Category
+              .chips.chips-initial
+              h5 Location
+              .chips.chips-initial
+              h5 Tag
+              .chips.chips-initial
+        .col.s4#status
+          h5 Status
+          .input-field
+            select
+              option(value="verified") Verified
+              option(value="2") Test
+          h5 Priority
+          .input-field
+            select
+              option(value="urgent") Urgent
+              option(value="2") Test
+          h5 Department
+          .input-field
+            select
+              option(value="department1") Department 1
+              option(value="2") Department 2
+          h5 Annotation
+          .input-field
+            textarea.materialize-textarea
+
+
+append app_script
+  script.
+    $(function() {
+      //Data API
+      Promise.resolve({
+        id: 123456789,
+        reporter: {
+          name: "Joe",
+          date: "13 Nov 2020",
+          contact: "me@boonmeelab.com"
+        },
+        details: {
+          description: "test test test ทดสอบ สอบบ",
+          category: ["walkway"],
+          location: ["building4", "floor17"],
+          tag: ["walkway", "danger"]
+        },
+        status: {
+          status: "verified",
+          priority: "urgent",
+          department: "2",
+          annotation: "test"
+        }
+      }).then( function(data) {
+        $("#id").text(data.id);
+
+        var $reporter = $("#reporter");
+        var $span = $reporter.find("span");
+        $span.eq(0).text(data.reporter.name);
+        $span.eq(1).text(data.reporter.date);
+        $reporter.find("a").attr("href", "mailto:"+data.reporter.contact);
+
+        var $details = $("#details");
+        $details.find("textarea")
+          .val(data.details.description)
+          .trigger('autoresize');
+        $('.chips').material_chip();
+        var $chips = $details.find(".chips-initial");
+        $chips.eq(0).material_chip({data: data.details.category.map(function(d) { return {tag: d}; })});
+        $chips.eq(1).material_chip({data: data.details.location.map(function(d) { return {tag: d}; })});
+        $chips.eq(2).material_chip({data: data.details.tag.map(function(d) { return {tag: d}; })});
+
+        var $status = $("#status");
+        var $select = $status.find("select");
+        $select.eq(0).val(data.status.status);
+        $select.eq(1).val(data.status.priority);
+        $select.eq(2).val(data.status.department);
+        $status.find("textarea")
+          .val(data.status.annotation)
+          .trigger('autoresize');
+
+        //Materialize
+        $('.modal').modal();
+        $('select').material_select();
+
+      });
+    });

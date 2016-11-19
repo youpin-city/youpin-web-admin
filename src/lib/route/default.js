@@ -13,6 +13,10 @@ router.get('/login', (req, res, next) => {
   res.render('login');
 });
 
+router.get('/test', (req, res, next) => {
+  res.render('test');
+});
+
 // all other methods, show not found page
 router.all('/*', auth, (req, res, next) => {
   next(createError(404));

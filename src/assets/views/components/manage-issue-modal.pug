@@ -1,0 +1,66 @@
+//- //- site nav active
+//- - site_nav_active = page.route;
+
+//- nav#mobile-nav.modal
+//-   h4.section-title= __('sitenav.home')
+//-     .right
+//-       a.close-btn.modal-close(href='#!')
+//-         i.icon.material-icons close
+
+//-   h5.section-subtitle= __('bot.fullname')
+
+//-   .search-container
+//-     i.icon.material-icons search
+//-     form(action='/search')
+//-       input(type='search', name='q', placeholder='Title, keyword, author', tabindex='-1')
+
+//-   //- Main menu
+//-   ul.site-nav.clearfix
+//-     for nav in sitemap
+//-       - nav_route = nav.name.replace(/^sitenav\./, '');
+//-       li(class={ active: site_nav_active === nav_route })
+//-         a.text(href=site_url(nav.href))
+//-           | #{__(nav.name)}
+
+//-   .service-container
+//-     .row
+//-       .col.s12.no-padding
+//-         .profile-container
+//-           if user
+//-             a.link.center(href=site_url('', null, { 'logout': '1' }))
+//-               .image.profile-image(style='background-image: url("' + site_url('/public/img/profile_image.png') + '")')
+//-               .profile-name.center #{ user.name }
+//-               .center #{__('action.logout')}
+
+//-           else
+//-             a.link.center(href=site_url('', null, { 'login': '1' }))
+//-               i.icon.material-icons person
+//-               | #{__('action.login')}
+//-     //- .row
+//-     //-   .col.s6.no-padding
+//-     //-     a.link(href=settings.service.reservation.url)
+//-     //-       i.icon.material-icons event_note
+//-     //-       | #{__('sitenav.reserve_service')}
+//-     //-   .col.s6.no-padding
+//-     //-     a.link.modal-trigger(href="#user-feedback-modal")
+//-     //-       i.icon.material-icons record_voice_over
+//-     //-       | #{__('sitenav.give_feedback')}
+
+
+//- #service-request-modal.form-modal.modal
+//-   +modal('Service Request Form')
+//-     .row
+//-       .input-field.col.s12
+//-         select
+//-           option(value="form1") ขอเข้าเยี่ยมชมหอจดหมายเหตุ
+//-         label เลือกแบบฟอร์ม
+//-     .row
+//-       .input-field.col.s12
+//-         input#company.validate(type="text")
+//-         label(for="company") ชื่อองค์กร
+
+append app_script
+  script.
+    $(function() {
+
+    });
