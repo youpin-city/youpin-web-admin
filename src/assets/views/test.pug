@@ -1,7 +1,29 @@
 extends components/layout
 
-append content
+mixin reporter
+  #reporter
+    .slider
+      ul.slides
+    h5 Reported
+    p by&nbsp;
+      span
+    p on&nbsp;
+      span
+    a.btn-flat Contact
 
+mixin details
+  #details
+    h5 Description
+    .input-field
+      textarea.materialize-textarea
+    h5 Category
+    .chips.chips-initial
+    h5 Location
+    .chips.chips-initial
+    h5 Tag
+    .chips.chips-initial
+
+append content
   #page-dashboard.page
     .container.content-padding
       h1.page-title Test
@@ -10,11 +32,11 @@ append content
   .modal#manage-issue-modal
     .modal-header
       .row
-        .col.s6
+        .col.s7
           h3 Manage Issue
-        .col.s6
-          a.btn-flat#reset Reset
-          | &nbsp;
+        .col.s5
+          //- a.btn-flat#reset Reset
+          //- | &nbsp;
           a.btn-flat#cancel Cancel
           | &nbsp;
           a.btn#confirm Confirm
@@ -23,52 +45,53 @@ append content
           p
           .divider
     .modal-content
-      .row
-        .col.s12
-          h4 ID&nbsp;
-            span#id
-      .row
-        .col.s8
+      case role
+        when "department_officer"
           .row
-            .col.s6#reporter
-              .slider
-                ul.slides
-              h5 Reported
-              p by&nbsp;
-                span
-              p on&nbsp;
-                span
-              a.btn-flat Contact
-            .col.s6#details
-              h5 Description
+            .col.s7
+              h4 ID&nbsp;
+                span#id
+            .col.s5
+              a.btn-flat#reject Reject
+              | &nbsp;
+              a.btn-flat#resolve Resolve
+          .row
+            .col.s6
+              +reporter
+              +details
+            .col.s6
+        when "organization_admin"
+        default
+          .row
+            .col.s12
+              h4 ID&nbsp;
+                span#id
+          .row
+            .col.s8
+              .row
+                .col.s6
+                  +reporter
+                .col.s6
+                  +details
+            .col.s4#status
+              h5 Status
+              .input-field
+                select
+                  option(value='verified') Verified
+                  option(value='2') Test
+              h5 Priority
+              .input-field
+                select
+                  option(value='urgent') Urgent
+                  option(value='2') Test
+              h5 Department
+              .input-field
+                select
+                  option(value='department1') Department 1
+                  option(value='2') Department 2
+              h5 Annotation
               .input-field
                 textarea.materialize-textarea
-              h5 Category
-              .chips.chips-initial
-              h5 Location
-              .chips.chips-initial
-              h5 Tag
-              .chips.chips-initial
-        .col.s4#status
-          h5 Status
-          .input-field
-            select
-              option(value='verified') Verified
-              option(value='2') Test
-          h5 Priority
-          .input-field
-            select
-              option(value='urgent') Urgent
-              option(value='2') Test
-          h5 Department
-          .input-field
-            select
-              option(value='department1') Department 1
-              option(value='2') Department 2
-          h5 Annotation
-          .input-field
-            textarea.materialize-textarea
-
 
 append app_script
   script.
@@ -114,7 +137,10 @@ append app_script
         $details.find('textarea')
           .val(data.details.description)
           .trigger('autoresize');
-        $('.chips').material_chip();
+        $('.chips').material_chip({
+          placeholder: 'Enter a tag',
+          secondaryPlaceholder: 'Enter a tag'
+        });
         var $chips = $details.find('.chips-initial');
         $chips.eq(0).material_chip({data: data.details.category.map(function(d) { return {tag: d}; })});
         $chips.eq(1).material_chip({data: data.details.location.map(function(d) { return {tag: d}; })});
@@ -132,14 +158,14 @@ append app_script
         //Materialize
         $('.modal').modal();
         $('select').material_select();
-        $('.slider').slider({ width: '500px', height: $('.slider img').width() });
+        $('.slider').slider({ height: $('.slider img').width() });
         $('.slider').slider('pause');
         $('.materialboxed').materialbox();
       });
 
       //Buttons
-      $('#reset').click(function() {
-      });
+      /*$('#reset').click(function() {
+      });*/
       $('#cancel').click(function() {
         $('#manage-issue-modal').modal('close');
       });
@@ -150,5 +176,11 @@ append app_script
           }));
         });
         $('#manage-issue-modal').modal('close');
+      });
+      $('#reject').click(function() {
+        console.log({status: "unassigned"});
+      });
+      $('#resolve').click(function() {
+        console.log({status: "resolved"});
       });
     });

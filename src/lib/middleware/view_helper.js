@@ -30,6 +30,7 @@ module.exports = (req, res, next) => {
     api_url: conf.get('service.api.url'),
     dict: i18n.locales
   };
+  res.locals.role = "organization_admin"; //"super_admin", "organization_admin", "department_officer"
 
   next();
 };
