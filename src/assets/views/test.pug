@@ -32,41 +32,52 @@ append content
   .modal#manage-issue-modal
     .modal-header
       .row
-        .col.s7
+        .col.s6
           h3 Manage Issue
-        .col.s5
-          //- a.btn-flat#reset Reset
-          //- | &nbsp;
-          a.btn-flat#cancel Cancel
-          | &nbsp;
-          a.btn#confirm Confirm
+        .col.s6.right-align
+          case user_role
+            when "department_officer"
+              a.btn-flat#reject Reject
+              | &nbsp;
+              a.btn-flat#resolve Resolve
+            when "organization_admin"
+            default
+              //- a.btn-flat#reset Reset
+              //- | &nbsp;
+              a.btn-flat#cancel Cancel
+              | &nbsp;
+              a.btn#confirm Confirm
       .row
         .col.s12
           p
           .divider
     .modal-content
-      case role
-        when "department_officer"
-          .row
-            .col.s7
-              h4 ID&nbsp;
-                span#id
-            .col.s5
-              a.btn-flat#reject Reject
-              | &nbsp;
-              a.btn-flat#resolve Resolve
-          .row
+      .row
+        .col.s12
+          h4 ID&nbsp;
+            span#id
+      .row
+        case user_role
+          when 'department_officer'
             .col.s6
+              h5 Details
               +reporter
               +details
-            .col.s6
-        when "organization_admin"
-        default
-          .row
-            .col.s12
-              h4 ID&nbsp;
-                span#id
-          .row
+            .col.s6#progress
+              h5 Progress
+              .input-field
+                textarea.materialize-textarea
+              .row
+                .col.s8
+                  .file-field.input-field
+                    input(type='file', accept="image/*")
+                    .file-path-wrapper
+                      input.file-path.validate(type="text", placeholder="Upload photo")
+                .col.s4.right-align
+                  a.btn-flat#post Post
+              #cards
+          when 'organization_admin'
+          default
             .col.s8
               .row
                 .col.s6
@@ -103,9 +114,23 @@ append app_script
           'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png',
           'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
         ],
+        progress: [
+          {
+            name: 'Thiti',
+            date: new Date(),
+            description: 'update 1',
+            url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png'
+          },
+          {
+            name: 'Luang',
+            date: new Date(),
+            description: 'update 2',
+            url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
+          }
+        ],
         reporter: {
           name: 'Joe',
-          date: '13 Nov 2020',
+          date: new Date(),
           contact: 'me@boonmeelab.com'
         },
         details: {
@@ -130,7 +155,7 @@ append app_script
         var $reporter = $('#reporter');
         var $span = $reporter.find('span');
         $span.eq(0).text(data.reporter.name);
-        $span.eq(1).text(data.reporter.date);
+        $span.eq(1).text(data.reporter.date.toLocaleDateString());
         $reporter.find('a.btn-flat').attr('href', 'mailto:'+data.reporter.contact);
 
         var $details = $('#details');
@@ -155,7 +180,9 @@ append app_script
           .val(data.status.annotation)
           .trigger('autoresize');
 
-        //Materialize
+        data.progress.forEach(prependProgressCard);
+
+        //Init Materialize
         $('.modal').modal();
         $('select').material_select();
         $('.slider').slider({ height: $('.slider img').width() });
@@ -170,6 +197,7 @@ append app_script
         $('#manage-issue-modal').modal('close');
       });
       $('#confirm').click(function() {
+        //TODO save data
         $('.chips-initial').each( function() {
           console.log($(this).material_chip('data').map(function(d) {
             return d.tag;
@@ -178,9 +206,29 @@ append app_script
         $('#manage-issue-modal').modal('close');
       });
       $('#reject').click(function() {
+        //TODO save data
         console.log({status: "unassigned"});
       });
       $('#resolve').click(function() {
+        //TODO save data
         console.log({status: "resolved"});
       });
+      $('#post').click(function() {
+        //TODO save data
+        var $progress = $('#progress');
+        prependProgressCard({
+          name: '#{user_name}',
+          date: new Date(),
+          description: $progress.find('textarea').val(),
+          url: window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+        });
+        $('.materialboxed').materialbox();
+      });
+
+      function prependProgressCard(d) {
+        $('#cards').prepend('<div class="card"><div class="card-image">'+
+          '<img class="materialboxed" src='+d.url+'></div>'+
+          '<div class="card-content"><p>'+d.description+'</p>'+
+          '<p>'+d.name+' on '+d.date.toLocaleDateString()+'</p></div></div>');
+      }
     });

@@ -14366,6 +14366,19 @@ select {
   padding: 0;
 }
 
+.modal .modal-content .card-image {
+  padding-top: 0px;
+}
+
+.modal .modal-content .file-field {
+  margin-top: 0px;
+}
+
+.modal .modal-content .file-path-wrapper {
+  padding-left: 0px;
+  cursor: pointer;
+}
+
 .modal.full-sheet {
   display: -webkit-box !important;
   display: -moz-flex !important;
