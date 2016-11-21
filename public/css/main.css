@@ -14379,6 +14379,14 @@ select {
   cursor: pointer;
 }
 
+.modal .modal-content input:disabled {
+  border-bottom-width: 0px;
+}
+
+.modal .modal-content .hidden {
+  display: none;
+}
+
 .modal.full-sheet {
   display: -webkit-box !important;
   display: -moz-flex !important;
