@@ -9,13 +9,13 @@ mixin reporter
       span
     p on&nbsp;
       span
-    a.btn-flat(class=user_role === 'organization_admin' ? undefined : 'hidden') Contact
+    a.btn-flat(class=((user_role === 'organization_admin') || (user_role === 'super_admin')) ? undefined : 'hidden') Contact
 
 mixin details
   #details
     h5 Description
     .input-field
-      textarea.materialize-textarea(disabled=user_role === 'organization_admin' ? undefined : true)
+      textarea.materialize-textarea(disabled=((user_role === 'organization_admin') || (user_role === 'super_admin')) ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -42,6 +42,7 @@ append content
               | &nbsp;
               a.btn-flat#acceptOrResolve
             when "organization_admin"
+            when "super_admin"
             default
               //- a.btn-flat#reset Reset
               //- | &nbsp;
@@ -79,6 +80,7 @@ append content
                   a.btn-flat#post Post
               #cards
           when 'organization_admin'
+          when 'super_admin'
           default
             .col.s8
               .row
@@ -203,7 +205,7 @@ append app_script
         $('.materialboxed').materialbox();
 
         //Disable chips aka tags when the user role is of a department
-        if('#{user_role}' !== 'organization_admin') {
+        if('#{user_role}' !== 'organization_admin' && '#{user_role}' !== 'super_admin') {
           $chips.find('i').remove();
           $chips.find('input')
             .attr('placeholder', '')
