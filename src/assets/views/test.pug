@@ -36,10 +36,11 @@ append content
           h3 Manage Issue
         .col.s6.right-align
           case user_role
-            when "department_officer"
+            when "department_admin"
+            when "department_worker"
               a.btn-flat#reject Reject
               | &nbsp;
-              a.btn-flat#resolve Resolve
+              a.btn-flat#acceptOrResolve
             when "organization_admin"
             default
               //- a.btn-flat#reset Reset
@@ -58,7 +59,8 @@ append content
             span#id
       .row
         case user_role
-          when 'department_officer'
+          when 'department_admin'
+          when 'department_worker'
             .col.s6
               h5 Details
               +reporter
@@ -88,18 +90,18 @@ append content
               h5 Status
               .input-field
                 select
-                  option(value='verified') Verified
-                  option(value='2') Test
               h5 Priority
               .input-field
                 select
                   option(value='urgent') Urgent
-                  option(value='2') Test
+                  option(value='normal') Normal
+                  option(value='trivial') Trivial
               h5 Department
               .input-field
                 select
-                  option(value='department1') Department 1
-                  option(value='2') Department 2
+                  option(value='departmentA') Department A
+                  option(value='departmentB') Department B
+                  option(value='departmentC') Department C
               h5 Annotation
               .input-field
                 textarea.materialize-textarea
@@ -140,9 +142,9 @@ append app_script
           tag: ['walkway', 'danger']
         },
         status: {
-          status: 'verified',
-          priority: 'urgent',
-          department: '2',
+          status: 'processing',
+          priority: 'normal',
+          department: 'departmentC',
           annotation: 'test'
         }
       }).then( function(data) {
@@ -173,7 +175,17 @@ append app_script
 
         var $status = $('#status');
         var $select = $status.find('select');
-        $select.eq(0).val(data.status.status);
+        if(data.status.status === "pending") { //only cannot set back to 'pending' from other statuses
+          $select.eq(0).append('<option value="pending">Pending</option>')
+        }
+        $select.eq(0)
+          .append('<option value="unassigned">Unassigned</option>')
+          .append('<option value="assigned">Assigned</option>')
+          .append('<option value="processing">Processing</option>')
+          .append('<option value="resolved">Resolved</option>')
+          .append('<option value="rejected">Rejected</option>')
+          .append('<option value="duplicated">Duplicated</option>')
+          .val(data.status.status);
         $select.eq(1).val(data.status.priority);
         $select.eq(2).val(data.status.department);
         $status.find('textarea')
@@ -188,41 +200,61 @@ append app_script
         $('.slider').slider({ height: $('.slider img').width() });
         $('.slider').slider('pause');
         $('.materialboxed').materialbox();
-      });
 
-      //Buttons
-      /*$('#reset').click(function() {
-      });*/
-      $('#cancel').click(function() {
-        $('#manage-issue-modal').modal('close');
-      });
-      $('#confirm').click(function() {
-        //TODO save data
-        $('.chips-initial').each( function() {
-          console.log($(this).material_chip('data').map(function(d) {
-            return d.tag;
-          }));
+        //Buttons
+        /*$('#reset').click(function() {
+        });*/
+        $('#cancel').click(function() {
+          $('#manage-issue-modal').modal('close');
         });
-        $('#manage-issue-modal').modal('close');
-      });
-      $('#reject').click(function() {
-        //TODO save data
-        console.log({status: "unassigned"});
-      });
-      $('#resolve').click(function() {
-        //TODO save data
-        console.log({status: "resolved"});
-      });
-      $('#post').click(function() {
-        //TODO save data
-        var $progress = $('#progress');
-        prependProgressCard({
-          name: '#{user_name}',
-          date: new Date(),
-          description: $progress.find('textarea').val(),
-          url: window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+        $('#confirm').click(function() {
+          //TODO save data
+          $('.chips-initial').each( function() {
+            console.log($(this).material_chip('data').map(function(d) {
+              return d.tag;
+            }));
+          });
+          $('#manage-issue-modal').modal('close');
         });
-        $('.materialboxed').materialbox();
+        $('#reject').click(function() {
+          //TODO save data
+          console.log({status: "unassigned"});
+          $('#manage-issue-modal').modal('close');
+        });
+        $('#acceptOrResolve')
+          .text(function() {
+            switch(data.status.status) {
+              case 'processing':
+                return 'Resolve';
+              case "assigned":
+              default:
+                return 'Accept';
+            }
+          })
+          .click(function() {
+            //TODO save data
+            switch(data.status.status) {
+              case 'processing':
+                console.log({status: "resolved"});
+                break;
+              case "assigned":
+              default:
+                console.log({status: "processing"});
+                break;
+            }
+            $('#manage-issue-modal').modal('close');
+          });
+        $('#post').click(function() {
+          //TODO save data
+          var $progress = $('#progress');
+          prependProgressCard({
+            name: '#{user_name}',
+            date: new Date(),
+            description: $progress.find('textarea').val(),
+            url: window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+          });
+          $('.materialboxed').materialbox();
+        });
       });
 
       function prependProgressCard(d) {
