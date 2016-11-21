@@ -84,15 +84,25 @@
     &.no-padding-s {
       padding: 0;
     }
+
     .card-image {
       padding-top: 0px;
     }
+
     .file-field {
       margin-top: 0px;
     }
     .file-path-wrapper {
       padding-left: 0px;
       cursor: pointer;
+    }
+
+    input:disabled {
+      border-bottom-width: 0px;
+    }
+
+    .hidden {
+      display: none;
     }
   }
 }

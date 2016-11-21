@@ -9,13 +9,13 @@ mixin reporter
       span
     p on&nbsp;
       span
-    a.btn-flat Contact
+    a.btn-flat(class=user_role === 'organization_admin' ? undefined : 'hidden') Contact
 
 mixin details
   #details
     h5 Description
     .input-field
-      textarea.materialize-textarea
+      textarea.materialize-textarea(disabled=user_role === 'organization_admin' ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -164,7 +164,8 @@ append app_script
         $details.find('textarea')
           .val(data.details.description)
           .trigger('autoresize');
-        $('.chips').material_chip({
+        var $chips = $('.chips');
+        $chips.material_chip({
           placeholder: 'Enter a tag',
           secondaryPlaceholder: 'Enter a tag'
         });
@@ -200,6 +201,14 @@ append app_script
         $('.slider').slider({ height: $('.slider img').width() });
         $('.slider').slider('pause');
         $('.materialboxed').materialbox();
+
+        //Disable chips aka tags when the user role is of a department
+        if('#{user_role}' !== 'organization_admin') {
+          $chips.find('i').remove();
+          $chips.find('input')
+            .attr('placeholder', '')
+            .prop('disabled', true);
+        }
 
         //Buttons
         /*$('#reset').click(function() {
