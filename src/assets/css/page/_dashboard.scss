@@ -11,6 +11,32 @@
         height: 100%;
     }
 
+    ul.duration-selector {
+        margin: 0px;
+        border-bottom: solid $ps-xxs $cl-verylightgray;
+        li {
+            float: left;
+            display: block;
+            text-align: center;
+            width: 25%;
+            height: 100%;
+            border-top: solid $ps-xxs $cl-verylightgray;
+            cursor: pointer;
+
+            text-transform: capitalize;
+
+            &.highlight {
+                border-top-color: $cl-red;
+            }
+
+            div {
+                padding: $ps-default;
+            }
+
+
+        }
+    }
+
     .summary {
         border-bottom: $ps-xxs solid $cl-verylightgray;
 
