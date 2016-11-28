@@ -14,7 +14,7 @@ dashboard-table-summary
       th.performance Performance Index
 
     tr.row(each="{data}")
-      td.team { name }
+      td.team { department.name }
       td.numeric-col { assigned }
       td.numeric-col { processing }
       td.numeric-col { resolved }
@@ -25,9 +25,7 @@ dashboard-table-summary
 
     let self = this;
     let ymd = "YYYY-MM-DD";
-    let endDuration = moment().format(ymd);
-
-    console.log(endDuration);
+    let end_date = moment().format(ymd);
 
     self.activeSelector = 0;
 
@@ -41,19 +39,21 @@ dashboard-table-summary
     this.selectDuration  = function(selectorIdx) {
         return function(){
             self.activeSelector = selectorIdx;
-            // Load data
-            self.update();
+
+            let start_date = self.durationSelectors[selectorIdx];
+
+            api.getSummary('myorg', start_date, end_date, (data) => {
+                self.data = _.map( data.data[0].by_department, d => {
+                    d.performance = ( d.processing + d.resolved ) - d.assigned;
+                    return d;
+                });
+                self.update();
+            });
         }
     }
 
-    this.selectDuration(0);
-
-
-    this.data = [
-        { name:'Department A', assigned: 10, processing: 2, resolved: 5, rejected: 3, performance: 2 },
-        { name:'Department B', assigned: 5, processing: 1, resolved: 0, rejected: 0,  performance: -4 },
-        { name:'Department C', assigned: 5, processing: 5, resolved: 0, rejected: 0,  performance: 0 }
-    ];
+    // Initialize selector
+    this.selectDuration(0)();
 
     function generateStartDate(period, adjPeriod, unit ){
         return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
