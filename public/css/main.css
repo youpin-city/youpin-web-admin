@@ -14277,14 +14277,17 @@ select {
   }
 }
 
+.modal h5 {
+  color: #009de0;
+}
+
 .modal .modal-header {
   position: relative;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1;
-  color: #ffffff;
-  background-color: #009de0;
+  color: #009de0;
   padding: 2rem 2rem 1rem;
 }
 
@@ -14361,6 +14364,27 @@ select {
 
 .modal .modal-content.no-padding-s {
   padding: 0;
+}
+
+.modal .modal-content .card-image {
+  padding-top: 0px;
+}
+
+.modal .modal-content .file-field {
+  margin-top: 0px;
+}
+
+.modal .modal-content .file-path-wrapper {
+  padding-left: 0px;
+  cursor: pointer;
+}
+
+.modal .modal-content input:disabled {
+  border-bottom-width: 0px;
+}
+
+.modal .modal-content .hidden {
+  display: none;
 }
 
 .modal.full-sheet {

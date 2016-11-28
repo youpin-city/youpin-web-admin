@@ -31,5 +31,9 @@ module.exports = (req, res, next) => {
     dict: i18n.locales
   };
 
+  res.locals.user_name = 'Ma Fueng';
+  // choose from "super_admin", "organization_admin", "department_admin", "department_worker"
+  res.locals.user_role = 'department_admin';
+
   next();
 };

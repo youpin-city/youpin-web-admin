@@ -1,15 +1,16 @@
 // Test helper functions
-import { assertTestEnv, expect } from './test_helper';
-import conf from '../src/lib/config';
-import api from '../src/lib/api';
+import { assertTestEnv, expect } from '../test_helper';
+import conf from '../../src/lib/config';
+import api from '../../src/lib/api';
 // App stuff
-import app from '../src/lib/app';
+import app from '../../src/lib/app';
 
 // Exit test if NODE_ENV is not equal `test`
 assertTestEnv();
 
 describe('Web admin tests', () => {
   let server;
+
   before((done) => {
     server = app.listen(conf.get('port'));
     server.once('listening', () => done());

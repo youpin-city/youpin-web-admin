@@ -1,9 +1,9 @@
 extends: airbnb
-plugins:
-  - react
 env:
   node: true
   mocha: true
+globals:
+  browser: true
 rules:
   no-console: off
 
