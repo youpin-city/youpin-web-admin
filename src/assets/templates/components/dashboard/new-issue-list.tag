@@ -3,14 +3,21 @@ dashboard-new-issue-list
     h1.page-title New issue this week
     ul
       li(each="{data}").item
-        img(src="{img}")
+        img(src="{photos[0]}")
         span
-            b { description } </br>
-            | { ts } / { status } / { department } / { priority }
+            b { detail } </br>
+            | { created_time } / { status } / { assigned_department.name } / { level }
 
 
   script.
-    this.data = [
-      { img: 'http://lorempixel.com/80/80/city/', description: 'broken pipe', ts: '1h ago', department: 'Dept A.', status: 'open', priority: 'high' },
-      { img: 'http://lorempixel.com/80/80/city?sdf', description: 'broken door', ts: '1h ago', department: 'Dept B.', status: 'open', priority: 'high' }
-    ]
+    let self = this;
+    self.data = [];
+
+    api.getNewIssues( (data) => {
+      self.data = _.map( data.data, d => {
+        d.created_time = moment(d.created_time).fromNow();
+        return d;
+      });
+
+      self.update();
+    });
