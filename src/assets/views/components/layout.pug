@@ -29,10 +29,10 @@ block document
 
           main
             block content
-
-          block footer
-            if !hide_footer
-              include ../components/footer
+            div.clearfix
+            block footer
+              if !hide_footer
+                include ../components/footer
 
           block modal
             include ../components/modal
