@@ -99,6 +99,10 @@
                  text-align: right;
                  padding-right: $ps-small;
             }
+
+            &.hide {
+                display: none;
+            }
         }
     }
 

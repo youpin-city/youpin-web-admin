@@ -13,8 +13,8 @@ dashboard-table-summary
       th.rejected Rejected
       th.performance Performance Index
 
-    tr.row(each="{data}")
-      td.team { department.name }
+    tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
+      td.team { department.name } {  }
       td.numeric-col { assigned }
       td.numeric-col { processing }
       td.numeric-col { resolved }
@@ -71,4 +71,8 @@ dashboard-table-summary
 
     function generateStartDate(period, adjPeriod, unit ){
         return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
+    }
+
+    this.shouldHideRow = function(department){
+        return user.role != "organization_admin" && user.department != department;
     }
