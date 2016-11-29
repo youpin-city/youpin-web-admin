@@ -8,6 +8,8 @@ else root = {};
 
   // required libraries
   window.util = require('./lib/util');
+
+  window.api = require('./lib/api');
   // window.parser = require('../../lib/parser');
 
   // main application
