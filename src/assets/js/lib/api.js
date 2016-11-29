@@ -1,14 +1,15 @@
+/* global app */
+
 import querystring from 'querystring';
+import fetch from 'isomorphic-fetch'; // for now
 
 const api = module.exports = {};
 
-const API_URL = 'http://localhost:3100';
-
 api._buildEndpoint = function( path, queryParams ){
-  return API_URL + "/" + path + '?' + querystring.stringify(queryParams);
+  return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);
 };
 
-api.getSummary = function( org, start, end, cb ){
+api.getSummary = ( org, start, end, cb ) => {
   let url = api._buildEndpoint(
     'summaries',
     {
@@ -18,5 +19,23 @@ api.getSummary = function( org, start, end, cb ){
     }
   );
 
-  $.get(url,cb,'json');
+  fetch(url)
+    .then(response => response.json())
+    .then(cb);
+
+};
+
+api.getNewIssues = (cb) => {
+  let url = api._buildEndpoint(
+    'pins',
+    {
+      '$sort': '-created_time',
+      '$limit': 5
+    }
+  );
+
+  fetch(url)
+    .then(response => response.json())
+    .then(cb);
+
 };
