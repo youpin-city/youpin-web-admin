@@ -37,6 +37,7 @@ module.exports = (req, res, next) => {
 
   res.locals.user_role = 'department_admin';
   res.locals.user_department = '583b6b63a4918a001117ffa1'; // ID of the deparment
+  res.locals.user_organization = 'myorg'; // organization's name
 
   next();
 };

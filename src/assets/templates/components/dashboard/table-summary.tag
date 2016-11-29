@@ -42,7 +42,7 @@ dashboard-table-summary
 
             let start_date = self.durationSelectors[selectorIdx];
 
-            api.getSummary('myorg', start_date, end_date, (data) => {
+            api.getSummary( user.organization, start_date, end_date, (data) => {
                 self.data = _.map( data.data[0].by_department, d => {
                     d.performance = ( d.processing + d.resolved ) - d.assigned;
                     return d;
