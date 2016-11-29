@@ -105,28 +105,12 @@
     .recent-activity {
         padding: $ps-xs;
 
-        $li-height: 40px;
         li.activity {
-            margin-top: $ps-large;
-            height: $li-height;
+            margin-bottom: $ps-small;
             padding: 0px;
-
-            img {
-              $size: 30px;
-              display: inline-block;
-              padding: 0;
-              width: $size;
-              height: $size;
-              border-radius: $size;
-              background-color: $cl-verylightgray;
-              line-height: $li-height;
-              vertical-align: middle;
-            }
 
             span {
                 display: inline-block;
-                line-height: $li-height/2;
-                height: $li-height;
                 margin-left: $ps-xs;
                 vertical-align: middle;
             }

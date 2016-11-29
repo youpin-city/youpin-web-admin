@@ -18,6 +18,5 @@ dashboard-recent-activity
         return d;
       });
 
-      console.log(data);
       self.update();
     });
