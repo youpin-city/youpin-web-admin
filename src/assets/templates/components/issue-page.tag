@@ -61,7 +61,6 @@ issue-page
       this.statuses = [ { name: 'pending', issues: 4 }, { name: 'assigned', issues: 5 }, { name: 'processing', issues: 2 }, { name: 'resolved', issues: 1 }]
 
       this.issues = _.range(0, this.statuses[0].issues)
-      console.log(this.issues)
 
       select(name){
         return function(){

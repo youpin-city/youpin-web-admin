@@ -13,6 +13,10 @@ router.get('/login', (req, res, next) => {
   res.render('login');
 });
 
+router.get('/issue', (req, res, next) => {
+  res.render('issue');
+});
+
 router.get('/test', (req, res, next) => {
   res.render('test');
 });
