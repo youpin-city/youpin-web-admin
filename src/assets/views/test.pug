@@ -9,13 +9,13 @@ mixin reporter
       span
     p on&nbsp;
       span
-    a.btn-flat(class=user_role === 'organization_admin' ? undefined : 'hidden') Contact
+    a.btn-flat(class=superuser ? undefined : 'hidden') Contact
 
 mixin details
   #details
     h5 Description
     .input-field
-      textarea.materialize-textarea(disabled=user_role === 'organization_admin' ? undefined : true)
+      textarea.materialize-textarea(disabled=superuser ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -24,10 +24,12 @@ mixin details
     .chips.chips-initial
 
 append content
+  - var superuser = (user_role === 'organization_admin') || (user_role === 'super_admin')
+
   #page-dashboard.page
     .container.content-padding
       h1.page-title Test
-      a.btn(href='#manage-issue-modal') Manage Issue
+      a.btn(href='#manage-issue-modal' data-id='578b13225563625d6281b600') Manage Issue
 
   .modal#manage-issue-modal
     .modal-header
@@ -35,19 +37,16 @@ append content
         .col.s6
           h3 Manage Issue
         .col.s6.right-align
-          case user_role
-            when "department_admin"
-            when "department_worker"
-              a.btn-flat#reject Reject
-              | &nbsp;
-              a.btn-flat#acceptOrResolve
-            when "organization_admin"
-            default
-              //- a.btn-flat#reset Reset
-              //- | &nbsp;
-              a.btn-flat#cancel Cancel
-              | &nbsp;
-              a.btn#confirm Confirm
+          if superuser
+            //- a.btn-flat#reset Reset
+            //- | &nbsp;
+            a.btn-flat#cancel Cancel
+            | &nbsp;
+            a.btn#confirm Confirm
+          else
+            a.btn-flat#reject Reject
+            | &nbsp;
+            a.btn-flat#acceptOrResolve
       .row
         .col.s12
           p
@@ -58,64 +57,56 @@ append content
           h4 ID&nbsp;
             span#id
       .row
-        case user_role
-          when 'department_admin'
-          when 'department_worker'
-            .col.s6
-              h5 Details
-              +reporter
-              +details
-            .col.s6#progress
-              h5 Progress
-              .input-field
-                textarea.materialize-textarea
-              .row
-                .col.s8
-                  .file-field.input-field
-                    input(type='file', accept="image/*")
-                    .file-path-wrapper
-                      input.file-path.validate(type="text", placeholder="Upload photo")
-                .col.s4.right-align
-                  a.btn-flat#post Post
-              #cards
-          when 'organization_admin'
-          default
-            .col.s8
-              .row
-                .col.s6
-                  +reporter
-                .col.s6
-                  +details
-            .col.s4#status
-              h5 Status
-              .input-field
-                select
-              h5 Priority
-              .input-field
-                select
-                  option(value='urgent') Urgent
-                  option(value='normal') Normal
-                  option(value='trivial') Trivial
-              h5 Department
-              .input-field
-                select
-                  option(value='departmentA') Department A
-                  option(value='departmentB') Department B
-                  option(value='departmentC') Department C
-              h5 Annotation
-              .input-field
-                textarea.materialize-textarea
+        if superuser
+          .col.s8
+            .row
+              .col.s6
+                +reporter
+              .col.s6
+                +details
+          .col.s4#status
+            h5 Status
+            .input-field
+              select
+            h5 Priority
+            .input-field
+              select
+                option(value='urgent') Urgent
+                option(value='normal') Normal
+                option(value='trivial') Trivial
+            h5 Department
+            .input-field
+              select
+                option(value='departmentA') Department A
+                option(value='departmentB') Department B
+                option(value='departmentC') Department C
+            h5 Annotation
+            .input-field
+              textarea.materialize-textarea
+        else
+          .col.s6
+            h5 Details
+            +reporter
+            +details
+          .col.s6#progress
+            h5 Progress
+            .input-field
+              textarea.materialize-textarea
+            .row
+              .col.s8
+                .file-field.input-field
+                  input(type='file', accept="image/*")
+                  .file-path-wrapper
+                    input.file-path.validate(type="text", placeholder="Upload photo")
+              .col.s4.right-align
+                a.btn-flat#post Post
+            #cards
 
 append app_script
   script.
     $(function() {
       //Data API
       Promise.resolve({
-        id: 123456789,
-        images: [
-          'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png',
-          'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
-        ],
         progress: [
           {
             name: 'Thiti',
@@ -130,17 +121,6 @@ append app_script
             url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
           }
         ],
-        reporter: {
-          name: 'Joe',
-          date: new Date(),
-          contact: 'me@boonmeelab.com'
-        },
-        details: {
-          description: 'test test test ทดสอบ สอบบ',
-          category: ['walkway'],
-          location: ['building4', 'floor17'],
-          tag: ['walkway', 'danger']
-        },
         status: {
           status: 'processing',
           priority: 'normal',
@@ -148,32 +128,6 @@ append app_script
           annotation: 'test'
         }
       }).then( function(data) {
-        $('#id').text(data.id);
-
-        data.images.forEach( function(d) {
-          $('.slides').append('<li><img class="materialboxed" src='+d+'></li>');
-        });
-
-        var $reporter = $('#reporter');
-        var $span = $reporter.find('span');
-        $span.eq(0).text(data.reporter.name);
-        $span.eq(1).text(data.reporter.date.toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:'+data.reporter.contact);
-
-        var $details = $('#details');
-        $details.find('textarea')
-          .val(data.details.description)
-          .trigger('autoresize');
-        var $chips = $('.chips');
-        $chips.material_chip({
-          placeholder: 'Enter a tag',
-          secondaryPlaceholder: 'Enter a tag'
-        });
-        var $chips = $details.find('.chips-initial');
-        $chips.eq(0).material_chip({data: data.details.category.map(function(d) { return {tag: d}; })});
-        $chips.eq(1).material_chip({data: data.details.location.map(function(d) { return {tag: d}; })});
-        $chips.eq(2).material_chip({data: data.details.tag.map(function(d) { return {tag: d}; })});
-
         var $status = $('#status');
         var $select = $status.find('select');
         if(data.status.status === "pending") { //only cannot set back to 'pending' from other statuses
@@ -196,19 +150,10 @@ append app_script
         data.progress.forEach(prependProgressCard);
 
         //Init Materialize
-        $('.modal').modal();
+        $('.modal').modal({
+          ready: ready
+        });
         $('select').material_select();
-        $('.slider').slider({ height: $('.slider img').width() });
-        $('.slider').slider('pause');
-        $('.materialboxed').materialbox();
-
-        //Disable chips aka tags when the user role is of a department
-        if('#{user_role}' !== 'organization_admin') {
-          $chips.find('i').remove();
-          $chips.find('input')
-            .attr('placeholder', '')
-            .prop('disabled', true);
-        }
 
         //Buttons
         /*$('#reset').click(function() {
@@ -271,5 +216,58 @@ append app_script
           '<img class="materialboxed" src='+d.url+'></div>'+
           '<div class="card-content"><p>'+d.description+'</p>'+
           '<p>'+d.name+' on '+d.date.toLocaleDateString()+'</p></div></div>');
+      }
+
+      function ready(modal, trigger) {
+        var id = trigger.attr('data-id');
+        $('#id').text(id);
+
+        fetch(util.site_url('/pins/'+id, 'https://mafueng-api.youpin.city'), {
+          method: 'GET'
+        })
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          console.log(data);
+
+          data.photos.forEach( function(d) {
+            $('.slides').append('<li><img class="materialboxed" src='+d+'></li>');
+          });
+
+          var $reporter = $('#reporter');
+          var $span = $reporter.find('span');
+          $span.eq(0).text(data.owner); //TODO owner's name
+          $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
+          $reporter.find('a.btn-flat').attr('href', 'mailto:'+data.owner);
+
+          var $details = $('#details');
+          $details.find('textarea')
+            .val(data.detail)
+            .trigger('autoresize');
+
+          $('.chips').material_chip({
+            placeholder: 'Enter a tag',
+            secondaryPlaceholder: 'Enter a tag'
+          });
+
+          var $chips = $details.find('.chips-initial');
+          $chips.eq(0).material_chip({data: data.categories.map(function(d) { return {tag: d}; })});
+          $chips.eq(1).material_chip({data: data.location.coordinates.map(function(d) { return {tag: d}; })});
+          $chips.eq(2).material_chip({data: data.tags.map(function(d) { return {tag: d}; })});
+
+          //Disable chips aka tags when the user role is of a department
+          if('#{superuser}' !== 'true') {
+            $chips.find('i').remove();
+            $chips.find('input')
+              .attr('placeholder', '')
+              .prop('disabled', true);
+          }
+
+          //Init Materialize
+          $('.slider').slider({ height: $('.slider img').width() });
+          $('.slider').slider('pause');
+          $('.materialboxed').materialbox();
+        });
       }
     });
