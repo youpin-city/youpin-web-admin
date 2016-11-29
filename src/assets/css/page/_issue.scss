@@ -1,0 +1,163 @@
+#page-issue {
+    h1 {
+        border-bottom: solid $ps-xxs $bgc-tap;
+        margin-bottom: 0;
+    }
+
+    .bt-new-issue {
+        background: $cl-primary;
+        color: $cl-white;
+        padding: $ps-xs $ps-default;
+        border-radius: $ps-xxs;
+        font-weight: $fw-bold;
+        float: right;
+        display: inline-block;
+        cursor: pointer;
+        font-size: $fs-xs;
+
+        span::after {
+            content: "+";
+            font-size: $fs-xl;
+            margin-left: $ps-small;
+            line-height: $fs-xs;
+            vertical-align: middle;
+        }
+    }
+
+    .status-selector {
+        margin: 0;
+
+        li {
+            padding: $ps-small $ps-large;
+            display: inline-block;
+            color: $cl-gray;
+            font-weight: $fw-bold;
+            cursor: pointer;
+            text-transform: capitalize;
+
+            &.active {
+                border-top: solid $ps-xxs $cl-red;
+                color: $cl-primary;
+            }
+        }
+
+    }
+
+    .menu-bar  {
+        .sorting {
+            float: left;
+            border-radius: $ps-xxs;
+            background: $cl-gray;
+            padding: $gs-default/16 $ps-default;
+        }
+
+        .list-or-map {
+            vertical-align: middle;
+            float: right;
+
+            span {
+                font-size: $fs-sm;
+                font-weight: $fw-bold;
+
+                color: $cl-gray;
+
+                &.active {
+                    color: $cl-primary;
+                }
+                cursor: pointer;
+            }
+
+            span.separator {
+                margin: 0 $ps-xxs;
+            }
+
+        }
+    }
+
+    li.issue {
+        border-radius: $ps-xxs;
+        padding: $ps-small;
+
+        img.issue-img {
+            margin:  0px;
+            padding: 0px;
+            vertical-align: middle;
+
+            $size: 20%;
+            line-height: $size;
+            width:   $size;
+            height:  $size;
+        }
+
+        .issue-body {
+            display: inline-block;
+            border-right: dotted $ps-xxs $cl-red;
+            vertical-align: top;
+            margin-left: $ps-small;
+            width: 60%;
+
+            .issue-desc {
+                max-height: 60px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-bottom: $ps-small;
+            }
+
+            .issue-id {
+                b {
+                    margin-right: $ps-default;
+                }
+            }
+        }
+
+        .issue-category, .issue-location {
+            width: 50%;
+            display: inline-block;
+            float: left;
+        }
+
+
+        .bubble {
+             padding: $ps-xxs $ps-default;
+             border-radius: $ps-small;
+             background: $cl-gray;
+             color: $cl-white;
+             cursor: pointer;
+        }
+
+        .issue-tags { 
+            margin-top: $ps-small;
+            span {
+                 margin-right: $ps-xxs;
+            }
+        }
+
+        .issue-info {
+             padding-left: $ps-xxs;
+             width: 18%;
+             display: inline-block;
+             vertical-align: top;
+             text-transform: capitalize;
+
+             div {
+                 vertical-align: middle;
+                 padding: $ps-xxs 0px;
+             }
+
+             .big-text {
+                  font-size: $fs-lg;
+                  float: right;
+             }
+        }
+
+        .bt-manage-issue {
+             border: 1px solid $cl-red;
+             padding: $ps-default $ps-large;
+             cursor: pointer;
+             display: inline-block;
+             width: 100%;
+             text-align: center;
+        }
+    }
+
+}
