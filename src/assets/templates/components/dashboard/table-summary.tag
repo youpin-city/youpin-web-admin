@@ -40,7 +40,7 @@ dashboard-table-summary
         return function(){
             self.activeSelector = selectorIdx;
 
-            let start_date = self.durationSelectors[selectorIdx];
+            let start_date = self.durationSelectors[selectorIdx].start;
 
             api.getSummary( user.organization, start_date, end_date, (data) => {
                 self.data = _.map( data.data[0].by_department, d => {
