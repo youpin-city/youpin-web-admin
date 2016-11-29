@@ -43,10 +43,24 @@ dashboard-table-summary
             let start_date = self.durationSelectors[selectorIdx].start;
 
             api.getSummary( user.organization, start_date, end_date, (data) => {
-                self.data = _.map( data.data[0].by_department, d => {
-                    d.performance = ( d.processing + d.resolved ) - d.assigned;
-                    return d;
+                let summary =  data.data[0].by_department;
+
+                summary = _.keyBy( summary, 'department.name' );
+
+                /* Aggregate by date*/
+                for( var i = 1; i < data.data.length; i++ ) {
+                  _.each( data.data[i].by_department, dep => {
+                    _.each( ['resolved', 'processing', 'assigned'], k => {
+                      summary[dep.department.name][k] += dep[k];
+                    });
+                  });
+                }
+
+                self.data = _.map( summary, d => {
+                  d.performance = ( d.processing + d.resolved ) - d.assigned;
+                  return d;
                 });
+
                 self.update();
             });
         }
@@ -58,4 +72,3 @@ dashboard-table-summary
     function generateStartDate(period, adjPeriod, unit ){
         return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
     }
-
