@@ -1,0 +1,150 @@
+#page-dashboard {
+    .left-panel {
+        width: 70%;
+        float: left;
+        border-right: solid $cl-verylightgray $ps-xxs;
+    }
+
+    .right-panel {
+        width: 30%;
+        float: right;
+        height: 100%;
+    }
+
+    ul.duration-selector {
+        margin: 0px;
+        border-bottom: solid $ps-xxs $cl-verylightgray;
+        li {
+            float: left;
+            display: block;
+            text-align: center;
+            width: 25%;
+            height: 100%;
+            border-top: solid $ps-xxs $cl-verylightgray;
+            cursor: pointer;
+
+            text-transform: capitalize;
+
+            &.highlight {
+                border-top-color: $cl-red;
+            }
+
+            div {
+                padding: $ps-default;
+            }
+
+
+        }
+    }
+
+    .summary {
+        border-bottom: $ps-xxs solid $cl-verylightgray;
+
+        th {
+            border-left: solid $ps-xs;
+            background: $cl-verylightgray;
+            vertical-align: top;
+
+            &.team {
+                boder-left-color: $cl-darkgreen;
+            }
+
+            &.assigned {
+                border-left-color: $cl-blue;
+            }
+
+            &.processing {
+                border-left-color: $cl-orange;
+            }
+
+            &.resolved {
+                border-left-color: $cl-green;
+            }
+
+            &.rejected {
+                border-left-color: $cl-red;
+            }
+
+            &.performance {
+                border: none;
+            }
+
+        }
+
+        .row {
+            border-bottom: 1px solid $cl-verylightgray;
+
+            .team {
+                color: $cl-primary;
+                width: 20%;
+            }
+
+            .performance {
+                background:  $cl-lightgray;
+                width: 15%;
+
+                &.positive::after {
+                    float: right;
+                    color: $cl-green;
+                    content: '▲'
+                }
+                &.negative::after {
+                    float: right;
+                    color: $cl-red;
+                    content: '▼';
+                }
+            }
+
+            .numeric-col {
+                 text-align: right;
+                 padding-right: $ps-small;
+            }
+
+            &.hide {
+                display: none;
+            }
+        }
+    }
+
+    .recent-activity {
+        padding: $ps-xs;
+
+        li.activity {
+            margin-bottom: $ps-small;
+            padding: 0px;
+
+            span {
+                display: inline-block;
+                margin-left: $ps-xs;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    .new-issue-list {
+        padding: $ps-xs;
+
+        $li-height: 80px;
+        li.item {
+            margin-top: $ps-small;
+            height: $li-height;
+            padding: 0px;
+
+            img {
+              $size: $li-height;
+              width: $size;
+              height: $size;
+              vertical-align: middle;
+            }
+
+            span {
+                display: inline-block;
+                line-height: $li-height/2;
+                height: $li-height;
+                margin-left: $ps-xs;
+                vertical-align: middle;
+            }
+        }
+    }
+
+}

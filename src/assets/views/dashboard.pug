@@ -1,7 +1,16 @@
 extends components/layout
 
 append content
-
   #page-dashboard.page
-    .container.content-padding
-      h1.page-title Overview
+      div.left-panel.content-padding
+        dashboard-table-summary
+        dashboard-new-issue-list
+
+      div.right-panel
+        dashboard-recent-activity
+
+append app_script
+  script.
+    riot.mount('dashboard-table-summary')
+    riot.mount('dashboard-recent-activity')
+    riot.mount('dashboard-new-issue-list')

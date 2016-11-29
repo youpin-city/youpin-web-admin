@@ -15,7 +15,8 @@ api.getSummary = ( org, start, end, cb ) => {
     {
       start_date: start,
       end_date: end,
-      organization: org
+      organization: org,
+      trigger: true
     }
   );
 

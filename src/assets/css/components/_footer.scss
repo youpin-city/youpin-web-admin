@@ -1,14 +1,10 @@
 
 // Footer
 footer#footer {
-  // color: $cl-white;
   font-size: $fs-xs;
   padding: 20px 0;
   margin: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  margin-left: $nav-left-width;
   background-color: transparent;
   transition: left .4s ease-out;
 

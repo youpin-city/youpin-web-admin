@@ -1,5 +1,82 @@
 'use strict';
 
+riot.tag2('dashboard-new-issue-list', '<div class="new-issue-list"> <h1 class="page-title">New issue this week</h1> <ul> <li class="item" each="{data}"><img riot-src="{photos[0]}"><span><b>{detail} </br></b>{created_time} / {status} / {assigned_department.name} / {level}</span></li> </ul> </div>', '', '', function (opts) {
+  var self = this;
+  self.data = [];
+
+  api.getNewIssues(function (data) {
+    self.data = _.map(data.data, function (d) {
+      d.created_time = moment(d.created_time).fromNow();
+      return d;
+    });
+
+    self.update();
+  });
+});
+
+riot.tag2('dashboard-recent-activity', '<div class="recent-activity"><b>Recent Activity</b> <ul> <li class="activity" each="{data}"><span><b>{description} </br></b>{timestamp}</span></li> </ul> </div>', '', '', function (opts) {
+  var self = this;
+  self.data = [];
+
+  api.getRecentActivities(function (data) {
+    self.data = _.map(data, function (d) {
+      d.timestamp = moment(d.timestamp).fromNow();
+      return d;
+    });
+
+    self.update();
+  });
+});
+
+riot.tag2('dashboard-table-summary', '<h1 class="page-title">Overview</h1> <ul class="duration-selector"> <li class="{highlight: activeSelector == i}" each="{dur, i in durationSelectors}" onclick="{selectDuration(i)}" title="{dur.start}-today"> <div>{dur.name}</div> </li> </ul> <table class="summary"> <tr> <th class="team">Team</th> <th class="assigned">Assigned</th> <th class="processing">Processing</th> <th class="resolved">Resolved</th> <th class="rejected">Rejected</th> <th class="performance">Performance Index</th> </tr> <tr class="row {hide: shouldHideRow(department._id)}" each="{data}"> <td class="team">{department.name} {}</td> <td class="numeric-col">{assigned}</td> <td class="numeric-col">{processing}</td> <td class="numeric-col">{resolved}</td> <td class="numeric-col">{rejected}</td> <td class="performance {positive: performance &gt; 0, negative: performance &lt; 0}">{performance}</td> </tr> </table>', '', '', function (opts) {
+  var self = this;
+  var ymd = "YYYY-MM-DD";
+  var end_date = moment().format(ymd);
+
+  self.activeSelector = 0;
+
+  this.durationSelectors = [{ name: 'week', start: generateStartDate('week', 'day', 1) }, { name: '1 months', start: generateStartDate('month', 'month', 0) }, { name: '2 months', start: generateStartDate('month', 'month', -1) }, { name: '6 months', start: generateStartDate('month', 'month', -5) }];
+
+  this.selectDuration = function (selectorIdx) {
+    return function () {
+      self.activeSelector = selectorIdx;
+
+      var start_date = self.durationSelectors[selectorIdx].start;
+
+      api.getSummary(user.organization, start_date, end_date, function (data) {
+        var summary = data.data[0].by_department;
+
+        summary = _.keyBy(summary, 'department.name');
+
+        for (var i = 1; i < data.data.length; i++) {
+          _.each(data.data[i].by_department, function (dep) {
+            _.each(['resolved', 'processing', 'assigned'], function (k) {
+              summary[dep.department.name][k] += dep[k];
+            });
+          });
+        }
+
+        self.data = _.map(summary, function (d) {
+          d.performance = d.processing + d.resolved - d.assigned;
+          return d;
+        });
+
+        self.update();
+      });
+    };
+  };
+
+  this.selectDuration(0)();
+
+  function generateStartDate(period, adjPeriod, unit) {
+    return moment().isoWeekday(1).startOf(period).add(unit, adjPeriod).format(ymd);
+  }
+
+  this.shouldHideRow = function (department) {
+    return user.role != "organization_admin" && user.department != department;
+  };
+});
+
 riot.tag2('image-slider', '<div class="slider-list"> <yield></yield> </div>', '', '', function (opts) {
   var self = this;
   self.item = opts.item || 'div';
@@ -55,6 +132,23 @@ riot.tag2('image-slider', '<div class="slider-list"> <yield></yield> </div>', ''
 
     if (self.viewer) {}
   });
+});
+
+riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue"><span>Create New Issue</span></div> </h1> <ul class="status-selector"> <li class="{active: name == selectedStatus}" each="{statuses}" onclick="{parent.select(name)}">{name}({issues})</li> </ul> <div class="menu-bar"> <div class="sorting">▾</div> <div class="list-or-map"><span class="active">List</span><span class="separator">/</span><span>Map</span></div> <div class="clearfix"></div> </div> <ul class="issue-list"> <li class="issue" each="{issues}"><img class="issue-img" src="http://lorempixel.com/150/150/city/"> <div class="issue-body"> <div class="issue-id"><b>ID</b>2340984509234</div> <div class="issue-desc">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.</div> <div class="issue-category"> <div><b>Category</b></div><span class="bubble">walkway</span> </div> <div class="issue-location"> <div><b>Location</b></div><span class="bubble">Building A</span> </div> <div class="clearfix"></div> <div class="issue-tags"> <div><b>Tag</b></div><span class="bubble">Walkway</span><span class="bubble">Danger</span> </div> </div> <div class="issue-info"> <div><b>Status</b><span class="big-text">{selectedStatus}</span> <div class="clearfix"></div> </div> <div><b>Dept.</b><span class="big-text">Engineer</span> <div class="clearfix"></div> </div> <div><b>Thiti Luang</b></div> <div>Submitted on [date& time]</div> <div class="bt-manage-issue">Manage issue</div> </div> </li> </ul>', '', '', function (opts) {
+  var self = this;
+  this.selectedStatus = 'pending';
+  this.statuses = [{ name: 'pending', issues: 4 }, { name: 'assigned', issues: 5 }, { name: 'processing', issues: 2 }, { name: 'resolved', issues: 1 }];
+
+  this.issues = _.range(0, this.statuses[0].issues);
+
+  this.select = function (name) {
+    return function () {
+      self.selectedStatus = name;
+      var statusIndex = _.findIndex(self.statuses, { name: name });
+      self.issues = _.range(0, self.statuses[statusIndex].issues);
+      this.update();
+    };
+  }.bind(this);
 });
 
 riot.tag2('preloader', '<div class="preloader-wrapper active {class}"> <div class="spinner-layer spinner-blue-only"> <div class="circle-clipper left"> <div class="circle"></div> </div> <div class="gap-patch"> <div class="circle"></div> </div> <div class="circle-clipper right"> <div class="circle"></div> </div> </div> </div>', '', '', function (opts) {
