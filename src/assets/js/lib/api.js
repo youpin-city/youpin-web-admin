@@ -39,3 +39,17 @@ api.getNewIssues = (cb) => {
     .then(cb);
 
 };
+
+api.getRecentActivities = (cb) => {
+  let url = api._buildEndpoint(
+    'activity_logs',
+    {
+      '$sort': '-timestamp',
+      '$limit': 10
+    }
+  );
+
+  fetch(url)
+    .then(response => response.json())
+    .then(cb);
+}
