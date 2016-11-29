@@ -26,13 +26,18 @@ api.getSummary = ( org, start, end, cb ) => {
 };
 
 api.getNewIssues = (cb) => {
-  let url = api._buildEndpoint(
-    'pins',
-    {
-      '$sort': '-created_time',
-      '$limit': 5
-    }
-  );
+  let opts = {
+    '$sort': '-created_time',
+    '$limit': 5
+  };
+
+  if( user.role !== 'organization_admin' ) {
+      opts = _.extend( opts, {
+        'assigned_department': user.department
+      });
+  }
+
+  let url = api._buildEndpoint('pins', opts);
 
   fetch(url)
     .then(response => response.json())
@@ -41,13 +46,18 @@ api.getNewIssues = (cb) => {
 };
 
 api.getRecentActivities = (cb) => {
-  let url = api._buildEndpoint(
-    'activity_logs',
-    {
-      '$sort': '-timestamp',
-      '$limit': 10
-    }
-  );
+  let opts = {
+    '$sort': '-timestamp',
+    '$limit': 10
+  };
+
+  if( user.role != 'organization_admin' ) {
+      opts = _.extend( opts, {
+        'department': user.department
+      });
+  }
+
+  let url = api._buildEndpoint( 'activity_logs', opts );
 
   fetch(url)
     .then(response => response.json())
