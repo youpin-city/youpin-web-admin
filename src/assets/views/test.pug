@@ -121,7 +121,6 @@ append app_script
           }
         ],
         status: {
-          status: 'processing',
           priority: 'normal',
           department: 'departmentC',
           annotation: 'test'
@@ -251,7 +250,7 @@ append app_script
           });
           $('#acceptOrResolve')
             .text(function() {
-              switch(data.status.status) {
+              switch(data.status) {
                 case 'processing':
                   return 'Resolve';
                 case "assigned":
@@ -261,7 +260,7 @@ append app_script
             })
             .click(function() {
               var bodyState;
-              switch(data.status.status) {
+              switch(data.status) {
                 case 'processing':
                   bodyState = {state: "resolved"};
                   break;
