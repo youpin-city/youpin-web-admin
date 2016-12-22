@@ -177,19 +177,19 @@
 }
 
 .mail-content h1 {
-  color: #009de0 !important;
+  color: #013d61 !important;
 }
 
 .mail-content h2 {
-  color: #009de0 !important;
+  color: #013d61 !important;
 }
 
 .mail-content h3 {
-  color: #00567a !important;
+  color: black !important;
 }
 
 .mail-content h4 {
-  color: #00567a !important;
+  color: black !important;
 }
 
 .mail-content ul {
@@ -209,11 +209,11 @@
 }
 
 .mail-content a {
-  color: #009de0 !important;
+  color: #013d61 !important;
 }
 
 .mail-content a:hover, .mail-content a:focus, .mail-content a:active {
-  color: #2ec0ff !important;
+  color: #026dad !important;
   text-decoration: underline !important;
 }
 

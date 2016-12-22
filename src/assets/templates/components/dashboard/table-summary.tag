@@ -30,40 +30,40 @@ dashboard-table-summary
     self.activeSelector = 0;
 
     this.durationSelectors = [
-        { name: 'week', start: generateStartDate('week', 'day', 1) },
-        { name: '1 months', start: generateStartDate('month', 'month', 0) },
-        { name: '2 months', start: generateStartDate('month', 'month', -1) },
-        { name: '6 months', start: generateStartDate('month', 'month', -5) }
+      { name: 'week', start: generateStartDate('week', 'day', 1) },
+      { name: '1 months', start: generateStartDate('month', 'month', 0) },
+      { name: '2 months', start: generateStartDate('month', 'month', -1) },
+      { name: '6 months', start: generateStartDate('month', 'month', -5) }
     ];
 
     this.selectDuration  = function(selectorIdx) {
-        return function(){
-            self.activeSelector = selectorIdx;
+      return function(){
+        self.activeSelector = selectorIdx;
 
-            let start_date = self.durationSelectors[selectorIdx].start;
+        let start_date = self.durationSelectors[selectorIdx].start;
 
-            api.getSummary( user.organization, start_date, end_date, (data) => {
-                let summary =  data.data[0].by_department;
+        api.getSummary( user.organization, start_date, end_date, (data) => {
+          let summary = (data.data || [])[0].by_department;
 
-                summary = _.keyBy( summary, 'department.name' );
+          summary = _.keyBy( summary, 'department.name' );
 
-                /* Aggregate by date*/
-                for( var i = 1; i < data.data.length; i++ ) {
-                  _.each( data.data[i].by_department, dep => {
-                    _.each( ['resolved', 'processing', 'assigned'], k => {
-                      summary[dep.department.name][k] += dep[k];
-                    });
-                  });
-                }
-
-                self.data = _.map( summary, d => {
-                  d.performance = ( d.processing + d.resolved ) - d.assigned;
-                  return d;
-                });
-
-                self.update();
+          /* Aggregate by date*/
+          for( var i = 1; i < data.data.length; i++ ) {
+            _.each( data.data[i].by_department, dep => {
+              _.each( ['resolved', 'processing', 'assigned'], k => {
+                summary[dep.department.name][k] += dep[k];
+              });
             });
-        }
+          }
+
+          self.data = _.map( summary, d => {
+            d.performance = ( d.processing + d.resolved ) - d.assigned;
+            return d;
+          });
+
+          self.update();
+        });
+      }
     }
 
     // Initialize selector

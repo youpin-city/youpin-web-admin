@@ -44,7 +44,7 @@ riot.tag2('dashboard-table-summary', '<h1 class="page-title">Overview</h1> <ul c
       var start_date = self.durationSelectors[selectorIdx].start;
 
       api.getSummary(user.organization, start_date, end_date, function (data) {
-        var summary = data.data[0].by_department;
+        var summary = (data.data || [])[0].by_department;
 
         summary = _.keyBy(summary, 'department.name');
 
@@ -134,8 +134,10 @@ riot.tag2('image-slider', '<div class="slider-list"> <yield></yield> </div>', ''
   });
 });
 
-riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue"><span>Create New Issue</span></div> </h1> <ul class="status-selector"> <li class="{active: name == selectedStatus}" each="{statuses}" onclick="{parent.select(name)}">{name}({issues})</li> </ul> <div class="menu-bar"> <div class="sorting">▾</div> <div class="list-or-map"><span class="active">List</span><span class="separator">/</span><span>Map</span></div> <div class="clearfix"></div> </div> <ul class="issue-list"> <li class="issue" each="{issues}"><img class="issue-img" src="http://lorempixel.com/150/150/city/"> <div class="issue-body"> <div class="issue-id"><b>ID</b>2340984509234</div> <div class="issue-desc">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.</div> <div class="issue-category"> <div><b>Category</b></div><span class="bubble">walkway</span> </div> <div class="issue-location"> <div><b>Location</b></div><span class="bubble">Building A</span> </div> <div class="clearfix"></div> <div class="issue-tags"> <div><b>Tag</b></div><span class="bubble">Walkway</span><span class="bubble">Danger</span> </div> </div> <div class="issue-info"> <div><b>Status</b><span class="big-text">{selectedStatus}</span> <div class="clearfix"></div> </div> <div><b>Dept.</b><span class="big-text">Engineer</span> <div class="clearfix"></div> </div> <div><b>Thiti Luang</b></div> <div>Submitted on [date& time]</div> <div class="bt-manage-issue">Manage issue</div> </div> </li> </ul>', '', '', function (opts) {
+riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue"><a class="btn" href="#manage-issue-modal">Create New Issue</a></div> </h1> <ul class="status-selector"> <li class="{active: name == selectedStatus}" each="{statuses}" onclick="{parent.select(name)}">{name}({issues})</li> </ul> <div class="menu-bar"> <div class="sorting">▾</div> <div class="list-or-map"><span class="active">List</span><span class="separator">/</span><span>Map</span></div> <div class="clearfix"></div> </div> <ul class="issue-list"> <li class="issue clearfix" each="{pins}"> <div class="issue-img"> <div class="img responsive-img" riot-style="background-image: url(&quot;{_.get(photos, &quot;0&quot;)}&quot;)"></div> </div> <div class="issue-body"> <div class="issue-id"><b>ID</b><span href="#manage-issue-modal" data-id="{_id}">{_id}</span> </div> <div class="issue-desc">{detail}</div> <div class="issue-category"> <div><b>Category</b><span class="bubble" each="{cat in categories}">{cat}</span></div> </div> <div class="issue-location"> <div><b>Location</b></div><span class="bubble">Building A</span> </div> <div class="clearfix"></div> <div class="issue-tags"> <div><b>Tag</b><span class="bubble" each="{tag in tags}">{tag}</span></div> </div> </div> <div class="issue-info"> <div><b>Status</b><span class="big-text">{status}</span> <div class="clearfix"></div> </div> <div><b>Dept.</b><span class="big-text">Engineer</span> <div class="clearfix"></div> </div> <div><b>Thiti Luang</b></div> <div>Submitted on {moment(created_time).fromNow()}</div><a class="bt-manage-issue btn" href="#manage-issue-modal" data-id="{_id}">Issue</a> </div> </li> </ul>', '', '', function (opts) {
   var self = this;
+  this.all_pins = opts.pins || [];
+  this.pins = this.all_pins;
   this.selectedStatus = 'pending';
   this.statuses = [{ name: 'pending', issues: 4 }, { name: 'assigned', issues: 5 }, { name: 'processing', issues: 2 }, { name: 'resolved', issues: 1 }];
 
@@ -146,9 +148,12 @@ riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue">
       self.selectedStatus = name;
       var statusIndex = _.findIndex(self.statuses, { name: name });
       self.issues = _.range(0, self.statuses[statusIndex].issues);
+      self.pins = _.filter(self.all_pins, function (pin) {
+        return pin.status === name;
+      });
       this.update();
     };
-  }.bind(this);
+  };
 });
 
 riot.tag2('preloader', '<div class="preloader-wrapper active {class}"> <div class="spinner-layer spinner-blue-only"> <div class="circle-clipper left"> <div class="circle"></div> </div> <div class="gap-patch"> <div class="circle"></div> </div> <div class="circle-clipper right"> <div class="circle"></div> </div> </div> </div>', '', '', function (opts) {

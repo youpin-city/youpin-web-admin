@@ -27690,29 +27690,33 @@ App.prototype.busy = function (is_busy) {
 
 // dummy cover when image cannot be loaded
 App.prototype.check_image = function () {
-  var _this = this;
-
-  $('.image:not(.image-checked)').on('error', function (e) {
-    // debugger;
-  }).each(function () {
-    var $el = $(_this);
-    var src = $el.css('background-image');
-    var $img = void 0;
-    if (src) {
-      src = src.replace(/(^url\()|(\)$|["'])/g, '');
-      $img = $('<img>').attr('src', src).on('load', function () {
-        $el.addClass('image-checked image-checked-success');
-      }).on('error', function () {
-        if ($el.hasClass('hide-on-error')) {
-          $el.addClass('image-checked image-checked-error image-hidden');
-        } else {
-          var type = $el.data('item-type') || 'general';
-          $el.css('background-image', 'url("' + util.site_url('/public/img/cover/dummy_' + type + '.png') + '")');
-          $el.addClass('image-checked image-checked-error');
-        }
-      });
-    }
-  });
+  // $('.image:not(.image-checked)')
+  // .on('error', (e) => {
+  //   // debugger;
+  // })
+  // .each(() => {
+  //   const $el = $(this);
+  //   let src = $el.css('background-image');
+  //   let $img;
+  //   if (src) {
+  //     src = src.replace(/(^url\()|(\)$|["'])/g, '');
+  //     $img = $('<img>').attr('src', src)
+  //     .on('load', () => {
+  //       $el.addClass('image-checked image-checked-success');
+  //     })
+  //     .on('error', () => {
+  //       if ($el.hasClass('hide-on-error')) {
+  //         $el.addClass('image-checked image-checked-error image-hidden');
+  //       } else {
+  //         const type = $el.data('item-type') || 'general';
+  //         $el.css('background-image',
+  //           `url("${util.site_url('/public/img/cover/dummy_' + type + '.png')}")`
+  //         );
+  //         $el.addClass('image-checked image-checked-error');
+  //       }
+  //     });
+  //   }
+  // });
 };
 
 module.exports = App;
