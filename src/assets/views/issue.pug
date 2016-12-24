@@ -1,28 +1,5 @@
 extends components/layout
 
-mixin reporter
-  #reporter
-    .slider
-      ul.slides
-    h5 Reported
-    p by&nbsp;
-      span
-    p on&nbsp;
-      span
-    a.btn-flat(class=superuser ? undefined : 'hidden') Contact
-
-mixin details
-  #details
-    h5 Description
-    .input-field
-      textarea.materialize-textarea(disabled=superuser ? undefined : true)
-    h5 Category
-    .chips.chips-initial
-    h5 Location
-    .chips.chips-initial
-    h5 Tag
-    .chips.chips-initial
-
 append content
   #page-issue.page.content-padding
     issue-page
@@ -31,6 +8,4 @@ append content
 
 append app_script
   script.
-    riot.mount('issue-page', { pins: !{JSON.stringify(pins)} })
-
-  script.
+    riot.mount('issue-page');

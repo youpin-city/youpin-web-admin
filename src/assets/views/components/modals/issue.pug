@@ -1,3 +1,26 @@
+mixin reporter
+  #reporter
+    .slider
+      ul.slides
+    h5 Reported
+    p by&nbsp;
+      span
+    p on&nbsp;
+      span
+    a.btn-flat(class=superuser ? undefined : 'hidden') Contact
+
+mixin details
+  #details
+    h5 Description
+    .input-field
+      textarea.materialize-textarea(disabled=superuser ? undefined : true)
+    h5 Category
+    .chips.chips-initial
+    h5 Location
+    .chips.chips-initial
+    h5 Tag
+    .chips.chips-initial
+
 .modal#manage-issue-modal
   .modal-header
     .row
