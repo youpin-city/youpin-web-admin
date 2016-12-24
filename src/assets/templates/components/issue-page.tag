@@ -59,7 +59,7 @@ issue-page
           i.icon.material-icons access_time
           | { moment(p.created_time).fromNow() }
           //- | [date& time]
-        a.bt-manage-issue.btn(href='#manage-issue-modal' data-id='{ p._id }') Issue
+        a.bt-manage-issue.btn(href='#!issue-id:{ p._id }') Issue
 
     div.load-more-wrapper
       a.load-more(class="{active: hasMore}", onclick="{loadMore()}" ) Load More
