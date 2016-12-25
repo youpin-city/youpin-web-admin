@@ -9,14 +9,12 @@ api._buildEndpoint = function( path, queryParams ){
   return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);
 };
 
-api.getSummary = ( org, start, end, cb ) => {
+api.getSummary = ( start, end, cb ) => {
   let url = api._buildEndpoint(
-    'summaries',
+    'summarize-states',
     {
       start_date: start,
-      end_date: end,
-      organization: org,
-      trigger: true
+      end_date: end
     }
   );
 
