@@ -358,15 +358,41 @@ append app_script
                 });
               });
             $('#post').click(function() {
-              //TODO save data
               var $progress = $('#progress');
+              var progressData = {
+                'photos': [
+                  window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+                ],
+                'detail': $progress.find('textarea').val()
+              }
               prependProgressCard({
                 name: '#{user_name}',
                 date: new Date(),
-                description: $progress.find('textarea').val(),
-                url: window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+                description: progressData.detail,
+                url: progressData.photos[0]
               });
               $('.materialboxed').materialbox();
+
+              //TODO save data
+              //Edit pin info (partially)
+              fetch(util.site_url('/pins/'+id, app.config.api_url), {
+                method: 'PATCH',
+                body: {
+                  'progresses': progressData
+                },
+                headers: {
+                  'Content-type': 'application/json',
+                  'Authorization': authorizationBearer
+                }
+              })
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(data) {
+              })
+              .catch(function(err) {
+                Materialize.toast(err.message, 8000, 'dialog-error large');
+              });
             });
           });
         });
