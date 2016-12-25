@@ -58,7 +58,7 @@ router.get('/settings/department', (req, res, next) => {
 });
 
 router.get('/settings/user', (req, res, next) => {
-  res.render('test');
+  res.render('settings/user');
 });
 
 

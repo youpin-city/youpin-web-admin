@@ -81,7 +81,7 @@ api.getDepartments = () => {
     then(response => response.json());
 }
 
-api.createDepartments = (orgId, deptName) => {
+api.createDepartment = (orgId, deptName) => {
   let body = {
       name: deptName,
       organization: orgId
@@ -90,4 +90,26 @@ api.createDepartments = (orgId, deptName) => {
   let url = api._buildEndpoint('departments');
 
   return fetch(url, { method: 'POST', body : JSON.stringify(body), headers: headers});
+}
+
+api.getUsers = () => {
+  let opts = {
+    '$limit': 100
+  };
+
+  let url = api._buildEndpoint( 'users', opts );
+
+  return fetch(url, {headers: headers})
+    .then(resp => resp.json());
+}
+
+api.createUser = (userObj) => {
+  let url = api._buildEndpoint('users');
+
+  return fetch(url, { method: 'POST', body : JSON.stringify(userObj), headers: headers});
+}
+
+api.updateUser = (userId, patchObj) => {
+  let url = api._buildEndpoint('users/'+userId);
+  return fetch(url, { method: 'PATCH', body : JSON.stringify(patchObj), headers: headers});
 }
