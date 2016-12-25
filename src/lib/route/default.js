@@ -53,6 +53,15 @@ router.get('/test', (req, res, next) => {
   res.render('test');
 });
 
+router.get('/settings/department', (req, res, next) => {
+  res.render('settings/department');
+});
+
+router.get('/settings/user', (req, res, next) => {
+  res.render('test');
+});
+
+
 // all other methods, show not found page
 router.all('/*', auth, (req, res, next) => {
   next(createError(404));

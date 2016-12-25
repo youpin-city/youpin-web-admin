@@ -13,8 +13,23 @@ sitemap:
     href: "/report"
     children: []
   - name: sitenav.settings
-    href: "/settings"
-    children: []
+    href: "#"
+    authorized_roles:
+        - super_admin
+        - organization_admin
+        - department_head
+    children:
+        - name: sitenav.settings_department
+          href: '/settings/department'
+          authorized_roles:
+            - super_admin
+            - organization_admin
+        - name: sitenav.settings_user
+          href: '/settings/user'
+          authorized_roles:
+            - super_admin
+            - organization_admin
+            - department_head
 
 footer_link: []
   # - name: sitenav.privacy
