@@ -5,6 +5,11 @@ import fetch from 'isomorphic-fetch'; // for now
 
 const api = module.exports = {};
 
+const headers = {
+    'Authorization': 'Bearer '+ user.token,
+    'Content-Type': 'application/json'
+};
+
 api._buildEndpoint = function( path, queryParams ){
   return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);
 };
@@ -63,4 +68,26 @@ api.getRecentActivities = (cb) => {
   fetch(url)
     .then(response => response.json())
     .then(cb);
+}
+
+api.getDepartments = () => {
+  let opts = {
+    '$limit': 100
+  };
+
+  let url = api._buildEndpoint( 'departments', opts );
+
+  return fetch(url).
+    then(response => response.json());
+}
+
+api.createDepartments = (orgId, deptName) => {
+  let body = {
+      name: deptName,
+      organization: orgId
+  };
+
+  let url = api._buildEndpoint('departments');
+
+  return fetch(url, { method: 'POST', body : JSON.stringify(body), headers: headers});
 }
