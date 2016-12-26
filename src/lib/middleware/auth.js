@@ -48,7 +48,6 @@ module.exports = function auth(req, res, next) {
     if (data) {
       const user = data;
       user.token = jwt;
-      user.department = data.departments[0];
       // assign to user
       req.user = res.locals.user = user;
       req.cookies[cookie_user_info] = user;
