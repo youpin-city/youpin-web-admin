@@ -5,6 +5,11 @@ import fetch from 'isomorphic-fetch'; // for now
 
 const api = module.exports = {};
 
+const headers = {
+    'Authorization': 'Bearer '+ user.token,
+    'Content-Type': 'application/json'
+};
+
 api._buildEndpoint = function( path, queryParams ){
   return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);
 };
@@ -61,6 +66,50 @@ api.getRecentActivities = (cb) => {
   fetch(url)
     .then(response => response.json())
     .then(cb);
+}
+
+api.getDepartments = () => {
+  let opts = {
+    '$limit': 100
+  };
+
+  let url = api._buildEndpoint( 'departments', opts );
+
+  return fetch(url).
+    then(response => response.json());
+}
+
+api.createDepartment = (orgId, deptName) => {
+  let body = {
+      name: deptName,
+      organization: orgId
+  };
+
+  let url = api._buildEndpoint('departments');
+
+  return fetch(url, { method: 'POST', body : JSON.stringify(body), headers: headers});
+}
+
+api.getUsers = () => {
+  let opts = {
+    '$limit': 100
+  };
+
+  let url = api._buildEndpoint( 'users', opts );
+
+  return fetch(url, {headers: headers})
+    .then(resp => resp.json());
+}
+
+api.createUser = (userObj) => {
+  let url = api._buildEndpoint('users');
+
+  return fetch(url, { method: 'POST', body : JSON.stringify(userObj), headers: headers});
+}
+
+api.updateUser = (userId, patchObj) => {
+  let url = api._buildEndpoint('users/'+userId);
+  return fetch(url, { method: 'PATCH', body : JSON.stringify(patchObj), headers: headers});
 }
 
 api.getPins = (status, opts) => {
