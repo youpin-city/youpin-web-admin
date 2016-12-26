@@ -3,10 +3,12 @@ dashboard-new-issue-list
     h1.page-title New issue this week
     ul
       li(each="{data}").item
-        img(src="{photos[0]}")
+        a(href="#!issue-id:{_id}")
+          img(src="{photos[0]}")
         span
+          a(href="#!issue-id:{_id}")
             b { detail } </br>
-            | { created_time } / { status } / { assigned_department.name } / { level }
+          | { created_time } / { status } / { assigned_department.name } / { level }
 
 
   script.

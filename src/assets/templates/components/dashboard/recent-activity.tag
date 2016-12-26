@@ -4,7 +4,8 @@ dashboard-recent-activity
     ul
       li(each="{data}").activity
         span
-            b { description } </br>
+            a(href="#!issue-id:{ pin_id }")
+              b { description } </br>
             | { timestamp }
 
 

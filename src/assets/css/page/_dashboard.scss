@@ -11,6 +11,10 @@
         height: 100%;
     }
 
+    a {
+        color: $cl-darkgray;
+    }
+
     ul.duration-selector {
         margin: 0px;
         border-bottom: solid $ps-xxs $cl-verylightgray;

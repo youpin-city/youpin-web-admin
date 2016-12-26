@@ -14,14 +14,12 @@ api._buildEndpoint = function( path, queryParams ){
   return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);
 };
 
-api.getSummary = ( org, start, end, cb ) => {
+api.getSummary = ( start, end, cb ) => {
   let url = api._buildEndpoint(
-    'summaries',
+    'summarize-states',
     {
       start_date: start,
-      end_date: end,
-      organization: org,
-      trigger: true
+      end_date: end
     }
   );
 
@@ -112,4 +110,17 @@ api.createUser = (userObj) => {
 api.updateUser = (userId, patchObj) => {
   let url = api._buildEndpoint('users/'+userId);
   return fetch(url, { method: 'PATCH', body : JSON.stringify(patchObj), headers: headers});
+}
+
+api.getPins = (status, opts) => {
+
+    opts = _.extend({
+        '$sort': '-created_time',
+        '$limit': 10,
+        'status': status
+    }, opts );
+
+  let url = api._buildEndpoint( 'pins', opts );
+
+  return fetch(url).then(response => response.json())
 }

@@ -43,8 +43,8 @@ header#header
 
     ul#site-nav-left-menu.nav-list.hide-on-small-and-down
       for nav in sitemap
-        - nav_route = nav.name.replace(/^sitenav\./, '');
-        - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+        - nav_route = nav.name.replace(/^sitenav\./, '');ref;
+        - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
         - if( nav.authorized_roles && !nav.authorized_roles.find( r => r == user_role ) ) { continue; }
         li(class={ active: is_active })
           a(href=site_url(nav.href))
@@ -79,7 +79,7 @@ nav#mobile-nav.modal
   ul.site-nav.nav-list.clearfix
     for nav in sitemap
       - nav_route = nav.name.replace(/^sitenav\./, '');
-      - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+      - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
       li(class={ active: is_active })
         a(href=site_url(nav.href))
           | #{__(nav.name)}
