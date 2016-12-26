@@ -18,7 +18,7 @@ else root = {};
   window.$ = window.jQuery = require('jquery');
   require('jquery-serializejson');
   // require('materialize-css/dist/js/materialize.js');
-  require('jquery.scrollTo');
+  require('jquery.scrollto');
 
   // riot
   window.riot = require('riot');

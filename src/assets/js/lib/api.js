@@ -6,9 +6,12 @@ import fetch from 'isomorphic-fetch'; // for now
 const api = module.exports = {};
 
 const headers = {
-    'Authorization': 'Bearer '+ user.token,
-    'Content-Type': 'application/json'
+  'Content-Type': 'application/json'
 };
+
+if (user && user.token) {
+  headers['Authorization'] = 'Bearer '+ user.token;
+}
 
 api._buildEndpoint = function( path, queryParams ){
   return app.config.api_url + "/" + path + '?' + querystring.stringify(queryParams);

@@ -6,8 +6,9 @@ import urllib from 'url';
 import createError from 'http-errors';
 import _ from 'lodash';
 import conf from './config';
+import log from './logger';
 
-function APIFetch(api_baseurl, parser = _.identity, method = 'json') {
+function APIFetch(api_baseurl, _options = {}, parser = _.identity, method = 'json') {
   return function (...args) {
     // use API URL as base URL
     const urlobj = urllib.parse(
@@ -16,7 +17,7 @@ function APIFetch(api_baseurl, parser = _.identity, method = 'json') {
       : api_baseurl.replace(/\/$/, '') + '/' + args[0].replace(/^\//, '')
     );
     // parse options
-    const options = args[1] || {};
+    const options = _.assignIn(_options, args[1] || {});
     // handle modifying 'query', overriding query string in baseurl
     const query = typeof options.query === 'string' ? qs.parse(options.query) : options.query;
     const mod_query = 'query' in options ? query : {};
@@ -24,6 +25,10 @@ function APIFetch(api_baseurl, parser = _.identity, method = 'json') {
     urlobj.search = '?' + qs.stringify(_.defaults(mod_query, qs.parse(urlobj.query)));
     // assign normalized url
     args[0] = urllib.format(urlobj);
+    args[1] = options;
+
+    log.debug('Fetch ' + args[0]);
+
     return fetch.apply(this, args)
     .then(response => response[method]().then(data => {
       if (response.ok) return parser(data);
@@ -44,7 +49,9 @@ function APIParser(data) {
   return data;
 }
 
-export default {
-  server: APIFetch(conf.get('site.host'), _.identity, 'text'),
-  api: APIFetch(conf.get('service.api.url'), APIParser)
+export default APIFetch(conf.get('service.api.url'), {}, _.identity);
+
+export {
+  APIFetch
 };
+

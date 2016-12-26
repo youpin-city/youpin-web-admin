@@ -45,7 +45,7 @@ dashboard-table-summary
         api.getSummary( start_date, end_date, (data) => {
           let departments = Object.keys(data);
 
-          let attributes = Object.keys( data[departments[0]] );
+          let attributes = departments.length > 0 ? Object.keys( data[departments[0]] ) : [];
 
           let deptSummaries = _.map( departments, dept => {
             return {
