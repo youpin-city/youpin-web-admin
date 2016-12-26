@@ -7,4 +7,6 @@ site:
 debug: true
 service:
   api:
-    url: http://localhost:8080/api
+    url: 'http://mafueng-api.youpin.city'
+    app_username: 'web@mafueng.city'
+    app_password: 'web_mafueng'

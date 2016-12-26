@@ -10,6 +10,9 @@ else root = {};
   window.util = require('./lib/util');
 
   window.api = require('./lib/api');
+
+  window.router = require('./lib/router')();
+
   // window.parser = require('../../lib/parser');
 
   // main application

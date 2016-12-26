@@ -1,6 +1,7 @@
 import pathlib from 'path';
 import urllib from 'url';
 import conf from '../config';
+import api_middleware from '../middleware/api';
 
 // Modify resp.redirect
 const resp = require('express').response;
@@ -18,6 +19,7 @@ import default_router from './default';
 const router = module.exports = app => {
   // assign frontend middleware
   app.use(require('../middleware/view_helper'));
+  app.use(api_middleware);
 
   // default
   app.use(default_router);

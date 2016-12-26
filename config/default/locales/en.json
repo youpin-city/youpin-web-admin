@@ -20,7 +20,9 @@
     "issue": "Issue",
     "archive": "Archive",
     "report": "Report",
-    "settings": "Settings"
+    "settings": "Settings",
+    "settings_user": "User",
+    "settings_department": "Department"
   },
   "action": {
     "read": "Read More",

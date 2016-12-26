@@ -46838,7 +46838,7 @@ if (typeof global !== 'undefined') root = global;else if (typeof window !== 'und
   window.$ = window.jQuery = require('jquery');
   require('jquery-serializejson');
   // require('materialize-css/dist/js/materialize.js');
-  require('jquery.scrollTo');
+  require('jquery.scrollto');
 
   // riot
   window.riot = require('riot');
@@ -46857,5 +46857,5 @@ if (typeof global !== 'undefined') root = global;else if (typeof window !== 'und
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../etc/moment":15,"bluebird":1,"isomorphic-fetch":2,"jquery":5,"jquery-serializejson":3,"jquery.scrollTo":4,"js-cookie":6,"lodash":7,"moment":8,"riot":10,"scrollmagic":11,"slick-carousel":12,"slick-lightbox":13}]},{},[17])
+},{"../etc/moment":15,"bluebird":1,"isomorphic-fetch":2,"jquery":5,"jquery-serializejson":3,"jquery.scrollto":4,"js-cookie":6,"lodash":7,"moment":8,"riot":10,"scrollmagic":11,"slick-carousel":12,"slick-lightbox":13}]},{},[17])
 //# sourceMappingURL=dep.js.map

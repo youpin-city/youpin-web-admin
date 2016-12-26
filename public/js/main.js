@@ -27444,16 +27444,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var api = module.exports = {};
 
+var headers = {
+  'Content-Type': 'application/json'
+};
+
+if (user && user.token) {
+  headers['Authorization'] = 'Bearer ' + user.token;
+}
+
 api._buildEndpoint = function (path, queryParams) {
   return app.config.api_url + "/" + path + '?' + _querystring2.default.stringify(queryParams);
 };
 
-api.getSummary = function (org, start, end, cb) {
-  var url = api._buildEndpoint('summaries', {
+api.getSummary = function (start, end, cb) {
+  var url = api._buildEndpoint('summarize-states', {
     start_date: start,
-    end_date: end,
-    organization: org,
-    trigger: true
+    end_date: end
   });
 
   (0, _isomorphicFetch2.default)(url).then(function (response) {
@@ -27497,6 +27503,67 @@ api.getRecentActivities = function (cb) {
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
+};
+
+api.getDepartments = function () {
+  var opts = {
+    '$limit': 100
+  };
+
+  var url = api._buildEndpoint('departments', opts);
+
+  return (0, _isomorphicFetch2.default)(url).then(function (response) {
+    return response.json();
+  });
+};
+
+api.createDepartment = function (orgId, deptName) {
+  var body = {
+    name: deptName,
+    organization: orgId
+  };
+
+  var url = api._buildEndpoint('departments');
+
+  return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+};
+
+api.getUsers = function () {
+  var opts = {
+    '$limit': 100
+  };
+
+  var url = api._buildEndpoint('users', opts);
+
+  return (0, _isomorphicFetch2.default)(url, { headers: headers }).then(function (resp) {
+    return resp.json();
+  });
+};
+
+api.createUser = function (userObj) {
+  var url = api._buildEndpoint('users');
+
+  return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(userObj), headers: headers });
+};
+
+api.updateUser = function (userId, patchObj) {
+  var url = api._buildEndpoint('users/' + userId);
+  return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
+};
+
+api.getPins = function (status, opts) {
+
+  opts = _.extend({
+    '$sort': '-created_time',
+    '$limit': 10,
+    'status': status
+  }, opts);
+
+  var url = api._buildEndpoint('pins', opts);
+
+  return (0, _isomorphicFetch2.default)(url).then(function (response) {
+    return response.json();
+  });
 };
 
 },{"isomorphic-fetch":32,"querystring":40}],70:[function(require,module,exports){
@@ -27722,6 +27789,303 @@ App.prototype.check_image = function () {
 module.exports = App;
 
 },{}],71:[function(require,module,exports){
+'use strict';
+
+var _issue = require('./routes/issue');
+
+var _issue2 = _interopRequireDefault(_issue);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var router = module.exports = function () {
+
+    riot.route('/issue-id:*', function (id) {
+        _issue2.default.process(id);
+    });
+
+    riot.route.start();
+
+    Promise.all([_issue2.default.setup()]).then(function () {
+        setTimeout(function () {
+            riot.route.exec();
+        }, 1000);
+    });
+}; /* global app */
+
+},{"./routes/issue":72}],72:[function(require,module,exports){
+'use strict';
+
+var modalId = '#manage-issue-modal';
+var dataKey = ' issue-id';
+
+var issueRouter = module.exports = {
+  process: function process(issueId) {
+    $(modalId).data(dataKey, issueId);
+    $(modalId).trigger('openModal');
+  },
+  setup: function setup() {
+    function prependProgressCard(d) {
+      $('#cards').prepend('<div class="card"><div class="card-image">' + '<img class="materialboxed" src=' + d.url + '></div>' + '<div class="card-content"><p>' + d.description + '</p>' + '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
+    }
+
+    function ready(modal, trigger) {
+      var id = trigger.attr('data-id');
+      $('#id').text(id);
+      fetch(util.site_url('/pins/' + id, app.config.api_url), {
+        method: 'GET'
+      }).then(function (response) {
+        return response.json();
+      }).then(function (data) {
+        console.log(data);
+
+        fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: user.token
+          }
+        }).then(function (response) {
+          return response.json();
+        }).then(function (owner) {
+          data.photos.forEach(function (d) {
+            return $('.slides').append('<li><img class="materialboxed" src=' + d + '></li>');
+          });
+
+          var $reporter = $('#reporter');
+          var $span = $reporter.find('span');
+          $span.eq(0).text(owner.name); // TODO owner's name
+          $span.eq(1).text(new Date(data.created_time).toLocaleDateString());
+          $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
+
+          var $details = $('#details');
+          $details.find('textarea').val(data.detail).trigger('autoresize');
+
+          $('.chips').material_chip({
+            placeholder: 'Enter a tag',
+            secondaryPlaceholder: 'Enter a tag'
+          });
+
+          var $chips = $details.find('.chips-initial');
+          $chips.eq(0).material_chip({ data: data.categories.map(function (d) {
+              tag: d;
+            }) });
+          $chips.eq(1).material_chip({ data: data.location.coordinates.map(function (d) {
+              tag: d;
+            }) });
+          $chips.eq(2).material_chip({ data: data.tags.map(function (d) {
+              tag: d;
+            }) });
+
+          // Disable chips aka tags when the user role is of a department
+          if ('#{superuser}' !== 'true') {
+            $chips.find('i').remove();
+            $chips.find('input').attr('placeholder', '').prop('disabled', true);
+          }
+
+          // Dropdown lists
+          var $status = $('#status');
+          var $select = $status.find('select');
+          if (data.status === 'pending') {
+            // only cannot set back to 'pending' from other statuses
+            $select.eq(0).append('<option value="pending">Pending</option>');
+          }
+          $select.eq(0).append('<option value="unassigned">Unassigned</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status);
+
+          // Init Materialize
+          $('.slider').slider({ height: $('.slider img').width() });
+          $('.slider').slider('pause');
+          $('.materialboxed').materialbox();
+
+          // Buttons
+          /* $('#reset').click(function() {
+          });*/
+          $('#cancel').click(function () {
+            $('#manage-issue-modal').modal('close');
+          });
+          $('#confirm').click(function () {
+            // TODO Save data
+            var bodyState = {
+              detail: $details.find('textarea').val(),
+              categories: $chips.eq(0).material_chip('data').map(function (d) {
+                return d.tag;
+              }),
+              location: {
+                coordinates: $chips.eq(1).material_chip('data').map(function (d) {
+                  return d.tag;
+                })
+              },
+              tags: $chips.eq(2).material_chip('data').map(function (d) {
+                return d.tag;
+              })
+            };
+            /* $select.eq(1).val(data.status.priority);
+            $status.find('textarea').val(data.status.annotation)*/
+
+            // Edit pin info (partially)
+            fetch(util.site_url('/pins/' + id, app.config.api_url), {
+              method: 'PATCH',
+              body: bodyState,
+              headers: {
+                'Content-type': 'application/json',
+                Authorization: user.token
+              }
+            }).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+
+            // State transition
+            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+              method: 'POST',
+              body: {
+                state: $select.eq(0).val(data.status),
+                assigned_department: $select.eq(2).val(data.status.department)
+              },
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: user.token
+              }
+            }).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+          $('#reject').click(function () {
+            // TODO Save data
+            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+              method: 'POST',
+              body: {
+                state: 'unassigned'
+              },
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: user.token
+              }
+            }).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+          $('#acceptOrResolve').text(function () {
+            switch (data.status) {
+              case 'processing':
+                return 'Resolve';
+              default:
+                return 'Accept';
+            }
+          }).click(function () {
+            // TODO save data
+            var bodyState = void 0;
+            switch (data.status) {
+              case 'processing':
+                bodyState = { state: 'resolved' };
+                break;
+              default:
+                bodyState = {
+                  state: 'assigned',
+                  assigned_department: '' // TODO get current user's department
+                };
+                break;
+            }
+            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+              method: 'POST',
+              body: bodyState,
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: user.token
+              }
+            }).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+          $('#post').click(function () {
+            var $progress = $('#progress');
+            var progressData = {
+              photos: [window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])],
+              detail: $progress.find('textarea').val()
+            };
+            prependProgressCard({
+              name: '#{user_name}',
+              date: new Date(),
+              description: progressData.detail,
+              url: progressData.photos[0]
+            });
+            $('.materialboxed').materialbox();
+
+            // TODO save data
+            // Edit pin info (partially)
+            fetch(util.site_url('/pins/' + id, app.config.api_url), {
+              method: 'PATCH',
+              body: {
+                progresses: progressData
+              },
+              headers: {
+                'Content-type': 'application/json',
+                Authorization: user.token
+              }
+            }).then(function (response) {
+              return response.json();
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+        });
+      });
+    }
+
+    return Promise.resolve({
+      progress: [{
+        name: 'Thiti',
+        date: new Date(),
+        description: 'update 1',
+        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png'
+      }, {
+        name: 'Luang',
+        date: new Date(),
+        description: 'update 2',
+        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
+      }],
+      status: {
+        status: 'processing',
+        priority: 'normal',
+        department: 'departmentC',
+        annotation: 'test'
+      }
+    }).then(function (data) {
+      var $status = $('#status');
+      var $select = $status.find('select');
+      $select.eq(1).val(data.status.priority);
+      $select.eq(2).val(data.status.department);
+      $status.find('textarea').val(data.status.annotation).trigger('autoresize');
+
+      data.progress.forEach(prependProgressCard);
+
+      // Init Materialize
+      $('.modal').modal({
+        ready: ready
+      });
+      $('select').material_select();
+    });
+  }
+};
+
+},{}],73:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* global app: true */
@@ -28012,7 +28376,7 @@ extend(utility, {
   }
 });
 
-},{"lodash":33,"path":34,"sanitize-html":53,"url":64}],72:[function(require,module,exports){
+},{"lodash":33,"path":34,"sanitize-html":53,"url":64}],74:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -28027,6 +28391,9 @@ if (typeof global !== 'undefined') root = global;else if (typeof window !== 'und
   window.util = require('./lib/util');
 
   window.api = require('./lib/api');
+
+  window.router = require('./lib/router')();
+
   // window.parser = require('../../lib/parser');
 
   // main application
@@ -28035,5 +28402,5 @@ if (typeof global !== 'undefined') root = global;else if (typeof window !== 'und
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./lib/api":69,"./lib/app":70,"./lib/util":71}]},{},[72])
+},{"./lib/api":69,"./lib/app":70,"./lib/router":71,"./lib/util":73}]},{},[74])
 //# sourceMappingURL=main.js.map

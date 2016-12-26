@@ -13,7 +13,9 @@ feature:
   enabled_sms: false
 service:
   api:
-    url: http://localhost:8324/api
+    url: 'http://mafueng-api.youpin.city'
+    app_username: 'web@mafueng.city'
+    app_password: 'web_mafueng'
   ga:
     id:
   facebook:
@@ -28,6 +30,9 @@ service:
       auth:
         api_user: ''
         api_key: ''
+        facebok:
+          clientID: 347883645589710
+          clientSecret: 88aff10c4bedd5b661421044c6619209
     signature:
       from_email: noreply@byoupin.city
       from_name: YouPin
@@ -36,4 +41,3 @@ service:
 
         ---------------------------------------------------------------------------------
         Do not reply to this email. This is an automated response email.
-

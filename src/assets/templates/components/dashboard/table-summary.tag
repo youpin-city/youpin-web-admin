@@ -14,18 +14,18 @@ dashboard-table-summary
       th.performance Performance Index
 
     tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
-      td.team { department.name } {  }
-      td.numeric-col { assigned }
-      td.numeric-col { processing }
-      td.numeric-col { resolved }
-      td.numeric-col { rejected }
+      td.team { name }
+      td.numeric-col { summary.assigned }
+      td.numeric-col { summary.processing }
+      td.numeric-col { summary.resolved }
+      td.numeric-col { summary.rejected }
       td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance }
 
   script.
 
     let self = this;
-    let ymd = "YYYY-MM-DD";
-    let end_date = moment().format(ymd);
+    let ymd = 'YYYY-MM-DD';
+    let end_date = moment().add(1,'day').format(ymd);
 
     self.activeSelector = 0;
 
@@ -42,24 +42,38 @@ dashboard-table-summary
 
         let start_date = self.durationSelectors[selectorIdx].start;
 
-        api.getSummary( user.organization, start_date, end_date, (data) => {
-          let summary = (data.data || [])[0].by_department;
+        api.getSummary( start_date, end_date, (data) => {
+          let departments = Object.keys(data);
 
-          summary = _.keyBy( summary, 'department.name' );
+          let attributes = departments.length > 0 ? Object.keys( data[departments[0]] ) : [];
 
-          /* Aggregate by date*/
-          for( var i = 1; i < data.data.length; i++ ) {
-            _.each( data.data[i].by_department, dep => {
-              _.each( ['resolved', 'processing', 'assigned'], k => {
-                summary[dep.department.name][k] += dep[k];
-              });
-            });
-          }
-
-          self.data = _.map( summary, d => {
-            d.performance = ( d.processing + d.resolved ) - d.assigned;
-            return d;
+          let deptSummaries = _.map( departments, dept => {
+            return {
+                name: dept,
+                summary: data[dept],
+                performance: computePerformance(attributes, data[dept])
+            }
           });
+
+          let all = _.reduce( attributes, (acc,attr) => {
+            acc[attr] = 0;
+            return acc;
+          }, {} );
+
+          all = _.reduce( deptSummaries, (acc, dept) => {
+             _.each( attributes, attr => {
+                acc[attr] += dept['summary'][attr];
+            });
+            return acc;
+          }, all);
+
+          let orgSummary = {
+            name: 'All',
+            summary: all,
+            performance: computePerformance(attributes, all)
+          };
+
+          self.data = [ orgSummary ].concat(deptSummaries);
 
           self.update();
         });
@@ -71,6 +85,20 @@ dashboard-table-summary
 
     function generateStartDate(period, adjPeriod, unit ){
         return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
+    }
+
+    function computePerformance( attributes, summary){
+        let total = _.reduce( attributes, (acc,attr) => {
+            acc += summary[attr];
+            return acc;
+          }, 0);
+
+        let divider = total - (summary['unverified'] + summary['rejected']);
+        if( divider == 0 ) {
+          return 0;
+        }
+
+        return summary['resolved'] / divider;
     }
 
     this.shouldHideRow = function(department){

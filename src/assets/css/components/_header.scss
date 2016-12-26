@@ -87,6 +87,7 @@ header#header {
           line-height: 40px;
           margin: 0;
         }
+
       }
     }
 
@@ -177,6 +178,10 @@ header#header {
           > a {
             color: $cl-primary;
           }
+        }
+
+        &.sub-menu {
+            margin-left: $ps-default;
         }
       }
     }
