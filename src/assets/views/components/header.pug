@@ -29,11 +29,11 @@ header#header
 
         if user
           li
-            a#desktop-logout-btn.hide-on-global-search(href=site_url('', null, { 'logout': '1' }))
+            a#desktop-logout-btn.hide-on-global-search(href=site_url('logout'))
               .image.profile-image(style='background-image: url("' + user.image + '")')
         else
           li
-            a#desktop-login-btn.hide-on-global-search(href=site_url('', null, { 'login': '1' }))= __('action.login')
+            a#desktop-login-btn.hide-on-global-search(href=site_url('login'))= __('action.login')
 
 
   nav#site-nav-left

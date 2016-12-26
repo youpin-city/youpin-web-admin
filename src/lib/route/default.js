@@ -3,6 +3,7 @@ import createError from 'http-errors';
 import auth from '../middleware/auth';
 import agent from '../agent';
 import conf from '../config';
+import api from '../api';
 
 // setup
 const router = require('express').Router(); // eslint-disable-line
@@ -16,30 +17,28 @@ router.get('/login', (req, res, next) => {
   res.render('login');
 });
 
-function api(path, method = 'GET', data = {}, options = {}) {
-  const method_fn = method.toLowerCase();
-  return agent
-  .get(conf.get('service.api.url') + path)
-  .set({
-    // Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ODNkZDlkODNkYjIzOTE0NDA3ZjliNGYiLCJpYXQiOjE0ODA0NjE5MzgsImV4cCI6MTQ4MDU0ODMzOCwiaXNzIjoiZmVhdGhlcnMifQ.Jv2173Saxquu-vT6qByScZdLD62btV9A6CodggBBhLA'
-  })
-  // .send({
-  //   email: conf.get('service.api.app_username'),
-  //   password: conf.get('service.api.app_password')
-  // })
-  .then(res => res.body)
-  .catch(err => {
-    console.error('Failed to get token.', err.body);
-    return false;
-  });
-}
+const cookie_auth_name = 'feathers-jwt';
+const cookie_user_info = 'user';
+router.get('/logout', (req, res, next) => {
+  res.clearCookie(cookie_auth_name);
+  delete req.cookies[cookie_auth_name];
+  res.clearCookie(cookie_user_info);
+  delete req.cookies[cookie_user_info];
+
+  res.redirect('/login');
+});
+
+router.get('/auth/success', (req, res, next) => {
+  res.redirect('/');
+});
 
 function getPins() {
   return api('/pins');
 }
 
 router.get('/issue', auth, (req, res, next) => {
-  getPins()
+  // getPins()
+  req.api('/pins')
   .then(result => {
     res.locals.pins = result.data;
     res.render('issue');
@@ -49,15 +48,15 @@ router.get('/issue', auth, (req, res, next) => {
   });
 });
 
-router.get('/test', (req, res, next) => {
+router.get('/test', auth, (req, res, next) => {
   res.render('test');
 });
 
-router.get('/settings/department', (req, res, next) => {
+router.get('/settings/department', auth, (req, res, next) => {
   res.render('settings/department');
 });
 
-router.get('/settings/user', (req, res, next) => {
+router.get('/settings/user', auth, (req, res, next) => {
   res.render('settings/user');
 });
 
