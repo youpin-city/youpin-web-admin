@@ -4,7 +4,7 @@ issue-page
     div.bt-new-issue
       a.btn(href='#manage-issue-modal') Create New Issue
   ul.status-selector
-      li(each="{statuses}", class="{active: name == selectedStatus}", onclick="{parent.select(name)}") {name}({issues})
+      li(each="{statuses}", class="{active: name == selectedStatus}", onclick="{parent.select(name)}") {name}({totalIssues})
 
   div.menu-bar
       div.sorting ▾
@@ -16,23 +16,19 @@ issue-page
 
 
   ul.issue-list
-    li.issue.clearfix(each="{ pins }")
+    li.issue.clearfix(each="{ p in pins }")
       .issue-img
-        div.img.responsive-img(style='background-image: url("{ _.get(photos, "0") }");')
+        div.img.responsive-img(style='background-image: url("{ _.get(p.photos, "0") }");')
         //- img.issue-img(src="http://lorempixel.com/150/150/city/")
       div.issue-body
         div.issue-id
           b ID
-          span(href='#manage-issue-modal' data-id='{ _id }') { _id }
-
-          // | 2340984509234
-        div.issue-desc { detail }
-        //-  | Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.
+          span(href='#manage-issue-modal' data-id='{ p._id }') { p._id }
+        div.issue-desc { p.detail }
         div.issue-category
           div
             b Category
-            span.bubble(each="{ cat in categories }") { cat }
-          //- span.bubble walkway
+          span.bubble(each="{ cat in p.categories }") { cat }
 
         div.issue-location
           div
@@ -43,43 +39,84 @@ issue-page
         div.issue-tags
           div
             b Tag
-            span.bubble(each="{ tag in tags }") { tag }
-          //- span.bubble Walkway
-          //- span.bubble Danger
+          span.bubble(each="{ tag in p.tags }") { tag }
       div.issue-info
         div
           b Status
-          span.big-text { status }
-          //- span.big-text {selectedStatus}
-          div.clearfix
+        span.big-text { p.status }
+        div.clearfix
 
         div
           b Dept.
-          span.big-text Engineer
-          div.clearfix
+        span.big-text Engineer
+        div.clearfix
 
-        div
-          b Thiti Luang
+        div(title="assigned to")
+          i.icon.material-icons face
+          | { p.assigned_user.name }
 
-        div Submitted on { moment(created_time).fromNow() }
+        div(title="created at")
+          i.icon.material-icons access_time
+          | { moment(p.created_time).fromNow() }
           //- | [date& time]
-        a.bt-manage-issue.btn(href='#manage-issue-modal' data-id='{ _id }') Issue
+        a.bt-manage-issue.btn(href='#manage-issue-modal' data-id='{ p._id }') Issue
+
+    div.load-more-wrapper
+      a.load-more(class="{active: hasMore}", onclick="{loadMore()}" ) Load More
 
   script.
     var self = this;
-    this.all_pins = opts.pins || [];
-    this.pins = this.all_pins;
-    this.selectedStatus = 'pending';
-    this.statuses = [ { name: 'pending', issues: 4 }, { name: 'assigned', issues: 5 }, { name: 'processing', issues: 2 }, { name: 'resolved', issues: 1 }]
+    this.pins = [];
 
-    this.issues = _.range(0, this.statuses[0].issues)
+    // TODO: For super_admin, see all statues
 
-    this.select = function(name){
-      return function(){
-        self.selectedStatus = name;
-        var statusIndex = _.findIndex(self.statuses, { name: name})
-        self.issues = _.range(0, self.statuses[statusIndex].issues)
-        self.pins = _.filter(self.all_pins, pin => pin.status === name);
-        this.update();
+    this.statusesForRole =  ['assigned', 'processing', 'resolved']; // for department worker both head or regular
+    this.statuses = []
+
+    this.hasMore = true;
+
+    this.temps = Promise.map( this.statusesForRole, s => {
+        // get no. issues per status
+        return api.getPins(s, { '$limit': 1 }).then( res => {
+            return {
+                name: s,
+                totalIssues: res.total
+            }
+        })
+      }).then( data => {
+          self.statuses = data;
+          self.update();
+
+          this.select(self.statuses[0].name)();
+      });
+
+    this.selectedStatus = this.statusesForRole[0];
+
+    this.select = (status) => {
+      return () => {
+        self.selectedStatus = status;
+
+        api.getPins(status).then( res => {
+          self.pins = res.data;
+          console.log(res.data);
+          self.updateHasMoreButton(res);
+          self.update();
+        });
       }
     }
+
+    this.loadMore = () => {
+      return () => {
+        api.getPins( self.selectedStatus, { '$skip': self.pins.length }).then( res => {
+          self.pins = self.pins.concat(res.data)
+          self.updateHasMoreButton(res);
+          self.update();
+        });
+      };
+    }
+
+    this.updateHasMoreButton = (res) => {
+        self.hasMore = ( res.total - ( res.skip + res.data.length ) ) > 0
+    }
+
+

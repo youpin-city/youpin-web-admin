@@ -64,3 +64,17 @@ api.getRecentActivities = (cb) => {
     .then(response => response.json())
     .then(cb);
 }
+
+api.getPins = (status, opts) => {
+
+    opts = _.extend({
+        '$sort': '-created_time',
+        '$limit': 10,
+        'status': status,
+        'assigned_department': user.department
+    }, opts );
+
+  let url = api._buildEndpoint( 'pins', opts );
+
+  return fetch(url).then(response => response.json())
+}
