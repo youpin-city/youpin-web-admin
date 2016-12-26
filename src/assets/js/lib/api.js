@@ -70,8 +70,7 @@ api.getPins = (status, opts) => {
     opts = _.extend({
         '$sort': '-created_time',
         '$limit': 10,
-        'status': status,
-        'assigned_department': user.department
+        'status': status
     }, opts );
 
   let url = api._buildEndpoint( 'pins', opts );

@@ -48,7 +48,7 @@ issue-page
 
         div
           b Dept.
-        span.big-text Engineer
+        span.big-text { p.assigned_department ? p.assigned_department.name : '-' }
         div.clearfix
 
         div(title="assigned to")
@@ -59,7 +59,7 @@ issue-page
           i.icon.material-icons access_time
           | { moment(p.created_time).fromNow() }
           //- | [date& time]
-        a.bt-manage-issue.btn(href='#manage-issue-modal' data-id='{ p._id }') Issue
+        a.bt-manage-issue.btn(href='#!issue-id:{ p._id }') Issue
 
     div.load-more-wrapper
       a.load-more(class="{active: hasMore}", onclick="{loadMore()}" ) Load More
@@ -68,16 +68,25 @@ issue-page
     var self = this;
     this.pins = [];
 
-    // TODO: For super_admin, see all statues
+    this.statusesForRole = []
+    let queryOpts = {};
 
-    this.statusesForRole =  ['assigned', 'processing', 'resolved']; // for department worker both head or regular
+    if( user.role == 'super_admin' || user.role == 'organization_admin' ) {
+      this.statusesForRole =  ['unverified', 'verified', 'assigned', 'processing', 'resolved', 'rejected'];
+    } else {
+      this.statusesForRole =  ['assigned', 'processing', 'resolved'];
+      queryOpts['assigned_department'] = user.department;
+    }
+
     this.statuses = []
 
     this.hasMore = true;
 
-    this.temps = Promise.map( this.statusesForRole, s => {
+    Promise.map( this.statusesForRole, s => {
         // get no. issues per status
-        return api.getPins(s, { '$limit': 1 }).then( res => {
+        let opts = _.extend( {}, queryOpts, { '$limit': 1 });
+
+        return api.getPins(s, opts ).then( res => {
             return {
                 name: s,
                 totalIssues: res.total
@@ -96,9 +105,8 @@ issue-page
       return () => {
         self.selectedStatus = status;
 
-        api.getPins(status).then( res => {
+        api.getPins(status, queryOpts).then( res => {
           self.pins = res.data;
-          console.log(res.data);
           self.updateHasMoreButton(res);
           self.update();
         });
@@ -107,7 +115,8 @@ issue-page
 
     this.loadMore = () => {
       return () => {
-        api.getPins( self.selectedStatus, { '$skip': self.pins.length }).then( res => {
+        let opts = _.extend( {}, queryOpts, { '$skip': self.pins.length });
+        api.getPins( self.selectedStatus, opts ).then( res => {
           self.pins = self.pins.concat(res.data)
           self.updateHasMoreButton(res);
           self.update();

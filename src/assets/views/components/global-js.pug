@@ -2,7 +2,7 @@ script.
   // common javascript for all pages
   $(function() {
     // start router and tags
-    riot.route.base('/')
+    riot.route.base('#!')
     riot.mount('preloader');
     riot.mount('image-slider');
     riot.mount('search-box', {
@@ -54,4 +54,5 @@ script.
       $('#mobile-nav').closeModal();
       $('body').removeClass('mobile-nav-active');
     });
+
   })
