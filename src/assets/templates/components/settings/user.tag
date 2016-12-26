@@ -19,7 +19,7 @@ setting-user
     tr(each="{user in users}" ).user
         td {user.name}
         td {user.email}
-        td {user.departments[0].name}
+        td {user.department.name}
         td {user.role}
         td
           span(onclick="{ changeRole(user) }")
@@ -38,7 +38,7 @@ setting-user
         h5 Department
         .input-field.col.s12
           select(name="department")
-            option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id == editingUser.departments[0]._id }" ) {dept.name}
+            option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id == editingUser.department._id }" ) {dept.name}
       div.padding
 
     .row
@@ -125,11 +125,11 @@ setting-user
     self.confirmChangeRole = () => {
         let patch = {
           role: $roleSelector.val(),
-          departments: [$departmentSelector.val()]
+          department: [$departmentSelector.val()]
         }
 
         if( patch.role == "super_admin" ) {
-          delete patch['departments'];
+          delete patch['department'];
         }
 
         api.updateUser(self.editingUser._id, patch).then( (res) => {
