@@ -1,4 +1,4 @@
-/* global app */
+/* global app $ _ riot util user */
 
 import querystring from 'querystring';
 import fetch from 'isomorphic-fetch'; // for now
@@ -38,7 +38,8 @@ api.getNewIssues = (cb) => {
     '$limit': 5
   };
 
-  if( user.department && user.is_superuser ) {
+  // never set assigned_department if department is empty
+  if (user.department) {
       opts = _.extend( opts, {
         'assigned_department': user.department
       });

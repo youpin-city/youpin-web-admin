@@ -27499,7 +27499,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // for now
 
-/* global app */
+/* global app $ _ riot util user */
 
 var api = module.exports = {};
 
@@ -27532,7 +27532,8 @@ api.getNewIssues = function (cb) {
     '$limit': 5
   };
 
-  if (user.department && user.is_superuser) {
+  // never set assigned_department if department is empty
+  if (user.department) {
     opts = _.extend(opts, {
       'assigned_department': user.department
     });
