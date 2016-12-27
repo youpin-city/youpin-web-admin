@@ -1,10 +1,10 @@
 ---
 env: local
-port: 8080
+port: 11100
 site:
   protocol: http
-  hostname: localhost:8080
+  hostname: localhost:11100
 debug: true
 service:
   api:
-    url: http://localhost:8080/api
+    url: http://localhost:9100
