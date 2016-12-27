@@ -31,13 +31,5 @@ module.exports = (req, res, next) => {
     dict: i18n.locales
   };
 
-  res.locals.user_name = 'Ma Fueng';
-  // choose from "super_admin", "organization_admin", "department_admin", "department_worker"
-  // res.locals.user_role = 'organization_admin';
-
-  res.locals.user_role = req.query.role || 'department_admin';
-  res.locals.user_department = '583ddc853db23914407f9b59'; // ID of the deparment
-  res.locals.user_organization = '583ddb7a3db23914407f9b58'; // organization's name
-
   next();
 };

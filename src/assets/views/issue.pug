@@ -4,7 +4,7 @@ append content
   #page-issue.page.content-padding
     issue-page
 
-  - var superuser = (user_role === 'organization_admin') || (user_role === 'super_admin')
+  - var superuser = (user.role === 'organization_admin') || (user.role === 'super_admin')
 
 append app_script
   script.

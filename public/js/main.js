@@ -27532,7 +27532,7 @@ api.getNewIssues = function (cb) {
     '$limit': 5
   };
 
-  if (user.role !== 'organization_admin') {
+  if (user.department && user.is_superuser) {
     opts = _.extend(opts, {
       'assigned_department': user.department
     });
