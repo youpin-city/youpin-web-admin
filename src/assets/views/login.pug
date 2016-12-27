@@ -30,5 +30,5 @@ append content
                 .site-logo.bg
 
                 .input-field
-                  a.facebook-login.btn.btn-block(href=site_url('/auth/facebook', app_config.api_url))
+                  a.facebook-login.btn.btn-block(href=site_url('/auth/facebook', app_config.api_url, { successRedirect: success_url, failureRedirect: failure_url }))
                     | Login with Facebook

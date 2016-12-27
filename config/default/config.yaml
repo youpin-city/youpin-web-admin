@@ -12,6 +12,9 @@ feature:
   enabled_email: true
   enabled_sms: false
 service:
+  cookie:
+    maxAge: 2592000000
+    httpOnly: true
   api:
     url: http://localhost:8324/api
   ga:

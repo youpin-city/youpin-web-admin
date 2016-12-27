@@ -27499,7 +27499,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // for now
 
-/* global app */
+/* global app $ _ riot util user */
 
 var api = module.exports = {};
 
@@ -27532,10 +27532,16 @@ api.getNewIssues = function (cb) {
     '$limit': 5
   };
 
-  if (user.role !== 'organization_admin') {
-    opts = _.extend(opts, {
-      'assigned_department': user.department
-    });
+  if (!user.is_superuser) {
+    if (user.department) {
+      // non-admin role can request only his/her department
+      opts = _.extend(opts, {
+        'assigned_department': user.department
+      });
+    } else {
+      // non-admin role cannot request any departments
+      opts['$limit'] = 0;
+    }
   }
 
   var url = api._buildEndpoint('pins', opts);

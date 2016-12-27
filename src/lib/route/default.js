@@ -1,9 +1,11 @@
 import pathlib from 'path';
 import createError from 'http-errors';
-import auth from '../middleware/auth';
+import auth, { reset_user, cookie_auth_name } from '../middleware/auth';
 import agent from '../agent';
 import conf from '../config';
+import log from '../logger';
 import api from '../api';
+import util from '../util';
 
 // setup
 const router = require('express').Router(); // eslint-disable-line
@@ -14,22 +16,27 @@ router.get('/', auth, (req, res, next) => {
 });
 
 router.get('/login', (req, res, next) => {
+  res.locals.success_url = util.site_url('/auth/success');
+  res.locals.failure_url = util.site_url('/auth/failure');
   res.render('login');
 });
 
-const cookie_auth_name = 'feathers-jwt';
-const cookie_user_info = 'user';
 router.get('/logout', (req, res, next) => {
-  res.clearCookie(cookie_auth_name);
-  delete req.cookies[cookie_auth_name];
-  res.clearCookie(cookie_user_info);
-  delete req.cookies[cookie_user_info];
-
+  reset_user(req, res);
   res.redirect('/login');
 });
 
 router.get('/auth/success', (req, res, next) => {
+  if (req.query.token) {
+    res.cookie(cookie_auth_name, req.query.token, conf.get('service.cookie'));
+  } else {
+    log.error('No token found.');
+  }
   res.redirect('/');
+});
+
+router.get('/auth/failure', (req, res, next) => {
+  res.send('Something went wrong. Try again.');
 });
 
 function getPins() {
