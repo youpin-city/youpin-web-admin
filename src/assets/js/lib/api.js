@@ -38,11 +38,16 @@ api.getNewIssues = (cb) => {
     '$limit': 5
   };
 
-  // never set assigned_department if department is empty
-  if (user.department) {
+  if (!user.is_superuser) {
+    if (user.department) {
+      // non-admin role can request only his/her department
       opts = _.extend( opts, {
         'assigned_department': user.department
       });
+    } else {
+      // non-admin role cannot request any departments
+      opts['$limit'] = 0;
+    }
   }
 
   let url = api._buildEndpoint('pins', opts);
