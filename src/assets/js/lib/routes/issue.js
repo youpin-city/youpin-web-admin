@@ -1,3 +1,4 @@
+/* global util app user Materialize Console*/
 
 const modalId = '#manage-issue-modal';
 const dataKey = ' issue-id';
@@ -16,7 +17,7 @@ const issueRouter = module.exports = {
     }
 
     function ready(modal, trigger) {
-      const id = trigger.attr('data-id');
+      const id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
       $('#id').text(id);
       fetch(util.site_url('/pins/' + id, app.config.api_url), {
         method: 'GET'
@@ -24,6 +25,7 @@ const issueRouter = module.exports = {
       .then(response => response.json())
       .then(data => {
         console.log(data);
+        console.log(user);
 
         fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
           method: 'GET',
@@ -54,13 +56,13 @@ const issueRouter = module.exports = {
             secondaryPlaceholder: 'Enter a tag'
           });
 
-          var $chips = $details.find('.chips-initial');
-          $chips.eq(0).material_chip({ data: data.categories.map(d => {tag: d}) });
-          $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => {tag: d}) });
-          $chips.eq(2).material_chip({ data: data.tags.map(d => {tag: d}) });
+          const $chips = $details.find('.chips-initial');
+          $chips.eq(0).material_chip({ data: data.categories.map(d => ({ tag: d })) });
+          $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => ({ tag: d })) });
+          $chips.eq(2).material_chip({ data: data.tags.map(d => ({ tag: d })) });
 
           // Disable chips aka tags when the user role is of a department
-          if ('#{superuser}' !== 'true') {
+          if (user.is_superuser !== true) {
             $chips.find('i').remove();
             $chips.find('input')
               .attr('placeholder', '')
@@ -116,7 +118,7 @@ const issueRouter = module.exports = {
               }
             })
             .then(response => response.json())
-            .then(data => $('#manage-issue-modal').modal('close'))
+            .then(() => $('#manage-issue-modal').modal('close'))
             .catch(err =>
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
@@ -135,7 +137,7 @@ const issueRouter = module.exports = {
               }
             })
             .then(response => response.json())
-            .then(data => $('#manage-issue-modal').modal('close'))
+            .then(() => $('#manage-issue-modal').modal('close'))
             .catch(err =>
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
@@ -154,7 +156,7 @@ const issueRouter = module.exports = {
               }
             })
             .then(response => response.json())
-            .then(data => $('#manage-issue-modal').modal('close'))
+            .then(() => $('#manage-issue-modal').modal('close'))
             .catch(err =>
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
@@ -192,7 +194,7 @@ const issueRouter = module.exports = {
                 }
               })
               .then(response => response.json())
-              .then(data => $('#manage-issue-modal').modal('close'))
+              .then(() => $('#manage-issue-modal').modal('close'))
               .catch(err =>
                 Materialize.toast(err.message, 8000, 'dialog-error large')
               );

@@ -27440,7 +27440,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // for now
 
-/* global app */
+/* global app $ _ riot util user */
 
 var api = module.exports = {};
 
@@ -27473,10 +27473,16 @@ api.getNewIssues = function (cb) {
     '$limit': 5
   };
 
-  if (user.role !== 'organization_admin') {
-    opts = _.extend(opts, {
-      'assigned_department': user.department
-    });
+  if (!user.is_superuser) {
+    if (user.department) {
+      // non-admin role can request only his/her department
+      opts = _.extend(opts, {
+        'assigned_department': user.department
+      });
+    } else {
+      // non-admin role cannot request any departments
+      opts['$limit'] = 0;
+    }
   }
 
   var url = api._buildEndpoint('pins', opts);
@@ -27815,6 +27821,8 @@ var router = module.exports = function () {
 },{"./routes/issue":72}],72:[function(require,module,exports){
 'use strict';
 
+/* global util app user Materialize Console*/
+
 var modalId = '#manage-issue-modal';
 var dataKey = ' issue-id';
 
@@ -27829,7 +27837,7 @@ var issueRouter = module.exports = {
     }
 
     function ready(modal, trigger) {
-      var id = trigger.attr('data-id');
+      var id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
       $('#id').text(id);
       fetch(util.site_url('/pins/' + id, app.config.api_url), {
         method: 'GET'
@@ -27837,6 +27845,7 @@ var issueRouter = module.exports = {
         return response.json();
       }).then(function (data) {
         console.log(data);
+        console.log(user);
 
         fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
           method: 'GET',
@@ -27867,17 +27876,17 @@ var issueRouter = module.exports = {
 
           var $chips = $details.find('.chips-initial');
           $chips.eq(0).material_chip({ data: data.categories.map(function (d) {
-              tag: d;
+              return { tag: d };
             }) });
           $chips.eq(1).material_chip({ data: data.location.coordinates.map(function (d) {
-              tag: d;
+              return { tag: d };
             }) });
           $chips.eq(2).material_chip({ data: data.tags.map(function (d) {
-              tag: d;
+              return { tag: d };
             }) });
 
           // Disable chips aka tags when the user role is of a department
-          if ('#{superuser}' !== 'true') {
+          if (user.is_superuser !== true) {
             $chips.find('i').remove();
             $chips.find('input').attr('placeholder', '').prop('disabled', true);
           }
@@ -27931,7 +27940,7 @@ var issueRouter = module.exports = {
               }
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(function () {
               return $('#manage-issue-modal').modal('close');
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');
@@ -27951,7 +27960,7 @@ var issueRouter = module.exports = {
               }
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(function () {
               return $('#manage-issue-modal').modal('close');
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');
@@ -27971,7 +27980,7 @@ var issueRouter = module.exports = {
               }
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(function () {
               return $('#manage-issue-modal').modal('close');
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');
@@ -28008,7 +28017,7 @@ var issueRouter = module.exports = {
               }
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(function () {
               return $('#manage-issue-modal').modal('close');
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');
