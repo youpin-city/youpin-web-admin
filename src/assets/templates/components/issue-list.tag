@@ -107,7 +107,9 @@ issue-list
 
           self.mapMarkers = _.map(self.pins, (p) => {
             let marker = L.marker( p.location.coordinates ).addTo(self.mapView);
-            marker.bindPopup(p.detail);
+            marker.on('click', () => {
+                window.location.hash = '!issue-id:'+ p._id;
+            });
             return marker;
           });
 
