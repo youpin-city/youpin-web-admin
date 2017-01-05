@@ -24,14 +24,11 @@ const issueRouter = module.exports = {
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-        console.log(user);
-
         fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
           method: 'GET',
           headers: {
             'Content-type': 'application/json',
-            Authorization: user.token
+            Authorization: 'Bearer ' + user.token
           }
         })
         .then(response => response.json())
@@ -42,7 +39,7 @@ const issueRouter = module.exports = {
 
           const $reporter = $('#reporter');
           const $span = $reporter.find('span');
-          $span.eq(0).text(owner.name); // TODO owner's name
+          $span.eq(0).text(owner.name);
           $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
           $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
 
@@ -114,7 +111,7 @@ const issueRouter = module.exports = {
               body: bodyState,
               headers: {
                 'Content-type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             })
             .then(response => response.json())
@@ -133,7 +130,7 @@ const issueRouter = module.exports = {
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             })
             .then(response => response.json())
@@ -152,7 +149,7 @@ const issueRouter = module.exports = {
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             })
             .then(response => response.json())
@@ -190,7 +187,7 @@ const issueRouter = module.exports = {
                 headers: {
                   Accept: 'application/json',
                   'Content-Type': 'application/json',
-                  Authorization: user.token
+                  Authorization: 'Bearer ' + user.token
                 }
               })
               .then(response => response.json())
@@ -224,7 +221,7 @@ const issueRouter = module.exports = {
               },
               headers: {
                 'Content-type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             })
             .then(response => response.json())

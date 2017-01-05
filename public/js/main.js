@@ -27844,14 +27844,11 @@ var issueRouter = module.exports = {
       }).then(function (response) {
         return response.json();
       }).then(function (data) {
-        console.log(data);
-        console.log(user);
-
         fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
           method: 'GET',
           headers: {
             'Content-type': 'application/json',
-            Authorization: user.token
+            Authorization: 'Bearer ' + user.token
           }
         }).then(function (response) {
           return response.json();
@@ -27862,7 +27859,7 @@ var issueRouter = module.exports = {
 
           var $reporter = $('#reporter');
           var $span = $reporter.find('span');
-          $span.eq(0).text(owner.name); // TODO owner's name
+          $span.eq(0).text(owner.name);
           $span.eq(1).text(new Date(data.created_time).toLocaleDateString());
           $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
 
@@ -27936,7 +27933,7 @@ var issueRouter = module.exports = {
               body: bodyState,
               headers: {
                 'Content-type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             }).then(function (response) {
               return response.json();
@@ -27956,7 +27953,7 @@ var issueRouter = module.exports = {
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             }).then(function (response) {
               return response.json();
@@ -27976,7 +27973,7 @@ var issueRouter = module.exports = {
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             }).then(function (response) {
               return response.json();
@@ -28013,7 +28010,7 @@ var issueRouter = module.exports = {
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             }).then(function (response) {
               return response.json();
@@ -28046,7 +28043,7 @@ var issueRouter = module.exports = {
               },
               headers: {
                 'Content-type': 'application/json',
-                Authorization: user.token
+                Authorization: 'Bearer ' + user.token
               }
             }).then(function (response) {
               return response.json();
