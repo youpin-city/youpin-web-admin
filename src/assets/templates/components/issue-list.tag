@@ -1,5 +1,4 @@
 issue-list
-  link(rel='stylesheet', href='https://unpkg.com/leaflet@1.0.2/dist/leaflet.css')
   div.menu-bar
       div.sorting ▾
       div.list-or-map
@@ -126,10 +125,13 @@ issue-list
     }
 
     this.on('mount', () => {
-      self.mapView = L.map('issue-map').setView([13.7365673, 100.5326298], 18);
-      L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGV5dGl0bGUiLCJhIjoiY2lqNW8zZnhkMDA2b3Y2a3Jsbmh1a3JsNiJ9.p3e9Zm5lDqv2nX6jaQ5VEg', {
+      self.mapView = L.map('issue-map')
+      self.mapView.setView( app.config.map.initial_location, 18);
+
+      L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token='+ app.config.map.access_token, {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
       }).addTo(self.mapView);
+
     });
 
     this.removeMapMarkers = () => {
