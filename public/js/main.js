@@ -27534,6 +27534,17 @@ api.createDepartment = function (orgId, deptName) {
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
+api.postTransition = function (pinId, state, deptId) {
+  var body = {
+    state: state,
+    assigned_department: deptId
+  };
+
+  var url = api._buildEndpoint('pins/' + pinId + '/state_transition');
+
+  return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+};
+
 api.getUsers = function () {
   var opts = {
     '$limit': 100
@@ -27570,6 +27581,12 @@ api.getPins = function (status, opts) {
   return (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   });
+};
+
+api.patchPin = function (pinId, body) {
+  var url = api._buildEndpoint('pins/' + pinId);
+
+  return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
 };
 
 },{"isomorphic-fetch":32,"querystring":40}],70:[function(require,module,exports){
@@ -27821,7 +27838,7 @@ var router = module.exports = function () {
 },{"./routes/issue":72}],72:[function(require,module,exports){
 'use strict';
 
-/* global util app user Materialize Console*/
+/* global util app user api Materialize Console*/
 
 var modalId = '#manage-issue-modal';
 var dataKey = ' issue-id';
@@ -27891,11 +27908,24 @@ var issueRouter = module.exports = {
           // Dropdown lists
           var $status = $('#status');
           var $select = $status.find('select');
-          if (data.status === 'pending') {
-            // only cannot set back to 'pending' from other statuses
-            $select.eq(0).append('<option value="pending">Pending</option>');
+
+          // Populate status dropdown list
+          if (data.status === 'unverified') {
+            // cannot set back to 'unverified' from other statuses
+            $select.eq(0).append('<option value="unverified">Unverified</option>');
           }
-          $select.eq(0).append('<option value="unverified">Unverified</option>').append('<option value="verified">Verified</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status);
+          $select.eq(0)
+          // .append('<option value="unverified">Unverified</option>')
+          .append('<option value="verified">Verified</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status).material_select();
+
+          // Populate department dropdown list
+          var $select_department = $select.eq(2);
+          api.getDepartments().then(function (departments) {
+            departments.data.forEach(function (department) {
+              $select_department.append('<option value="' + department._id + '">' + department.name + '</option>');
+            });
+            $select_department.val(data.assigned_department).material_select();
+          });
 
           // Init Materialize
           $('.slider').slider({ height: $('.slider img').width() });
@@ -27909,8 +27939,7 @@ var issueRouter = module.exports = {
             $('#manage-issue-modal').modal('close');
           });
           $('#confirm').click(function () {
-            // TODO Save data
-            var bodyState = {
+            var body = {
               detail: $details.find('textarea').val(),
               categories: $chips.eq(0).material_chip('data').map(function (d) {
                 return d.tag;
@@ -27928,14 +27957,7 @@ var issueRouter = module.exports = {
             $status.find('textarea').val(data.status.annotation)*/
 
             // Edit pin info (partially)
-            fetch(util.site_url('/pins/' + id, app.config.api_url), {
-              method: 'PATCH',
-              body: JSON.stringify(bodyState),
-              headers: {
-                'Content-type': 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(function (response) {
+            api.patchPin(id, body).then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -27944,18 +27966,7 @@ var issueRouter = module.exports = {
             });
 
             // State transition
-            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
-              method: 'POST',
-              body: JSON.stringify({
-                state: $select.eq(0).val(data.status),
-                assigned_department: $select.eq(2).val(data.status.department)
-              }),
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(function (response) {
+            api.postTransition(id, $select.eq(0).val(), $select.eq(2).val()).then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -27964,17 +27975,7 @@ var issueRouter = module.exports = {
             });
           });
           $('#reject').click(function () {
-            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
-              method: 'POST',
-              body: JSON.stringify({
-                state: 'verified'
-              }),
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(function (response) {
+            api.postTransition(id, 'verified').then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -27990,28 +27991,19 @@ var issueRouter = module.exports = {
                 return 'Accept';
             }
           }).click(function () {
-            var bodyState = void 0;
+            var state = void 0;
+            var assigned_department = void 0;
             switch (data.status) {
               case 'processing':
-                bodyState = {
-                  state: 'resolved'
-                };
+                state = 'resolved';
                 break;
               default:
-                bodyState = {
-                  state: 'assigned',
-                  assigned_department: user.department
-                };
+                state = 'assigned';
+                assigned_department = user.department;
                 break;
             }
-            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
-              method: 'POST',
-              body: JSON.stringify(bodyState),
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(function (response) {
+
+            api.postTransition(id, state, assigned_department).then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -28033,19 +28025,8 @@ var issueRouter = module.exports = {
             });
             $('.materialboxed').materialbox();
 
-            // TODO save data
             // Edit pin info (partially)
-            data.progresses.push(progressData);
-            fetch(util.site_url('/pins/' + id, app.config.api_url), {
-              method: 'PATCH',
-              body: JSON.stringify({
-                progresses: data.progresses
-              }),
-              headers: {
-                'Content-type': 'application/json',
-                Authorization: 'Bearer ' + user.token
-              }
-            }).then(function (response) {
+            api.patchPin(id, { progresses: data.progresses }).then(function (response) {
               return response.json();
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');
@@ -28056,31 +28037,15 @@ var issueRouter = module.exports = {
     }
 
     return Promise.resolve({
-      progress: [{
-        name: 'Thiti',
-        date: new Date(),
-        description: 'update 1',
-        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png'
-      }, {
-        name: 'Luang',
-        date: new Date(),
-        description: 'update 2',
-        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
-      }],
       status: {
-        status: 'processing',
         priority: 'normal',
-        department: 'departmentC',
-        annotation: 'test'
+        annotation: ''
       }
     }).then(function (data) {
       var $status = $('#status');
       var $select = $status.find('select');
       $select.eq(1).val(data.status.priority);
-      $select.eq(2).val(data.status.department);
       $status.find('textarea').val(data.status.annotation).trigger('autoresize');
-
-      data.progress.forEach(prependProgressCard);
 
       // Init Materialize
       $('.modal').modal({

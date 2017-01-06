@@ -99,6 +99,17 @@ api.createDepartment = (orgId, deptName) => {
   return fetch(url, { method: 'POST', body : JSON.stringify(body), headers: headers});
 }
 
+api.postTransition = (pinId, state, deptId) => {
+  const body = {
+    state: state,
+    assigned_department: deptId
+  };
+
+  const url = api._buildEndpoint('pins/' + pinId + '/state_transition');
+
+  return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+};
+
 api.getUsers = () => {
   let opts = {
     '$limit': 100
@@ -133,3 +144,9 @@ api.getPins = (status, opts) => {
 
   return fetch(url).then(response => response.json())
 }
+
+api.patchPin = (pinId, body) => {
+  const url = api._buildEndpoint('pins/' + pinId);
+
+  return fetch(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
+};
