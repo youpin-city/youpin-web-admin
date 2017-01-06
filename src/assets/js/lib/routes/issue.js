@@ -71,10 +71,11 @@ const issueRouter = module.exports = {
           const $select = $status.find('select');
 
           // Populate status dropdown list
+          const $select_status = $select.eq(0);
           if (data.status === 'unverified') { // cannot set back to 'unverified' from other statuses
-            $select.eq(0).append('<option value="unverified">Unverified</option>');
+            $select_status.append('<option value="unverified">Unverified</option>');
           }
-          $select.eq(0)
+          $select_status
             // .append('<option value="unverified">Unverified</option>')
             .append('<option value="verified">Verified</option>')
             .append('<option value="assigned">Assigned</option>')
@@ -90,8 +91,8 @@ const issueRouter = module.exports = {
           api.getDepartments()
           .then(departments => {
             departments.data.forEach(department => {
-              $select_department.append('<option value="' + department._id +
-                '">' + department.name + '</option>');
+              $select_department.append('<option value="' + department._id + '">' +
+                department.name + '</option>');
             });
             $select_department
               .val(data.assigned_department)

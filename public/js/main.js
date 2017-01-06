@@ -27449,11 +27449,11 @@ var headers = {
 };
 
 if (user && user.token) {
-  headers['Authorization'] = 'Bearer ' + user.token;
+  headers.Authorization = 'Bearer ' + user.token;
 }
 
 api._buildEndpoint = function (path, queryParams) {
-  return app.config.api_url + "/" + path + '?' + _querystring2.default.stringify(queryParams);
+  return app.config.api_url + '/' + path + '?' + _querystring2.default.stringify(queryParams);
 };
 
 api.getSummary = function (start, end, cb) {
@@ -27461,7 +27461,6 @@ api.getSummary = function (start, end, cb) {
     start_date: start,
     end_date: end
   });
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27469,24 +27468,23 @@ api.getSummary = function (start, end, cb) {
 
 api.getNewIssues = function (cb) {
   var opts = {
-    '$sort': '-created_time',
-    '$limit': 5
+    $sort: '-created_time',
+    $limit: 5
   };
 
   if (!user.is_superuser) {
     if (user.department) {
       // non-admin role can request only his/her department
       opts = _.extend(opts, {
-        'assigned_department': user.department
+        assigned_department: user.department
       });
     } else {
       // non-admin role cannot request any departments
-      opts['$limit'] = 0;
+      opts.$limit = 0;
     }
   }
 
   var url = api._buildEndpoint('pins', opts);
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27494,18 +27492,17 @@ api.getNewIssues = function (cb) {
 
 api.getRecentActivities = function (cb) {
   var opts = {
-    '$sort': '-timestamp',
-    '$limit': 10
+    $sort: '-timestamp',
+    $limit: 10
   };
 
-  if (user.role != 'organization_admin') {
+  if (user.role !== 'organization_admin') {
     opts = _.extend(opts, {
-      'department': user.department
+      department: user.department
     });
   }
 
   var url = api._buildEndpoint('activity_logs', opts);
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27513,11 +27510,10 @@ api.getRecentActivities = function (cb) {
 
 api.getDepartments = function () {
   var opts = {
-    '$limit': 100
+    $limit: 100
   };
 
   var url = api._buildEndpoint('departments', opts);
-
   return (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   });
@@ -27530,7 +27526,6 @@ api.createDepartment = function (orgId, deptName) {
   };
 
   var url = api._buildEndpoint('departments');
-
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
@@ -27541,25 +27536,22 @@ api.postTransition = function (pinId, state, deptId) {
   };
 
   var url = api._buildEndpoint('pins/' + pinId + '/state_transition');
-
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
 api.getUsers = function () {
   var opts = {
-    '$limit': 100
+    $limit: 100
   };
 
   var url = api._buildEndpoint('users', opts);
-
-  return (0, _isomorphicFetch2.default)(url, { headers: headers }).then(function (resp) {
-    return resp.json();
+  return (0, _isomorphicFetch2.default)(url, { headers: headers }).then(function (response) {
+    return response.json();
   });
 };
 
 api.createUser = function (userObj) {
   var url = api._buildEndpoint('users');
-
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(userObj), headers: headers });
 };
 
@@ -27569,15 +27561,13 @@ api.updateUser = function (userId, patchObj) {
 };
 
 api.getPins = function (status, opts) {
-
   opts = _.extend({
-    '$sort': '-created_time',
-    '$limit': 10,
-    'status': status
+    $sort: '-created_time',
+    $limit: 10,
+    status: status
   }, opts);
 
   var url = api._buildEndpoint('pins', opts);
-
   return (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   });
@@ -27585,7 +27575,6 @@ api.getPins = function (status, opts) {
 
 api.patchPin = function (pinId, body) {
   var url = api._buildEndpoint('pins/' + pinId);
-
   return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
 };
 
@@ -27910,11 +27899,12 @@ var issueRouter = module.exports = {
           var $select = $status.find('select');
 
           // Populate status dropdown list
+          var $select_status = $select.eq(0);
           if (data.status === 'unverified') {
             // cannot set back to 'unverified' from other statuses
-            $select.eq(0).append('<option value="unverified">Unverified</option>');
+            $select_status.append('<option value="unverified">Unverified</option>');
           }
-          $select.eq(0)
+          $select_status
           // .append('<option value="unverified">Unverified</option>')
           .append('<option value="verified">Verified</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status).material_select();
 
