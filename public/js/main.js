@@ -27946,10 +27946,10 @@ var issueRouter = module.exports = {
             // State transition
             fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
               method: 'POST',
-              body: {
+              body: JSON.stringify({
                 state: $select.eq(0).val(data.status),
                 assigned_department: $select.eq(2).val(data.status.department)
-              },
+              }),
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -28008,7 +28008,6 @@ var issueRouter = module.exports = {
               method: 'POST',
               body: JSON.stringify(bodyState),
               headers: {
-                // Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ' + user.token
               }

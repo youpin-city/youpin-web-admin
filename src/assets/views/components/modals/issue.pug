@@ -7,13 +7,13 @@ mixin reporter
       span
     p on&nbsp;
       span
-    a.btn-flat(class=superuser ? undefined : 'hidden') Contact
+    a.btn-flat(class=user.is_superuser ? undefined : 'hidden') Contact
 
 mixin details
   #details
     h5 Description
     .input-field
-      textarea.materialize-textarea(disabled=superuser ? undefined : true)
+      textarea.materialize-textarea(disabled=user.is_superuser ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -27,7 +27,7 @@ mixin details
       .col.s6
         h3 Manage Issue
       .col.s6.right-align
-        if superuser
+        if user.is_superuser
           //- a.btn-flat#reset Reset
           //- | &nbsp;
           a.btn-flat#cancel Cancel
@@ -47,7 +47,7 @@ mixin details
         h4 ID&nbsp;
           span#id
     .row
-      if superuser
+      if user.is_superuser
         .col.s8
           .row
             .col.s6
