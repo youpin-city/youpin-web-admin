@@ -27895,7 +27895,7 @@ var issueRouter = module.exports = {
             // only cannot set back to 'pending' from other statuses
             $select.eq(0).append('<option value="pending">Pending</option>');
           }
-          $select.eq(0).append('<option value="unassigned">Unassigned</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status);
+          $select.eq(0).append('<option value="unverified">Unverified</option>').append('<option value="verified">Verified</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status);
 
           // Init Materialize
           $('.slider').slider({ height: $('.slider img').width() });
@@ -27930,7 +27930,7 @@ var issueRouter = module.exports = {
             // Edit pin info (partially)
             fetch(util.site_url('/pins/' + id, app.config.api_url), {
               method: 'PATCH',
-              body: bodyState,
+              body: JSON.stringify(bodyState),
               headers: {
                 'Content-type': 'application/json',
                 Authorization: 'Bearer ' + user.token
@@ -27944,7 +27944,7 @@ var issueRouter = module.exports = {
             });
 
             // State transition
-            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
               method: 'POST',
               body: {
                 state: $select.eq(0).val(data.status),
@@ -27964,12 +27964,11 @@ var issueRouter = module.exports = {
             });
           });
           $('#reject').click(function () {
-            // TODO Save data
-            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
               method: 'POST',
-              body: {
-                state: 'unassigned'
-              },
+              body: JSON.stringify({
+                state: 'verified'
+              }),
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -27991,24 +27990,25 @@ var issueRouter = module.exports = {
                 return 'Accept';
             }
           }).click(function () {
-            // TODO save data
             var bodyState = void 0;
             switch (data.status) {
               case 'processing':
-                bodyState = { state: 'resolved' };
+                bodyState = {
+                  state: 'resolved'
+                };
                 break;
               default:
                 bodyState = {
                   state: 'assigned',
-                  assigned_department: '' // TODO get current user's department
+                  assigned_department: user.department
                 };
                 break;
             }
-            fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
+            fetch(util.site_url('/pins/' + id + '/state_transition', app.config.api_url), {
               method: 'POST',
-              body: bodyState,
+              body: JSON.stringify(bodyState),
               headers: {
-                Accept: 'application/json',
+                // Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ' + user.token
               }
@@ -28027,7 +28027,7 @@ var issueRouter = module.exports = {
               detail: $progress.find('textarea').val()
             };
             prependProgressCard({
-              name: '#{user_name}',
+              name: user.name,
               date: new Date(),
               description: progressData.detail,
               url: progressData.photos[0]
@@ -28036,11 +28036,12 @@ var issueRouter = module.exports = {
 
             // TODO save data
             // Edit pin info (partially)
+            data.progresses.push(progressData);
             fetch(util.site_url('/pins/' + id, app.config.api_url), {
               method: 'PATCH',
-              body: {
-                progresses: progressData
-              },
+              body: JSON.stringify({
+                progresses: data.progresses
+              }),
               headers: {
                 'Content-type': 'application/json',
                 Authorization: 'Bearer ' + user.token
