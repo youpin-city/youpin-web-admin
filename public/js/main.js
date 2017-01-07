@@ -27529,12 +27529,7 @@ api.createDepartment = function (orgId, deptName) {
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
-api.postTransition = function (pinId, state, deptId) {
-  var body = {
-    state: state,
-    assigned_department: deptId
-  };
-
+api.postTransition = function (pinId, body) {
   var url = api._buildEndpoint('pins/' + pinId + '/state_transition');
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
@@ -27930,6 +27925,7 @@ var issueRouter = module.exports = {
           });
           $('#confirm').click(function () {
             var body = {
+              owner: user._id,
               detail: $details.find('textarea').val(),
               categories: $chips.eq(0).material_chip('data').map(function (d) {
                 return d.tag;
@@ -27943,6 +27939,17 @@ var issueRouter = module.exports = {
                 return d.tag;
               })
             };
+            var new_state = $select.eq(0).val();
+            switch (new_state) {
+              case 'assigned':
+                body.assigned_department = $select.eq(2).val();
+                break;
+              case 'processing':
+                body.processed_by = user._id;
+                break;
+              default:
+                break;
+            }
             /* $select.eq(1).val(data.status.priority);
             $status.find('textarea').val(data.status.annotation)*/
 
@@ -27956,16 +27963,33 @@ var issueRouter = module.exports = {
             });
 
             // State transition
-            api.postTransition(id, $select.eq(0).val(), $select.eq(2).val()).then(function (response) {
-              return response.json();
-            }).then(function () {
-              return $('#manage-issue-modal').modal('close');
-            }).catch(function (err) {
-              return Materialize.toast(err.message, 8000, 'dialog-error large');
-            });
+            if (data.status !== new_state) {
+              var body_transition = {
+                state: new_state
+              };
+              switch (new_state) {
+                case 'assigned':
+                  body_transition.assigned_department = body.assigned_department;
+                  break;
+                case 'processing':
+                  body_transition.processed_by = body.processed_by;
+                  break;
+                default:
+                  break;
+              }
+              api.postTransition(id, body_transition).then(function (response) {
+                return response.json();
+              }).then(function () {
+                return $('#manage-issue-modal').modal('close');
+              }).catch(function (err) {
+                return Materialize.toast(err.message, 8000, 'dialog-error large');
+              });
+            }
           });
           $('#reject').click(function () {
-            api.postTransition(id, 'verified').then(function (response) {
+            api.postTransition(id, {
+              state: 'verified'
+            }).then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -27981,19 +28005,22 @@ var issueRouter = module.exports = {
                 return 'Accept';
             }
           }).click(function () {
-            var state = void 0;
-            var assigned_department = void 0;
+            var body = void 0;
             switch (data.status) {
               case 'processing':
-                state = 'resolved';
+                body = {
+                  state: 'resolved'
+                };
                 break;
               default:
-                state = 'assigned';
-                assigned_department = user.department;
+                body = {
+                  state: 'processing',
+                  processed_by: user._id
+                };
                 break;
             }
 
-            api.postTransition(id, state, assigned_department).then(function (response) {
+            api.postTransition(id, body).then(function (response) {
               return response.json();
             }).then(function () {
               return $('#manage-issue-modal').modal('close');
@@ -28007,6 +28034,9 @@ var issueRouter = module.exports = {
               photos: [window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])],
               detail: $progress.find('textarea').val()
             };
+            data.progresses.push(progressData);
+
+            // update progress feed UI
             prependProgressCard({
               name: user.name,
               date: new Date(),
@@ -28016,7 +28046,10 @@ var issueRouter = module.exports = {
             $('.materialboxed').materialbox();
 
             // Edit pin info (partially)
-            api.patchPin(id, { progresses: data.progresses }).then(function (response) {
+            api.patchPin(id, {
+              owner: user._id,
+              progresses: data.progresses
+            }).then(function (response) {
               return response.json();
             }).catch(function (err) {
               return Materialize.toast(err.message, 8000, 'dialog-error large');

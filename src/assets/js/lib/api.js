@@ -85,12 +85,7 @@ api.createDepartment = (orgId, deptName) => {
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
-api.postTransition = (pinId, state, deptId) => {
-  const body = {
-    state: state,
-    assigned_department: deptId
-  };
-
+api.postTransition = (pinId, body) => {
   const url = api._buildEndpoint('pins/' + pinId + '/state_transition');
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };

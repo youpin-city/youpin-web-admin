@@ -112,6 +112,7 @@ const issueRouter = module.exports = {
           });
           $('#confirm').click(() => {
             const body = {
+              owner: user._id,
               detail: $details.find('textarea').val(),
               categories: $chips.eq(0).material_chip('data').map(d => d.tag),
               location: {
@@ -119,6 +120,17 @@ const issueRouter = module.exports = {
               },
               tags: $chips.eq(2).material_chip('data').map(d => d.tag)
             };
+            const new_state = $select.eq(0).val();
+            switch (new_state) {
+              case 'assigned':
+                body.assigned_department = $select.eq(2).val();
+                break;
+              case 'processing':
+                body.processed_by = user._id;
+                break;
+              default:
+                break;
+            }
             /* $select.eq(1).val(data.status.priority);
             $status.find('textarea').val(data.status.annotation)*/
 
@@ -131,17 +143,32 @@ const issueRouter = module.exports = {
             );
 
             // State transition
-            api.postTransition(id,
-              $select.eq(0).val(),
-              $select.eq(2).val())
-            .then(response => response.json())
-            .then(() => $('#manage-issue-modal').modal('close'))
-            .catch(err =>
-              Materialize.toast(err.message, 8000, 'dialog-error large')
-            );
+            if (data.status !== new_state) {
+              const body_transition = {
+                state: new_state
+              };
+              switch (new_state) {
+                case 'assigned':
+                  body_transition.assigned_department = body.assigned_department;
+                  break;
+                case 'processing':
+                  body_transition.processed_by = body.processed_by;
+                  break;
+                default:
+                  break;
+              }
+              api.postTransition(id, body_transition)
+              .then(response => response.json())
+              .then(() => $('#manage-issue-modal').modal('close'))
+              .catch(err =>
+                Materialize.toast(err.message, 8000, 'dialog-error large')
+              );
+            }
           });
           $('#reject').click(() => {
-            api.postTransition(id, 'verified')
+            api.postTransition(id, {
+              state: 'verified'
+            })
             .then(response => response.json())
             .then(() => $('#manage-issue-modal').modal('close'))
             .catch(err =>
@@ -158,19 +185,22 @@ const issueRouter = module.exports = {
               }
             })
             .click(() => {
-              let state;
-              let assigned_department;
+              let body;
               switch (data.status) {
                 case 'processing':
-                  state = 'resolved';
+                  body = {
+                    state: 'resolved'
+                  };
                   break;
                 default:
-                  state = 'assigned';
-                  assigned_department = user.department;
+                  body = {
+                    state: 'processing',
+                    processed_by: user._id
+                  };
                   break;
               }
 
-              api.postTransition(id, state, assigned_department)
+              api.postTransition(id, body)
               .then(response => response.json())
               .then(() => $('#manage-issue-modal').modal('close'))
               .catch(err =>
@@ -185,6 +215,9 @@ const issueRouter = module.exports = {
               ],
               detail: $progress.find('textarea').val()
             };
+            data.progresses.push(progressData);
+
+            // update progress feed UI
             prependProgressCard({
               name: user.name,
               date: new Date(),
@@ -194,7 +227,10 @@ const issueRouter = module.exports = {
             $('.materialboxed').materialbox();
 
             // Edit pin info (partially)
-            api.patchPin(id, { progresses: data.progresses })
+            api.patchPin(id, {
+              owner: user._id,
+              progresses: data.progresses
+            })
             .then(response => response.json())
             .catch(err =>
               Materialize.toast(err.message, 8000, 'dialog-error large')
