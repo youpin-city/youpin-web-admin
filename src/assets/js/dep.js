@@ -31,6 +31,9 @@ else root = {};
   // scrollmagic
   window.ScrollMagic = require('scrollmagic');
 
+  // Leaflet
+  require('leaflet');
+
   // cookie
   window.Cookie = require('js-cookie');
 }(root));

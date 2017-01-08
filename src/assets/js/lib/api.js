@@ -121,12 +121,11 @@ api.updateUser = (userId, patchObj) => {
   return fetch(url, { method: 'PATCH', body : JSON.stringify(patchObj), headers: headers});
 }
 
-api.getPins = (status, opts) => {
+api.getPins = (opts) => {
 
     opts = _.extend({
         '$sort': '-created_time',
-        '$limit': 10,
-        'status': status
+        '$limit': 10
     }, opts );
 
   let url = api._buildEndpoint( 'pins', opts );
