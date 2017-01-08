@@ -16,7 +16,9 @@ service:
     maxAge: 2592000000
     httpOnly: true
   api:
-    url: http://localhost:8324/api
+    url: 'http://localhost:9100'
+    app_username: 'web@mafueng.city'
+    app_password: 'web_mafueng'
   map:
     initial_location: [13.7365673, 100.5326298]
   ga:
@@ -41,4 +43,3 @@ service:
 
         ---------------------------------------------------------------------------------
         Do not reply to this email. This is an automated response email.
-

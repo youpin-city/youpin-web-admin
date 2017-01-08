@@ -7,13 +7,13 @@ mixin reporter
       span
     p on&nbsp;
       span
-    a.btn-flat(class=superuser ? undefined : 'hidden') Contact
+    a.btn-flat(class=user.is_superuser ? undefined : 'hidden') Contact
 
 mixin details
   #details
     h5 Description
     .input-field
-      textarea.materialize-textarea(disabled=superuser ? undefined : true)
+      textarea.materialize-textarea(disabled=user.is_superuser ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -27,16 +27,17 @@ mixin details
       .col.s6
         h3 Manage Issue
       .col.s6.right-align
-        if superuser
-          //- a.btn-flat#reset Reset
-          //- | &nbsp;
-          a.btn-flat#cancel Cancel
-          | &nbsp;
-          a.btn#confirm Confirm
-        else
-          a.btn-flat#reject Reject
-          | &nbsp;
-          a.btn-flat#acceptOrResolve
+        if user
+          if user.is_superuser
+            //- a.btn-flat#reset Reset
+            //- | &nbsp;
+            a.btn-flat#cancel Cancel
+            | &nbsp;
+            a.btn#confirm Confirm
+          else
+            a.btn-flat#reject Reject
+            | &nbsp;
+            a.btn-flat#acceptOrResolve
     .row
       .col.s12
         p
@@ -47,46 +48,45 @@ mixin details
         h4 ID&nbsp;
           span#id
     .row
-      if superuser
-        .col.s8
-          .row
-            .col.s6
-              +reporter
-            .col.s6
-              +details
-        .col.s4#status
-          h5 Status
-          .input-field
-            select
-          h5 Priority
-          .input-field
-            select
-              option(value='urgent') Urgent
-              option(value='normal') Normal
-              option(value='trivial') Trivial
-          h5 Department
-          .input-field
-            select
-              option(value='departmentA') สารบรรณ
-              option(value='departmentB') กายภาพ
-          h5 Annotation
-          .input-field
-            textarea.materialize-textarea
-      else
-        .col.s6
-          h5 Details
-          +reporter
-          +details
-        .col.s6#progress
-          h5 Progress
-          .input-field
-            textarea.materialize-textarea
-          .row
-            .col.s8
-              .file-field.input-field
-                input(type='file', accept="image/*")
-                .file-path-wrapper
-                  input.file-path.validate(type="text", placeholder="Upload photo")
-            .col.s4.right-align
-              a.btn-flat#post Post
-          #cards
+      if user
+        if user.is_superuser
+          .col.s8
+            .row
+              .col.s6
+                +reporter
+              .col.s6
+                +details
+          .col.s4#status
+            h5 Status
+            .input-field
+              select
+            h5 Priority
+            .input-field
+              select
+                option(value='urgent') Urgent
+                option(value='normal') Normal
+                option(value='trivial') Trivial
+            h5 Department
+            .input-field
+              select
+            h5 Annotation
+            .input-field
+              textarea.materialize-textarea
+        else
+          .col.s6
+            h5 Details
+            +reporter
+            +details
+          .col.s6#progress
+            h5 Progress
+            .input-field
+              textarea.materialize-textarea
+            .row
+              .col.s8
+                .file-field.input-field
+                  input(type='file', accept="image/*")
+                  .file-path-wrapper
+                    input.file-path.validate(type="text", placeholder="Upload photo")
+              .col.s4.right-align
+                a.btn-flat#post Post
+            #cards

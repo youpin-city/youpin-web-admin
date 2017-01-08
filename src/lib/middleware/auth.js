@@ -3,7 +3,7 @@ import conf from '../config';
 import log from '../logger';
 import _ from 'lodash';
 import createError from 'http-errors';
-import { APIFetch } from '../api';
+import api from '../api';
 
 const cookie_auth_name = 'feathers-jwt';
 const cookie_user_info = 'user';
@@ -57,7 +57,7 @@ export default function auth(req, res, next) {
         Authorization: 'Bearer ' + jwt
       }
     };
-    req.api = APIFetch(conf.get('service.api.url'), options, _.identity);
+    req.api = api.APIFetch(conf.get('service.api.url'), options, _.identity);
   }
 
   let get_user;

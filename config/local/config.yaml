@@ -1,10 +1,12 @@
 ---
 env: local
-port: 11100
+port: 8080
 site:
   protocol: http
-  hostname: localhost:11100
+  hostname: localhost:8080
 debug: true
 service:
   api:
-    url: http://localhost:9100
+    url: 'https://mafueng-api.youpin.city'
+    app_username: 'web@mafueng.city'
+    app_password: 'web_mafueng'

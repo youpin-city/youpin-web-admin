@@ -27487,6 +27487,8 @@ function extend() {
 },{}],69:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /* global app $ _ riot util user */
+
 var _querystring = require('querystring');
 
 var _querystring2 = _interopRequireDefault(_querystring);
@@ -27499,8 +27501,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // for now
 
-/* global app $ _ riot util user */
-
 var api = module.exports = {};
 
 var headers = {
@@ -27508,11 +27508,11 @@ var headers = {
 };
 
 if (user && user.token) {
-  headers['Authorization'] = 'Bearer ' + user.token;
+  headers.Authorization = 'Bearer ' + user.token;
 }
 
 api._buildEndpoint = function (path, queryParams) {
-  return app.config.api_url + "/" + path + '?' + _querystring2.default.stringify(queryParams);
+  return app.config.api_url + '/' + path + '?' + _querystring2.default.stringify(queryParams);
 };
 
 api.getSummary = function (start, end, cb) {
@@ -27520,7 +27520,6 @@ api.getSummary = function (start, end, cb) {
     start_date: start,
     end_date: end
   });
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27528,24 +27527,23 @@ api.getSummary = function (start, end, cb) {
 
 api.getNewIssues = function (cb) {
   var opts = {
-    '$sort': '-created_time',
-    '$limit': 5
+    $sort: '-created_time',
+    $limit: 5
   };
 
   if (!user.is_superuser) {
     if (user.department) {
       // non-admin role can request only his/her department
       opts = _.extend(opts, {
-        'assigned_department': user.department
+        assigned_department: user.department
       });
     } else {
       // non-admin role cannot request any departments
-      opts['$limit'] = 0;
+      opts.$limit = 0;
     }
   }
 
   var url = api._buildEndpoint('pins', opts);
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27553,18 +27551,17 @@ api.getNewIssues = function (cb) {
 
 api.getRecentActivities = function (cb) {
   var opts = {
-    '$sort': '-timestamp',
-    '$limit': 10
+    $sort: '-timestamp',
+    $limit: 10
   };
 
-  if (user.role != 'organization_admin') {
+  if (user.role !== 'organization_admin') {
     opts = _.extend(opts, {
-      'department': user.department
+      department: user.department
     });
   }
 
   var url = api._buildEndpoint('activity_logs', opts);
-
   (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   }).then(cb);
@@ -27572,11 +27569,10 @@ api.getRecentActivities = function (cb) {
 
 api.getDepartments = function () {
   var opts = {
-    '$limit': 100
+    $limit: 100
   };
 
   var url = api._buildEndpoint('departments', opts);
-
   return (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   });
@@ -27589,25 +27585,27 @@ api.createDepartment = function (orgId, deptName) {
   };
 
   var url = api._buildEndpoint('departments');
+  return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+};
 
+api.postTransition = function (pinId, body) {
+  var url = api._buildEndpoint('pins/' + pinId + '/state_transition');
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
 api.getUsers = function () {
   var opts = {
-    '$limit': 100
+    $limit: 100
   };
 
   var url = api._buildEndpoint('users', opts);
-
-  return (0, _isomorphicFetch2.default)(url, { headers: headers }).then(function (resp) {
-    return resp.json();
+  return (0, _isomorphicFetch2.default)(url, { headers: headers }).then(function (response) {
+    return response.json();
   });
 };
 
 api.createUser = function (userObj) {
   var url = api._buildEndpoint('users');
-
   return (0, _isomorphicFetch2.default)(url, { method: 'POST', body: JSON.stringify(userObj), headers: headers });
 };
 
@@ -27616,17 +27614,26 @@ api.updateUser = function (userId, patchObj) {
   return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
 };
 
-api.getPins = function (opts) {
+api.getPins = function (status, opts) {
+  if ((typeof status === 'undefined' ? 'undefined' : _typeof(status)) === 'object') {
+    opts = status;
+    status = undefined;
+  }
   opts = _.extend({
-    '$sort': '-created_time',
-    '$limit': 10
+    $sort: '-created_time',
+    $limit: 10,
+    status: status
   }, opts);
 
   var url = api._buildEndpoint('pins', opts);
-
   return (0, _isomorphicFetch2.default)(url).then(function (response) {
     return response.json();
   });
+};
+
+api.patchPin = function (pinId, body) {
+  var url = api._buildEndpoint('pins/' + pinId);
+  return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
 };
 
 },{"isomorphic-fetch":32,"querystring":40}],70:[function(require,module,exports){
@@ -27861,22 +27868,23 @@ var _issue2 = _interopRequireDefault(_issue);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var router = module.exports = function () {
+  riot.route('/issue-id:*', function (id) {
+    _issue2.default.process(id);
+  });
 
-    riot.route('/issue-id:*', function (id) {
-        _issue2.default.process(id);
-    });
+  riot.route.start();
 
-    riot.route.start();
-
-    Promise.all([_issue2.default.setup()]).then(function () {
-        setTimeout(function () {
-            riot.route.exec();
-        }, 1000);
-    });
-}; /* global app */
+  Promise.all([_issue2.default.setup()]).then(function () {
+    setTimeout(function () {
+      riot.route.exec();
+    }, 1000);
+  });
+}; /* global app riot */
 
 },{"./routes/issue":72}],72:[function(require,module,exports){
 'use strict';
+
+/* global util app user api Materialize*/
 
 var modalId = '#manage-issue-modal';
 var dataKey = ' issue-id';
@@ -27888,180 +27896,256 @@ var issueRouter = module.exports = {
   },
   setup: function setup() {
     function prependProgressCard(d) {
-      $('#cards').prepend('<div class="card"><div class="card-image">' + '<img class="materialboxed" src=' + d.url + '></div>' + '<div class="card-content"><p>' + d.description + '</p>' + '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
+      $('#cards').prepend('<div class="card"><div class="card-image">' + '<img class="materialboxed" src=' + d.url + '></div>' + '<div class="card-content"><p>' + d.description + '</p>' + 'on ' + new Date(d.date).toLocaleDateString() + '</p></div></div>');
+      // '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
     }
 
     function ready(modal, trigger) {
-      var id = $(modal).data(dataKey);
-
+      var id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
+      $('#id').text(id);
       fetch(util.site_url('/pins/' + id, app.config.api_url), {
         method: 'GET'
       }).then(function (response) {
         return response.json();
       }).then(function (data) {
-
-        $('.slides').empty();
-        (data.photos || []).forEach(function (d) {
-          $('.slides').append('<li><img class="materialboxed" src=' + d + '></li>');
-        });
-
-        var $reporter = $('#reporter');
-        var $span = $reporter.find('span');
-        $span.eq(0).text(data.owner); //TODO owner's name
-        $span.eq(1).text(new Date(data.created_time).toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
-
-        var $details = $('#details');
-        $details.find('textarea').val(data.detail).trigger('autoresize');
-
-        $('.chips').material_chip({
-          placeholder: 'Enter a tag',
-          secondaryPlaceholder: 'Enter a tag'
-        });
-
-        var $chips = $details.find('.chips-initial');
-        $chips.eq(0).material_chip({ data: data.categories.map(function (d) {
-            return { tag: d };
-          }) });
-        $chips.eq(1).material_chip({ data: data.location.coordinates.map(function (d) {
-            return { tag: d };
-          }) });
-        $chips.eq(2).material_chip({ data: data.tags.map(function (d) {
-            return { tag: d };
-          }) });
-
-        //Disable chips aka tags when the user role is of a department
-        if ('#{superuser}' !== 'true') {
-          $chips.find('i').remove();
-          $chips.find('input').attr('placeholder', '').prop('disabled', true);
-        }
-
-        //Init Materialize
-        $('.slider').slider({ height: $('.slider img').width() });
-        $('.slider').slider('pause');
-        $('.materialboxed').materialbox();
-
-        //Buttons
-        /*$('#reset').click(function() {
-        });*/
-        $('#cancel').click(function () {
-          $('#manage-issue-modal').modal('close');
-        });
-        $('#confirm').click(function () {
-          //TODO save data
-          $('.chips-initial').each(function () {
-            console.log($(this).material_chip('data').map(function (d) {
-              return d.tag;
-            }));
-          });
-          $('#manage-issue-modal').modal('close');
-        });
-        $('#reject').click(function () {
-          fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
-            method: 'POST',
-            body: {
-              state: "unassigned"
-            },
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          }).then(function (response) {
-            return response.json();
-          }).then(function (data) {
-            $('#manage-issue-modal').modal('close');
-          }).catch(function (err) {
-            Materialize.toast(err.message, 8000, 'dialog-error large');
-          });
-        });
-        $('#acceptOrResolve').text(function () {
-          switch (data.status.status) {
-            case 'processing':
-              return 'Resolve';
-            case "assigned":
-            default:
-              return 'Accept';
+        fetch(util.site_url('/users/' + data.owner, app.config.api_url), {
+          method: 'GET',
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: 'Bearer ' + user.token
           }
-        }).click(function () {
-          var bodyState;
-          switch (data.status.status) {
-            case 'processing':
-              bodyState = { state: "resolved" };
-              break;
-            case "assigned":
-            default:
-              bodyState = { status: "processing" };
-              break;
+        }).then(function (response) {
+          return response.json();
+        }).then(function (owner) {
+          data.photos.forEach(function (d) {
+            return $('.slides').append('<li><img class="materialboxed" src=' + d + '></li>');
+          });
+
+          var $reporter = $('#reporter');
+          var $span = $reporter.find('span');
+          $span.eq(0).text(owner.name);
+          $span.eq(1).text(new Date(data.created_time).toLocaleDateString());
+          $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
+
+          var $details = $('#details');
+          $details.find('textarea').val(data.detail).trigger('autoresize');
+
+          $('.chips').material_chip({
+            placeholder: 'Enter a tag',
+            secondaryPlaceholder: 'Enter a tag'
+          });
+
+          var $chips = $details.find('.chips-initial');
+          $chips.eq(0).material_chip({ data: data.categories.map(function (d) {
+              return { tag: d };
+            }) });
+          $chips.eq(1).material_chip({ data: data.location.coordinates.map(function (d) {
+              return { tag: d };
+            }) });
+          $chips.eq(2).material_chip({ data: data.tags.map(function (d) {
+              return { tag: d };
+            }) });
+
+          // Disable chips aka tags when the user role is of a department
+          if (user.is_superuser !== true) {
+            $chips.find('i').remove();
+            $chips.find('input').attr('placeholder', '').prop('disabled', true);
           }
-          fetch(util.site_url('/pins/' + id + 'state_transition', app.config.api_url), {
-            method: 'POST',
-            body: bodyState,
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
-          }).then(function (response) {
-            return response.json();
-          }).then(function (data) {
-            $('#manage-issue-modal').modal('close');
-          }).catch(function (err) {
-            Materialize.toast(err.message, 8000, 'dialog-error large');
+
+          // Dropdown lists
+          var $status = $('#status');
+          var $select = $status.find('select');
+
+          // Populate status dropdown list
+          var $select_status = $select.eq(0);
+          if (data.status === 'unverified') {
+            // cannot set back to 'unverified' from other statuses
+            $select_status.append('<option value="unverified">Unverified</option>');
+          }
+          $select_status
+          // .append('<option value="unverified">Unverified</option>')
+          .append('<option value="verified">Verified</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status).material_select();
+
+          // Populate department dropdown list
+          var $select_department = $select.eq(2);
+          api.getDepartments().then(function (departments) {
+            departments.data.forEach(function (department) {
+              $select_department.append('<option value="' + department._id + '">' + department.name + '</option>');
+            });
+            $select_department.val(data.assigned_department).material_select();
           });
-        });
-        $('#post').click(function () {
-          //TODO save data
-          var $progress = $('#progress');
-          prependProgressCard({
-            name: '#{user_name}',
-            date: new Date(),
-            description: $progress.find('textarea').val(),
-            url: window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
+
+          // update progress feed UI
+          data.progresses.forEach(function (progress) {
+            return prependProgressCard({
+              date: progress.created_time,
+              description: progress.detail,
+              url: progress.photos[0]
+            });
           });
+
+          // Init Materialize
+          $('.slider').slider({ height: $('.slider img').width() });
+          $('.slider').slider('pause');
           $('.materialboxed').materialbox();
+
+          // Buttons
+          /* $('#reset').click(function() {
+          });*/
+          $('#cancel').click(function () {
+            $('#manage-issue-modal').modal('close');
+          });
+          $('#confirm').click(function () {
+            var body = {
+              owner: user._id,
+              detail: $details.find('textarea').val(),
+              categories: $chips.eq(0).material_chip('data').map(function (d) {
+                return d.tag;
+              }),
+              location: {
+                coordinates: $chips.eq(1).material_chip('data').map(function (d) {
+                  return d.tag;
+                }),
+                type: 'Point'
+              },
+              tags: $chips.eq(2).material_chip('data').map(function (d) {
+                return d.tag;
+              })
+            };
+            var new_state = $select.eq(0).val();
+            switch (new_state) {
+              case 'assigned':
+                body.assigned_department = $select.eq(2).val();
+                break;
+              case 'processing':
+                body.processed_by = user._id;
+                break;
+              default:
+                break;
+            }
+            /* $select.eq(1).val(data.status.priority);
+            $status.find('textarea').val(data.status.annotation)*/
+
+            // Edit pin info (partially)
+            api.patchPin(id, body).then(function (response) {
+              return response.json();
+            }).then(function () {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+
+            // State transition
+            if (data.status !== new_state) {
+              var body_transition = {
+                state: new_state
+              };
+              switch (new_state) {
+                case 'assigned':
+                  body_transition.assigned_department = body.assigned_department;
+                  break;
+                case 'processing':
+                  body_transition.processed_by = body.processed_by;
+                  break;
+                default:
+                  break;
+              }
+              api.postTransition(id, body_transition).then(function (response) {
+                return response.json();
+              }).then(function () {
+                return $('#manage-issue-modal').modal('close');
+              }).catch(function (err) {
+                return Materialize.toast(err.message, 8000, 'dialog-error large');
+              });
+            }
+          });
+          $('#reject').click(function () {
+            api.postTransition(id, {
+              state: 'verified'
+            }).then(function (response) {
+              return response.json();
+            }).then(function () {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+          $('#acceptOrResolve').text(function () {
+            switch (data.status) {
+              case 'processing':
+                return 'Resolve';
+              default:
+                return 'Accept';
+            }
+          }).click(function () {
+            var body = void 0;
+            switch (data.status) {
+              case 'processing':
+                body = {
+                  state: 'resolved'
+                };
+                break;
+              default:
+                body = {
+                  state: 'processing',
+                  processed_by: user._id
+                };
+                break;
+            }
+
+            api.postTransition(id, body).then(function (response) {
+              return response.json();
+            }).then(function () {
+              return $('#manage-issue-modal').modal('close');
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
+          $('#post').click(function () {
+            var $progress = $('#progress');
+            var progressData = {
+              photos: [window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])],
+              detail: $progress.find('textarea').val()
+            };
+            data.progresses.push(progressData);
+
+            // update progress feed UI
+            prependProgressCard({
+              date: new Date(),
+              description: progressData.detail,
+              url: progressData.photos[0]
+            });
+            $('.materialboxed').materialbox();
+
+            // Edit pin info (partially)
+            api.patchPin(id, {
+              owner: user._id,
+              progresses: data.progresses
+            }).then(function (response) {
+              return response.json();
+            }).catch(function (err) {
+              return Materialize.toast(err.message, 8000, 'dialog-error large');
+            });
+          });
         });
       });
     }
 
     return Promise.resolve({
-      progress: [{
-        name: 'Thiti',
-        date: new Date(),
-        description: 'update 1',
-        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/f994c4f9d8748bd688a3f288b982ada53342447d84a045d114ce925255363bfd.png'
-      }, {
-        name: 'Luang',
-        date: new Date(),
-        description: 'update 2',
-        url: 'https://youpin-asset-test.s3-ap-southeast-1.amazonaws.com/fad08f3e311dfdd721fc476a329a7dbf37847d782feb036da730f35738813a6c.png'
-      }],
       status: {
-        status: 'processing',
         priority: 'normal',
-        department: 'departmentC',
-        annotation: 'test'
+        annotation: ''
       }
     }).then(function (data) {
       var $status = $('#status');
       var $select = $status.find('select');
-      if (data.status.status === "pending") {
-        //only cannot set back to 'pending' from other statuses
-        $select.eq(0).append('<option value="pending">Pending</option>');
-      }
-      $select.eq(0).append('<option value="unassigned">Unassigned</option>').append('<option value="assigned">Assigned</option>').append('<option value="processing">Processing</option>').append('<option value="resolved">Resolved</option>').append('<option value="rejected">Rejected</option>').append('<option value="duplicated">Duplicated</option>').val(data.status.status);
       $select.eq(1).val(data.status.priority);
-      $select.eq(2).val(data.status.department);
       $status.find('textarea').val(data.status.annotation).trigger('autoresize');
 
-      data.progress.forEach(prependProgressCard);
-
-      //Init Materialize
-      $(modalId).modal({
-        ready: ready,
-        complete: function complete() {
-          window.location.hash = '!';
-        }
+      // Init Materialize
+      $('.modal').modal({
+        ready: ready
       });
-
       $('select').material_select();
     });
   }

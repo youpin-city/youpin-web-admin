@@ -4,7 +4,6 @@ import auth, { reset_user, cookie_auth_name } from '../middleware/auth';
 import agent from '../agent';
 import conf from '../config';
 import log from '../logger';
-import api from '../api';
 import util from '../util';
 
 // setup
@@ -39,15 +38,11 @@ router.get('/auth/failure', (req, res, next) => {
   res.send('Something went wrong. Try again.');
 });
 
-function getPins() {
-  return api('/pins');
-}
-
 router.get('/issue', auth, (req, res, next) => {
   // getPins()
   req.api('/pins')
   .then(result => {
-    res.locals.pins = result.data;
+    res.locals.pins = result.data || [];
     res.render('issue');
   })
   .catch(err => {

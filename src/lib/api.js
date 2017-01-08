@@ -49,9 +49,8 @@ function APIParser(data) {
   return data;
 }
 
-export default APIFetch(conf.get('service.api.url'), {}, _.identity);
-
-export {
-  APIFetch
+export default {
+  server: APIFetch(conf.get('site.host'), {}, _.identity, 'text'),
+  api: APIFetch(conf.get('service.api.url'), {}, APIParser),
+  APIFetch: APIFetch
 };
-
