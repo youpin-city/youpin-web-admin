@@ -27822,7 +27822,7 @@ var router = module.exports = function () {
 },{"./routes/issue":72}],72:[function(require,module,exports){
 'use strict';
 
-/* global util app user api Materialize Console*/
+/* global util app user api Materialize*/
 
 var modalId = '#manage-issue-modal';
 var dataKey = ' issue-id';
@@ -27834,7 +27834,8 @@ var issueRouter = module.exports = {
   },
   setup: function setup() {
     function prependProgressCard(d) {
-      $('#cards').prepend('<div class="card"><div class="card-image">' + '<img class="materialboxed" src=' + d.url + '></div>' + '<div class="card-content"><p>' + d.description + '</p>' + '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
+      $('#cards').prepend('<div class="card"><div class="card-image">' + '<img class="materialboxed" src=' + d.url + '></div>' + '<div class="card-content"><p>' + d.description + '</p>' + 'on ' + new Date(d.date).toLocaleDateString() + '</p></div></div>');
+      // '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
     }
 
     function ready(modal, trigger) {
@@ -27912,6 +27913,15 @@ var issueRouter = module.exports = {
             $select_department.val(data.assigned_department).material_select();
           });
 
+          // update progress feed UI
+          data.progresses.forEach(function (progress) {
+            return prependProgressCard({
+              date: progress.created_time,
+              description: progress.detail,
+              url: progress.photos[0]
+            });
+          });
+
           // Init Materialize
           $('.slider').slider({ height: $('.slider img').width() });
           $('.slider').slider('pause');
@@ -27933,7 +27943,8 @@ var issueRouter = module.exports = {
               location: {
                 coordinates: $chips.eq(1).material_chip('data').map(function (d) {
                   return d.tag;
-                })
+                }),
+                type: 'Point'
               },
               tags: $chips.eq(2).material_chip('data').map(function (d) {
                 return d.tag;
@@ -28038,7 +28049,6 @@ var issueRouter = module.exports = {
 
             // update progress feed UI
             prependProgressCard({
-              name: user.name,
               date: new Date(),
               description: progressData.detail,
               url: progressData.photos[0]

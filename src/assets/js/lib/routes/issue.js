@@ -1,4 +1,4 @@
-/* global util app user api Materialize Console*/
+/* global util app user api Materialize*/
 
 const modalId = '#manage-issue-modal';
 const dataKey = ' issue-id';
@@ -13,7 +13,8 @@ const issueRouter = module.exports = {
       $('#cards').prepend('<div class="card"><div class="card-image">' +
         '<img class="materialboxed" src=' + d.url + '></div>' +
         '<div class="card-content"><p>' + d.description + '</p>' +
-        '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
+        'on ' + new Date(d.date).toLocaleDateString() + '</p></div></div>');
+        // '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
     }
 
     function ready(modal, trigger) {
@@ -99,6 +100,15 @@ const issueRouter = module.exports = {
               .material_select();
           });
 
+          // update progress feed UI
+          data.progresses.forEach((progress) =>
+            prependProgressCard({
+              date: progress.created_time,
+              description: progress.detail,
+              url: progress.photos[0]
+            })
+          );
+
           // Init Materialize
           $('.slider').slider({ height: $('.slider img').width() });
           $('.slider').slider('pause');
@@ -116,7 +126,8 @@ const issueRouter = module.exports = {
               detail: $details.find('textarea').val(),
               categories: $chips.eq(0).material_chip('data').map(d => d.tag),
               location: {
-                coordinates: $chips.eq(1).material_chip('data').map(d => d.tag)
+                coordinates: $chips.eq(1).material_chip('data').map(d => d.tag),
+                type: 'Point'
               },
               tags: $chips.eq(2).material_chip('data').map(d => d.tag)
             };
@@ -219,7 +230,6 @@ const issueRouter = module.exports = {
 
             // update progress feed UI
             prependProgressCard({
-              name: user.name,
               date: new Date(),
               description: progressData.detail,
               url: progressData.photos[0]
