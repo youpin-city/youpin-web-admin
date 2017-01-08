@@ -43,9 +43,15 @@ search-box(class='{ open: open }')
   script.
     const self = this;
     self.open = false;
-    self.path = opts.path || '';
+    self.path = util.site_url('/search') + '?q=<QUERY>';
     self.placeholder = opts.placeholder;
 
+    let prevQuery = queryString.parse(location.search).q;
+    if( prevQuery ) {
+      self.open = true;
+      $(self.q).val(prevQuery);
+      $('body').addClass('global-search-active');
+    }
 
     ////// Render //////
     self.on('updated', function() {
@@ -65,8 +71,9 @@ search-box(class='{ open: open }')
     };
 
     self.submitSearch = function(e) {
+      if(self.q.value == '') { return }
       e.preventDefault();
-      location.href = util.site_url(self.path, {
-        q: self.q.value
-      });
+
+      let url = self.path.replace(/<QUERY>/, self.q.value);
+      location.href = url;
     };

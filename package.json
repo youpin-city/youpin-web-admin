@@ -63,6 +63,7 @@
     "pm2": "^2.0.19",
     "pug": "^2.0.0-beta6",
     "qs": "^6.2.1",
+    "query-string": "^4.2.3",
     "riot": "^2.6.5",
     "serve-favicon": "^2.3.0",
     "superagent": "^2.0.0",
