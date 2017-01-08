@@ -122,11 +122,10 @@ api.updateUser = (userId, patchObj) => {
 }
 
 api.getPins = (opts) => {
-
-    opts = _.extend({
-        '$sort': '-created_time',
-        '$limit': 10
-    }, opts );
+  opts = _.extend({
+    '$sort': '-created_time',
+    '$limit': 10
+  }, opts );
 
   let url = api._buildEndpoint( 'pins', opts );
 

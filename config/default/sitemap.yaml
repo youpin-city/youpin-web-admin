@@ -13,7 +13,7 @@ sitemap:
     href: "/report"
     children: []
   - name: sitenav.settings
-    href: "#"
+    href: "/settings"
     authorized_roles:
         - super_admin
         - organization_admin

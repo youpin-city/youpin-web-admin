@@ -11,15 +11,14 @@ logger:
 feature:
   enabled_email: true
   enabled_sms: false
-map:
-  access_token: something
-  initial_location: [13.7365673, 100.5326298]
 service:
   cookie:
     maxAge: 2592000000
     httpOnly: true
   api:
     url: http://localhost:8324/api
+  map:
+    initial_location: [13.7365673, 100.5326298]
   ga:
     id:
   facebook:

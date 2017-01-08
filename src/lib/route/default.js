@@ -59,11 +59,28 @@ router.get('/test', auth, (req, res, next) => {
   res.render('test');
 });
 
+
+router.get('/settings', auth, (req, res, next) => {
+  res.redirect('settings/user');
+});
+
 router.get('/settings/department', auth, (req, res, next) => {
   res.render('settings/department');
 });
 
 router.get('/settings/user', auth, (req, res, next) => {
+  if (['super_admin', 'organization_admin'].indexOf(req.user.role) === -1) {
+    next(new createError.Unauthorized());
+    return;
+  }
+  const availableRoles = [
+    { id: 'department_head', name: 'Department Head' },
+    { id: 'organization_admin', name: 'Admin' }
+  ];
+  if (['super_admin'].indexOf(req.user.role) >= 0) {
+    availableRoles.push({ id: 'super_admin', name: 'Super Admin' });
+  }
+  res.locals.availableRoles = availableRoles;
   res.render('settings/user');
 });
 

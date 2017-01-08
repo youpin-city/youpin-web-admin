@@ -82,3 +82,10 @@ hr {
 main {
   overflow: hidden;
 }
+
+table {
+  td,
+  th {
+    padding: 0.5rem;
+  }
+}

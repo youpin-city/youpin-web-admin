@@ -27,7 +27,8 @@
     "push": "git push && git push --tags",
     "job": "node -e \"console.log('Run: npm run job:start -- <job_name>\\n\\n' + require('fs').readdirSync('./src/lib/jobs/').filter(path => path.indexOf('.js') >= 0).map(path => path.replace(/.js$/gi, '')).join('\\n'));\"",
     "job:start": "babel-node -e \"var j=require('./src/lib/jobs/' + process.argv[4]);j.default();\"",
-    "cron": "babel-node -e \"require('./src/lib/cron').default.start();"
+    "cron": "babel-node -e \"require('./src/lib/cron').default.start();",
+    "deploy:production": "pm2 deploy ecosystem.json production --force"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "connect-flash": "^0.1.1",
     "convict": "^1.4.0",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "express-session": "^1.13.0",
     "express-useragent": "^0.2.4",

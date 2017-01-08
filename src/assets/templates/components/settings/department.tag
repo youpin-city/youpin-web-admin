@@ -1,20 +1,24 @@
 setting-department
   h1.page-title
-    | Setting Department
+    | Department Settings
 
   .row
     .col.s12.right-align
-      a(onclick="{createDepartment}").btn
-        | Create department
+      a.btn(onclick="{createDepartment}")
+        | Create Department
 
-  ul
-    li(each="{dept in departments}" ).department
-      .row
-        .col.s1
+  table
+    thead
+      tr
+        th Department
+        th(style='width: 120px;')
+    tbody
+      tr(each="{dept in departments}" ).department
+        td
           b {dept.name}
-        .col.s6
-          span(onclick="{ editDepartment(dept._id) }")
-            | edit
+        td
+          a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id) }")
+            | Edit
 
   div(class="modal")#edit-department-form
     .modal-header

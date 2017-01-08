@@ -1,4 +1,5 @@
 /* eslint no-console: off */
+import dotenv from 'dotenv';
 import convict from 'convict';
 import urllib from 'url';
 import pathlib from 'path';
@@ -8,6 +9,9 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 // HACK: enable cancellation to avoid this bug https://github.com/KyleAMathews/superagent-bluebird-promise/issues/50
 Promise.config({ cancellation: true });
+
+// Load .env into environtment variables
+dotenv.config();
 
 // Define a schema
 const conf = convict({
@@ -108,11 +112,30 @@ const conf = convict({
   },
 
   service: {
-    doc: 'Third-part service config',
-    format: Object,
-    default: {},
-    env: 'SERVICE'
-  }
+    api: {
+      url: {
+        doc: 'YouPin API endpoint URL.',
+        format: String,
+        default: '',
+        env: 'SERVICE_API_URL'
+      }
+    },
+
+    here: {
+      app_id: {
+        doc: 'HERE App ID.',
+        format: String,
+        default: '',
+        env: 'SERVICE_HERE_APP_ID'
+      },
+      app_code: {
+        doc: 'HERE App Code.',
+        format: String,
+        default: '',
+        env: 'SERVICE_HERE_APP_CODE'
+      }
+    }
+  },
 
 });
 

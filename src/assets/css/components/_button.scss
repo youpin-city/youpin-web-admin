@@ -11,6 +11,13 @@
     vertical-align: middle;
   }
 }
+.btn-small {
+  font-size: $fs-xs;
+  i {
+    font-size: $fs-icon-h5;
+    line-height: 1;
+  }
+}
 .btn-large {
   font-size: $fs-md;
   i {

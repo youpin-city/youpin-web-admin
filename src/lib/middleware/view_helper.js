@@ -29,7 +29,10 @@ module.exports = (req, res, next) => {
     baseurl: conf.get('site.host'),
     api_url: conf.get('service.api.url'),
     dict: i18n.locales,
-    map: conf.get('map')
+    service: {
+      map: conf.get('service.map'),
+      here: conf.get('service.here')
+    }
   };
 
   next();

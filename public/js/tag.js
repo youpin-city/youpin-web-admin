@@ -163,13 +163,116 @@ riot.tag2('image-slider', '<div class="slider-list"> <yield></yield> </div>', ''
   });
 });
 
-riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue"><a class="btn" href="#manage-issue-modal">Create New Issue</a></div> </h1> <ul class="status-selector"> <li class="{active: name == selectedStatus}" each="{statuses}" onclick="{parent.select(name)}">{name}({totalIssues})</li> </ul> <div class="menu-bar"> <div class="sorting">▾</div> <div class="list-or-map"><span class="active">List</span><span class="separator">/</span><span>Map</span></div> <div class="clearfix"></div> </div> <ul class="issue-list"> <li class="issue clearfix" each="{p in pins}"> <div class="issue-img"> <div class="img responsive-img" riot-style="background-image: url(&quot;{_.get(p.photos, &quot;0&quot;)}&quot;)"></div> </div> <div class="issue-body"> <div class="issue-id"><b>ID</b><span href="#manage-issue-modal" data-id="{p._id}">{p._id}</span></div> <div class="issue-desc">{p.detail}</div> <div class="issue-category"> <div><b>Category</b></div><span class="bubble" each="{cat in p.categories}">{cat}</span> </div> <div class="issue-location"> <div><b>Location</b></div><span class="bubble">Building A</span> </div> <div class="clearfix"></div> <div class="issue-tags"> <div><b>Tag</b></div><span class="bubble" each="{tag in p.tags}">{tag}</span> </div> </div> <div class="issue-info"> <div><b>Status</b></div><span class="big-text">{p.status}</span> <div class="clearfix"></div> <div><b>Dept.</b></div><span class="big-text">{p.assigned_department ? p.assigned_department.name : \'-\'}</span> <div class="clearfix"></div> <div title="assigned to"><i class="icon material-icons">face</i>{p.assigned_user.name}</div> <div title="created at"><i class="icon material-icons">access_time</i>{moment(p.created_time).fromNow()}</div><a class="bt-manage-issue btn" href="#!issue-id:{p._id}">Issue</a> </div> </li> <div class="load-more-wrapper"><a class="load-more {active: hasMore}" onclick="{loadMore()}">Load More</a></div> </ul>', '', '', function (opts) {
+riot.tag2('issue-list', '<div class="menu-bar"> <div class="list-or-map"><span class="{active: !isShowingMap}" onclick="{showMapView(false)}">List</span><span class="separator">/</span><span class="{active: isShowingMap}" onclick="{showMapView(true)}">Map</span></div> <div class="clearfix"></div> </div> <div class="{hide: isShowingMap, \'list-view\': true}"> <ul class="issue-list"> <li class="issue clearfix" each="{p in pins}"> <div class="issue-img"> <div class="img responsive-img" riot-style="background-image: url(&quot;{_.get(p.photos, &quot;0&quot;)}&quot;)"></div> </div> <div class="issue-body"> <div class="issue-id"><b>ID</b><span href="#manage-issue-modal" data-id="{p._id}">{p._id}</span></div> <div class="issue-desc">{p.detail}</div> <div class="issue-category"> <div><b>Category</b></div><span class="bubble" each="{cat in p.categories}">{cat}</span> </div> <div class="issue-location"> <div><b>Location</b></div><span class="bubble">Building A</span> </div> <div class="clearfix"></div> <div class="issue-tags"> <div><b>Tag</b></div><span class="bubble" each="{tag in p.tags}">{tag}</span> </div> </div> <div class="issue-info"> <div><b>Status</b></div><span class="big-text">{p.status}</span> <div class="clearfix"></div> <div><b>Dept.</b></div><span class="big-text">{p.assigned_department ? p.assigned_department.name : \'-\'}</span> <div class="clearfix"></div> <div title="assigned to"><i class="icon material-icons">face</i>{p.assigned_user.name}</div> <div title="created at"><i class="icon material-icons">access_time</i>{moment(p.created_time).fromNow()}</div><a class="bt-manage-issue btn" href="#!issue-id:{p._id}">Issue</a> </div> </li> </ul> <div class="load-more-wrapper"><a class="load-more {active: hasMore}" onclick="{loadMore()}">Load More</a></div> </div> <div class="{hide: !isShowingMap, \'map-view\': true}"> <div id="issue-map"></div> </div>', '', '', function (opts) {
+  var self = this;
+
+  this.pins = [];
+  this.hasMore = true;
+  this.isShowingMap = false;
+  this.mapOptions = {};
+  this.mapMarkerIcon = L.icon({
+    iconUrl: util.site_url('/public/img/marker-m-3d.png'),
+    iconSize: [36, 54],
+    iconAnchor: [16, 51],
+    popupAnchor: [0, -51]
+  });
+
+  this.load = function (opts) {
+    self.currentQueryOpts = opts;
+
+    api.getPins(opts).then(function (res) {
+      self.pins = res.data;
+      self.updateHasMoreButton(res);
+      self.isShowingMap = false;
+
+      self.removeMapMarkers();
+
+      self.update();
+    });
+  };
+
+  this.loadMore = function () {
+    return function () {
+      var opts = _.extend({}, self.currentQueryOpts, { '$skip': self.pins.length });
+      api.getPins(self.selectedStatus, opts).then(function (res) {
+        self.pins = self.pins.concat(res.data);
+        self.updateHasMoreButton(res);
+        self.update();
+      });
+    };
+  };
+
+  this.updateHasMoreButton = function (res) {
+    self.hasMore = res.total - (res.skip + res.data.length) > 0;
+  };
+
+  this.showMapView = function (showMap) {
+    return function () {
+      if (showMap == self.isShowingMap) {
+        return;
+      }
+
+      self.isShowingMap = showMap;
+      if (showMap) {
+
+        self.mapMarkers = _.map(self.pins, function (p) {
+          var marker = L.marker(p.location.coordinates, {
+            icon: self.mapMarkerIcon
+
+          }).addTo(self.mapView);
+          marker.on('click', function () {
+            window.location.hash = '!issue-id:' + p._id;
+          });
+          return marker;
+        });
+      } else {
+        self.removeMapMarkers();
+      }
+      self.update();
+      if (showMap) {
+
+        self.mapView.invalidateSize();
+      }
+    };
+  };
+
+  this.on('mount', function () {
+    self.mapView = L.map('issue-map', self.mapOptions);
+    self.mapView.setView(app.config.service.map.initial_location, 18);
+
+    var HERE_normalDay = L.tileLayer('https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/{scheme}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}&style={style}&ppi={ppi}', {
+      attribution: 'Map &copy; 1987-2014 <a href="https://developer.here.com">HERE</a>',
+      subdomains: '1234',
+      mapID: 'newest',
+      app_id: app.get('service.here.app_id'),
+      app_code: app.get('service.here.app_code'),
+      base: 'base',
+      maxZoom: 20,
+      type: 'maptile',
+      scheme: 'ontouchstart' in window ? 'normal.day.mobile' : 'normal.day',
+      language: 'tha',
+      style: 'default',
+      format: 'png8',
+      size: '256',
+      ppi: 'devicePixelRatio' in window && window.devicePixelRatio >= 2 ? '250' : '72'
+    });
+    self.mapView.addLayer(HERE_normalDay);
+  });
+
+  this.removeMapMarkers = function () {
+    _.each(self.mapMarkers, function (m) {
+      self.mapView.removeLayer(m);
+    });
+  };
+});
+
+riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue"><a class="btn" href="#manage-issue-modal">Create New Issue</a></div> </h1> <ul class="status-selector"> <li class="{active: name == selectedStatus}" each="{statuses}" onclick="{parent.select(name)}">{name}({totalIssues})</li> </ul> <issue-list></issue-list>', '', '', function (opts) {
   var _this = this;
 
   var self = this;
-  this.pins = [];
 
   this.statusesForRole = [];
+
   var queryOpts = {};
 
   if (user.role == 'super_admin' || user.role == 'organization_admin') {
@@ -181,15 +284,16 @@ riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue">
 
   this.statuses = [];
 
-  this.hasMore = true;
+  Promise.map(this.statusesForRole, function (status) {
 
-  Promise.map(this.statusesForRole, function (s) {
+    var opts = _.extend({}, queryOpts, {
+      '$limit': 1,
+      status: status
+    });
 
-    var opts = _.extend({}, queryOpts, { '$limit': 1 });
-
-    return api.getPins(s, opts).then(function (res) {
+    return api.getPins(opts).then(function (res) {
       return {
-        name: s,
+        name: status,
         totalIssues: res.total
       };
     });
@@ -206,27 +310,12 @@ riot.tag2('issue-page', '<h1 class="page-title">Issue <div class="bt-new-issue">
     return function () {
       self.selectedStatus = status;
 
-      api.getPins(status, queryOpts).then(function (res) {
-        self.pins = res.data;
-        self.updateHasMoreButton(res);
-        self.update();
-      });
-    };
-  };
+      var query = _.extend({
+        status: status
+      }, queryOpts);
 
-  this.loadMore = function () {
-    return function () {
-      var opts = _.extend({}, queryOpts, { '$skip': self.pins.length });
-      api.getPins(self.selectedStatus, opts).then(function (res) {
-        self.pins = self.pins.concat(res.data);
-        self.updateHasMoreButton(res);
-        self.update();
-      });
+      self.tags['issue-list'].load(query);
     };
-  };
-
-  this.updateHasMoreButton = function (res) {
-    self.hasMore = res.total - (res.skip + res.data.length) > 0;
   };
 });
 
@@ -238,8 +327,15 @@ riot.tag2('preloader', '<div class="preloader-wrapper active {class}"> <div clas
 riot.tag2('search-box', '<a class="toggle-btn" href="#" onclick="{clickToggleSearch}"><i class="icon material-icons">search</i></a> <div class="search-box-wrapper" name="wrapper"> <form onsubmit="{submitSearch}"> <input class="flat" type="search" name="q" placeholder="{placeholder}" onblur="{clickToggleSearch}" tabindex="-1"> </form> </div>', 'search-box,[riot-tag="search-box"],[data-is="search-box"]{ display: inline-block; } search-box .toggle-btn,[riot-tag="search-box"] .toggle-btn,[data-is="search-box"] .toggle-btn{ display: inline-block; opacity: 1; transition: all 0.2s ease-out; } search-box .search-box-wrapper,[riot-tag="search-box"] .search-box-wrapper,[data-is="search-box"] .search-box-wrapper{ display: inline-block; width: 0; opacity: 0; padding-left: 0; padding-right: 0; transition: all 0.2s ease-out; } search-box.open .toggle-btn,[riot-tag="search-box"].open .toggle-btn,[data-is="search-box"].open .toggle-btn{ width: 0; opacity: 0; padding-left: 0; padding-right: 0; } search-box.open .search-box-wrapper,[riot-tag="search-box"].open .search-box-wrapper,[data-is="search-box"].open .search-box-wrapper{ width: 200px; opacity: 1; padding-left: 1rem; padding-right: 1rem; }', 'class="{open: open}"', function (opts) {
   var self = this;
   self.open = false;
-  self.path = opts.path || '';
+  self.path = util.site_url('/search') + '?q=<QUERY>';
   self.placeholder = opts.placeholder;
+
+  var prevQuery = queryString.parse(location.search).q;
+  if (prevQuery) {
+    self.open = true;
+    $(self.q).val(prevQuery);
+    $('body').addClass('global-search-active');
+  }
 
   self.on('updated', function () {
     if (self.open) {
@@ -254,14 +350,40 @@ riot.tag2('search-box', '<a class="toggle-btn" href="#" onclick="{clickToggleSea
   };
 
   self.submitSearch = function (e) {
+    if (self.q.value == '') {
+      return;
+    }
     e.preventDefault();
-    location.href = util.site_url(self.path, {
-      q: self.q.value
-    });
+
+    var url = self.path.replace(/<QUERY>/, self.q.value);
+    location.href = url;
   };
 });
 
-riot.tag2('setting-department', '<h1 class="page-title">Setting Department</h1> <div class="row"> <div class="col s12 right-align"><a class="btn" onclick="{createDepartment}">Create department</a></div> </div> <ul> <li class="department" each="{dept in departments}"> <div class="row"> <div class="col s1"><b>{dept.name}</b></div> <div class="col s6"><span onclick="{editDepartment(dept._id)}">edit</span></div> </div> </li> </ul> <div class="modal" id="edit-department-form"> <div class="modal-header"> <h3>Edit Department</h3> </div> <div class="divider"></div> <div class="modal-content">something</div> </div> <div class="modal" id="create-department-form"> <div class="modal-header"> <h3>Create Department</h3> </div> <div class="modal-content"> <h5>Department name</h5> <div class="input-field"> <input type="text" name="name"> </div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeCreateModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmCreate}">Create</a></div> </div> </div>', '', '', function (opts) {
+riot.tag2('search-page', '<div class="{hidden: !isNoIssue}"> <h1 class="page-title">No result for "{query}"</h1> </div> <div class="{hidden: isNoIssue}"> <h1 class="page-title">Search result for "{query}"</h1> <issue-list></issue-list> </div>', '', '', function (opts) {
+  var self = this;
+
+  self.isNoResult = false;
+
+  self.query = queryString.parse(location.search).q;
+
+  self.issueList = self.tags['issue-list'];
+
+  self.on('mount', function () {
+    self.tags['issue-list'].load({
+      'detail[$regex]': '.*' + self.query + '.*',
+      '$sort': '-created_time',
+      'assigned_department': user.department
+    });
+  });
+
+  self.issueList.on('update', function () {
+    self.isNoIssue = self.issueList.pins.length == 0;
+    self.update();
+  });
+});
+
+riot.tag2('setting-department', '<h1 class="page-title">Department Settings</h1> <div class="row"> <div class="col s12 right-align"><a class="btn" onclick="{createDepartment}">Create Department</a></div> </div> <table> <thead> <tr> <th>Department</th> <th style="width: 120px"></th> </tr> </thead> <tbody> <tr class="department" each="{dept in departments}"> <td><b>{dept.name}</b></td> <td><a class="btn btn-small btn-block" onclick="{editDepartment(dept._id)}">Edit</a></td> </tr> </tbody> </table> <div class="modal" id="edit-department-form"> <div class="modal-header"> <h3>Edit Department</h3> </div> <div class="divider"></div> <div class="modal-content">something</div> </div> <div class="modal" id="create-department-form"> <div class="modal-header"> <h3>Create Department</h3> </div> <div class="modal-content"> <h5>Department name</h5> <div class="input-field"> <input type="text" name="name"> </div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeCreateModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmCreate}">Create</a></div> </div> </div>', '', '', function (opts) {
   var self = this;
   var $editModal = void 0,
       $createModal = void 0;
@@ -327,20 +449,14 @@ riot.tag2('setting-department', '<h1 class="page-title">Setting Department</h1> 
   };
 });
 
-riot.tag2('setting-user', '<h1 class="page-title">Setting User</h1> <div class="row"> <div class="col s12 right-align"><a class="btn" onclick="{createUser}">Create user</a></div> </div> <ul></ul> <table> <thead> <td>Name</td> <td>Email</td> <td>Department</td> <td>Role</td> <td>#</td> </thead> <tr class="user" each="{user in users}"> <td>{user.name}</td> <td>{user.email}</td> <td>{user.department.name}</td> <td>{user.role}</td> <td><span onclick="{changeRole(user)}">change role</span></td> </tr> </table> <div class="modal" id="change-role-form"> <div class="modal-header"> <h3>Change role of {editingUser.name}</h3> </div> <div class="divider"></div> <div class="modal-content"> <h5>Role</h5> <div class="input-field col s12"> <select name="role"> <option each="{role in availableRoles}" value="{role}" __selected="{role == editingUser.role}">{role}</option> </select> </div> <div class="department-selector-wrapper"> <h5>Department</h5> <div class="input-field col s12"> <select name="department"> <option each="{dept in departments}" value="{dept._id}" __selected="{dept._id == editingUser.department._id}">{dept.name}</option> </select> </div> </div> <div class="padding"></div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeChangeRoleModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmChangeRole}">Save</a></div> </div> </div> <div class="modal" id="create-user-form"> <div class="modal-header"> <h3>Create User</h3> </div> <div class="modal-content"> <h5>Name</h5> <div class="input-field"> <input type="text" name="name"> </div> <h5>Email</h5> <div class="input-field"> <input type="text" name="email"> </div> <h5>Password</h5> <div class="input-field"> <input type="text" name="password"> </div> <h5>Confirm Password</h5> <div class="input-field"> <input type="text" name="confirm-password"> </div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeCreateModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmCreate}">Create</a></div> </div> </div>', '', '', function (opts) {
+riot.tag2('setting-user', '<h1 class="page-title">User Settings</h1> <div class="row"> <div class="col s12 right-align"><a class="btn" onclick="{createUser}">Create User</a></div> </div> <table> <thead> <th>Name</th> <th>Email</th> <th>Department</th> <th>Role</th> <th style="min-width: 100px"></th> </thead> <tr class="user" each="{user in users}"> <td>{user.name}</td> <td>{user.email}</td> <td>{user.department.name}</td> <td>{user.role}</td> <td><a class="btn btn-small btn-block" onclick="{changeRole(user)}">Edit</a></td> </tr> </table> <div class="modal" id="change-role-form"> <div class="modal-header"> <h3>Change role of {editingUser.name}</h3> </div> <div class="divider"></div> <div class="modal-content"> <h5>Role</h5> <div class="input-field col s12"> <select name="role"> <option each="{role in availableRoles}" value="{role.id}" __selected="{role.id === editingUser.role}">{role.name}</option> </select> </div> <div class="department-selector-wrapper"> <h5>Department</h5> <div class="input-field col s12"> <select name="department"> <option each="{dept in departments}" value="{dept._id}" __selected="{dept._id === editingUser.department._id}">{dept.name}</option> </select> </div> </div> <div class="padding"></div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeChangeRoleModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmChangeRole}">Save</a></div> </div> </div> <div class="modal" id="create-user-form"> <div class="modal-header"> <h3>Create User</h3> </div> <div class="modal-content"> <h5>Name</h5> <div class="input-field"> <input type="text" name="name"> </div> <h5>Email</h5> <div class="input-field"> <input type="text" name="email"> </div> <h5>Password</h5> <div class="input-field"> <input type="password" name="password"> </div> <h5>Confirm Password</h5> <div class="input-field"> <input type="password" name="confirm-password"> </div> </div> <div class="row"> <div class="col s12 right-align"><a class="btn-flat" onclick="{closeCreateModal}">Cancel</a>&nbsp;<a class="btn" onclick="{confirmCreate}">Create</a></div> </div> </div>', '', '', function (opts) {
   var self = this;
   var $changeRoleModal = void 0,
       $createModal = void 0,
       $roleSelector = void 0,
       $departmentSelector = void 0;
 
-  this.availableRoles = ['department_head', 'department_officer'];
-
-  if (_.find(['super_admin', 'organization_admin'], function (r) {
-    return r == user.role;
-  })) {
-    this.availableRoles = ['organization_admin'].concat(self.availableRoles);
-  }
+  self.availableRoles = opts.availableRoles || [];
   $(document).ready(function () {
     $changeRoleModal = $('#change-role-form').modal();
     $createModal = $('#create-user-form').modal();

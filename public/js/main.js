@@ -27616,12 +27616,10 @@ api.updateUser = function (userId, patchObj) {
   return (0, _isomorphicFetch2.default)(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
 };
 
-api.getPins = function (status, opts) {
-
+api.getPins = function (opts) {
   opts = _.extend({
     '$sort': '-created_time',
-    '$limit': 10,
-    'status': status
+    '$limit': 10
   }, opts);
 
   var url = api._buildEndpoint('pins', opts);

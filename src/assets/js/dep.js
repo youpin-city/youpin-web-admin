@@ -13,7 +13,8 @@ else root = {};
   window._ = require('lodash');
   window.Promise = require('bluebird');
   window.fetch = require('isomorphic-fetch');
-  window.queryString = require('query-string');
+  window.queryString = require('querystring');
+
 
   // jQuery
   window.$ = window.jQuery = require('jquery');
