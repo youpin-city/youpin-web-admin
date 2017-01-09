@@ -29,7 +29,7 @@
       "ref"  : "origin/master",
       "repo" : "git@github.com:youpin-city/youpin-web-admin.git",
       "path" : "/opt/mafueng-web-admin.production",
-      "post-deploy" : "cp ../shared/.env . && ln -fs `pwd`/config/production config/current && npm install --production && pm2 startOrRestart ecosystem.json --env production",
+      "post-deploy" : "cp ../shared/.env . && ln -fs `pwd`/config/production config/current && npm install && npm run build && pm2 startOrRestart ecosystem.json --env production",
       "pre-deploy-local" : "echo '[production] deploy completed.'"
     }
   }
