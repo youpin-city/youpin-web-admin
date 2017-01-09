@@ -43,40 +43,47 @@ riot.tag2('dashboard-table-summary', '<h1 class="page-title">Overview</h1> <ul c
 
       var start_date = self.durationSelectors[selectorIdx].start;
 
-      api.getSummary(start_date, end_date, function (data) {
-        var departments = Object.keys(data);
-
-        var attributes = departments.length > 0 ? Object.keys(data[departments[0]]) : [];
-
-        var deptSummaries = _.map(departments, function (dept) {
-          return {
-            name: dept,
-            summary: data[dept],
-            performance: computePerformance(attributes, data[dept])
-          };
+      api.getDepartments().then(function (departments) {
+        departments = departments.data.map(function (d) {
+          return d.name;
         });
+        api.getSummary(start_date, end_date, function (data) {
+          var available_departments = Object.keys(data);
+          var attributes = available_departments.length > 0 ? Object.keys(data[available_departments[0]]) : [];
 
-        var all = _.reduce(attributes, function (acc, attr) {
-          acc[attr] = 0;
-          return acc;
-        }, {});
-
-        all = _.reduce(deptSummaries, function (acc, dept) {
-          _.each(attributes, function (attr) {
-            acc[attr] += dept['summary'][attr];
+          var deptSummaries = _.map(departments, function (dept) {
+            var data_dept = data[dept] === undefined ? attributes.reduce(function (acc, cur) {
+              acc[cur] = 0;return acc;
+            }, {}) : data[dept];
+            return {
+              name: dept,
+              summary: data_dept,
+              performance: computePerformance(attributes, data_dept)
+            };
           });
-          return acc;
-        }, all);
 
-        var orgSummary = {
-          name: 'All',
-          summary: all,
-          performance: computePerformance(attributes, all)
-        };
+          var all = _.reduce(attributes, function (acc, attr) {
+            acc[attr] = 0;
+            return acc;
+          }, {});
 
-        self.data = [orgSummary].concat(deptSummaries);
+          all = _.reduce(deptSummaries, function (acc, dept) {
+            _.each(attributes, function (attr) {
+              acc[attr] += dept['summary'][attr];
+            });
+            return acc;
+          }, all);
 
-        self.update();
+          var orgSummary = {
+            name: 'All',
+            summary: all,
+            performance: computePerformance(attributes, all)
+          };
+
+          self.data = [orgSummary].concat(deptSummaries);
+
+          self.update();
+        });
       });
     };
   };
@@ -94,7 +101,7 @@ riot.tag2('dashboard-table-summary', '<h1 class="page-title">Overview</h1> <ul c
     }, 0);
 
     var divider = total - (summary['unverified'] + summary['rejected']);
-    if (divider == 0) {
+    if (divider === 0) {
       return 0;
     }
 

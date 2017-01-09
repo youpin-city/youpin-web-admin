@@ -25,7 +25,7 @@
  * 
  */
 /**
- * bluebird build version 3.4.6
+ * bluebird build version 3.4.7
  * Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, using, timers, filter, any, each
 */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Promise=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -179,11 +179,6 @@ if (!util.hasDevTools) {
         }
     };
 }
-
-Async.prototype.invokeFirst = function (fn, receiver, arg) {
-    this._normalQueue.unshift(fn, receiver, arg);
-    this._queueTick();
-};
 
 Async.prototype._drainQueue = function(queue) {
     while (queue.length() > 0) {
@@ -964,6 +959,7 @@ Promise.config = function(opts) {
             Promise.prototype._fireEvent = defaultFireEvent;
         }
     }
+    return Promise;
 };
 
 function defaultFireEvent() { return false; }
@@ -1234,7 +1230,7 @@ function stackFramesAsArray(error) {
             break;
         }
     }
-    if (i > 0) {
+    if (i > 0 && error.name != "SyntaxError") {
         stack = stack.slice(i);
     }
     return stack;
@@ -1247,7 +1243,7 @@ function parseStackAndMessage(error) {
                 ? stackFramesAsArray(error) : ["    (No stack trace)"];
     return {
         message: message,
-        stack: cleanStack(stack)
+        stack: error.name == "SyntaxError" ? stack : cleanStack(stack)
     };
 }
 
@@ -3465,7 +3461,7 @@ _dereq_("./synchronous_inspection")(Promise);
 _dereq_("./join")(
     Promise, PromiseArray, tryConvertToPromise, INTERNAL, async, getDomain);
 Promise.Promise = Promise;
-Promise.version = "3.4.6";
+Promise.version = "3.4.7";
 _dereq_('./map.js')(Promise, PromiseArray, apiRejection, tryConvertToPromise, INTERNAL, debug);
 _dereq_('./call_get.js')(Promise);
 _dereq_('./using.js')(Promise, apiRejection, tryConvertToPromise, createContext, INTERNAL, debug);
@@ -4153,23 +4149,6 @@ Queue.prototype._pushOne = function (arg) {
     var i = (this._front + length) & (this._capacity - 1);
     this[i] = arg;
     this._length = length + 1;
-};
-
-Queue.prototype._unshiftOne = function(value) {
-    var capacity = this._capacity;
-    this._checkCapacity(this.length() + 1);
-    var front = this._front;
-    var i = (((( front - 1 ) &
-                    ( capacity - 1) ) ^ capacity ) - capacity );
-    this[i] = value;
-    this._front = i;
-    this._length = this.length() + 1;
-};
-
-Queue.prototype.unshift = function(fn, receiver, arg) {
-    this._unshiftOne(arg);
-    this._unshiftOne(receiver);
-    this._unshiftOne(fn);
 };
 
 Queue.prototype.push = function (fn, receiver, arg) {
@@ -5532,8 +5511,11 @@ if (typeof Symbol !== "undefined" && Symbol.iterator) {
 var isNode = typeof process !== "undefined" &&
         classString(process).toLowerCase() === "[object process]";
 
-function env(key, def) {
-    return isNode ? process.env[key] : def;
+var hasEnvVariables = typeof process !== "undefined" &&
+    typeof process.env !== "undefined";
+
+function env(key) {
+    return hasEnvVariables ? process.env[key] : undefined;
 }
 
 function getNativePromise() {
@@ -5581,6 +5563,7 @@ var ret = {
     hasDevTools: typeof chrome !== "undefined" && chrome &&
                  typeof chrome.loadTimes === "function",
     isNode: isNode,
+    hasEnvVariables: hasEnvVariables,
     env: env,
     global: globalObject,
     getNativePromise: getNativePromise,
@@ -5612,9 +5595,9 @@ module.exports = self.fetch.bind(self);
 /*!
   SerializeJSON jQuery plugin.
   https://github.com/marioizquierdo/jquery.serializeJSON
-  version 2.7.2 (Dec, 2015)
+  version 2.8.1 (Dec, 2016)
 
-  Copyright (c) 2012, 2015 Mario Izquierdo
+  Copyright (c) 2012, 2017 Mario Izquierdo
   Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
   and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
 */
@@ -5633,7 +5616,7 @@ module.exports = self.fetch.bind(self);
 
   // jQuery('form').serializeJSON()
   $.fn.serializeJSON = function (options) {
-    var f, $form, opts, formAsArray, serializedObject, name, value, _obj, nameWithNoType, type, keys;
+    var f, $form, opts, formAsArray, serializedObject, name, value, parsedValue, _obj, nameWithNoType, type, keys, skipFalsy;
     f = $.serializeJSON;
     $form = this; // NOTE: the set of matched elements is most likely a form, but it could also be a group of inputs
     opts = f.setupOpts(options); // calculate values for options {parseNumbers, parseBoolens, parseNulls, ...} with defaults
@@ -5650,13 +5633,17 @@ module.exports = self.fetch.bind(self);
       _obj = f.extractTypeAndNameWithNoType(name);
       nameWithNoType = _obj.nameWithNoType; // input name with no type (i.e. "foo:string" => "foo")
       type = _obj.type; // type defined from the input name in :type colon notation
-      if (!type) type = f.tryToFindTypeFromDataAttr(name, $form); // type defined in the data-value-type attr
+      if (!type) type = f.attrFromInputWithName($form, name, 'data-value-type');
       f.validateType(name, type, opts); // make sure that the type is one of the valid types if defined
 
-      if (type !== 'skip') { // ignore elements with type 'skip'
+      if (type !== 'skip') { // ignore inputs with type 'skip'
         keys = f.splitInputNameIntoKeysArray(nameWithNoType);
-        value = f.parseValue(value, name, type, opts); // convert to string, number, boolean, null or customType
-        f.deepSet(serializedObject, keys, value, opts);
+        parsedValue = f.parseValue(value, name, type, opts); // convert to string, number, boolean, null or customType
+
+        skipFalsy = !parsedValue && f.shouldSkipFalsy($form, name, nameWithNoType, type, opts); // ignore falsy inputs if specified
+        if (!skipFalsy) {
+          f.deepSet(serializedObject, keys, parsedValue, opts);
+        }
       }
     });
     return serializedObject;
@@ -5674,6 +5661,9 @@ module.exports = self.fetch.bind(self);
       parseNulls: false, // convert "null" to null
       parseAll: false, // all of the above
       parseWithFunction: null, // to use custom parser, a function like: function(val){ return parsed_val; }
+
+      skipFalsyValuesForTypes: [], // skip serialization of falsy values for listed value types
+      skipFalsyValuesForFields: [], // skip serialization of falsy values for listed field names
 
       customTypes: {}, // override defaultTypes
       defaultTypes: {
@@ -5699,7 +5689,7 @@ module.exports = self.fetch.bind(self);
       defaultOptions = f.defaultOptions || {}; // defaultOptions
 
       // Make sure that the user didn't misspell an option
-      validOpts = ['checkboxUncheckedValue', 'parseNumbers', 'parseBooleans', 'parseNulls', 'parseAll', 'parseWithFunction', 'customTypes', 'defaultTypes', 'useIntKeysAsArrayIndex']; // re-define because the user may override the defaultOptions
+      validOpts = ['checkboxUncheckedValue', 'parseNumbers', 'parseBooleans', 'parseNulls', 'parseAll', 'parseWithFunction', 'skipFalsyValuesForTypes', 'skipFalsyValuesForFields', 'customTypes', 'defaultTypes', 'useIntKeysAsArrayIndex']; // re-define because the user may override the defaultOptions
       for (opt in options) {
         if (validOpts.indexOf(opt) === -1) {
           throw new  Error("serializeJSON ERROR: invalid option '" + opt + "'. Please use one of " + validOpts.join(', '));
@@ -5719,6 +5709,8 @@ module.exports = self.fetch.bind(self);
         parseNulls:    parseAll || optWithDefault('parseNulls'),
         parseWithFunction:         optWithDefault('parseWithFunction'),
 
+        skipFalsyValuesForTypes:   optWithDefault('skipFalsyValuesForTypes'),
+        skipFalsyValuesForFields:  optWithDefault('skipFalsyValuesForFields'),
         typeFunctions: $.extend({}, optWithDefault('defaultTypes'), optWithDefault('customTypes')),
 
         useIntKeysAsArrayIndex: optWithDefault('useIntKeysAsArrayIndex')
@@ -5760,21 +5752,26 @@ module.exports = self.fetch.bind(self);
     // The value of the unchecked values is determined from the opts.checkboxUncheckedValue
     // and/or the data-unchecked-value attribute of the inputs.
     readCheckboxUncheckedValues: function (formAsArray, opts, $form) {
-      var selector, $uncheckedCheckboxes, $el, dataUncheckedValue, f;
+      var selector, $uncheckedCheckboxes, $el, uncheckedValue, f, name;
       if (opts == null) { opts = {}; }
       f = $.serializeJSON;
 
       selector = 'input[type=checkbox][name]:not(:checked):not([disabled])';
       $uncheckedCheckboxes = $form.find(selector).add($form.filter(selector));
       $uncheckedCheckboxes.each(function (i, el) {
+        // Check data attr first, then the option
         $el = $(el);
-        dataUncheckedValue = $el.attr('data-unchecked-value');
-        if(dataUncheckedValue) { // data-unchecked-value has precedence over option opts.checkboxUncheckedValue
-          formAsArray.push({name: el.name, value: dataUncheckedValue});
-        } else {
-          if (!f.isUndefined(opts.checkboxUncheckedValue)) {
-            formAsArray.push({name: el.name, value: opts.checkboxUncheckedValue});
+        uncheckedValue = $el.attr('data-unchecked-value');
+        if (uncheckedValue == null) {
+          uncheckedValue = opts.checkboxUncheckedValue;
+        }
+
+        // If there's an uncheckedValue, push it into the serialized formAsArray
+        if (uncheckedValue != null) {
+          if (el.name && el.name.indexOf("[][") !== -1) { // identify a non-supported
+            throw new Error("serializeJSON ERROR: checkbox unchecked values are not supported on nested arrays of objects like '"+el.name+"'. See https://github.com/marioizquierdo/jquery.serializeJSON/issues/67");
           }
+          formAsArray.push({name: el.name, value: uncheckedValue});
         }
       });
     },
@@ -5793,16 +5790,39 @@ module.exports = self.fetch.bind(self);
       }
     },
 
-    // Find an input in the $form with the same name,
-    // and get the data-value-type attribute.
-    // Returns nil if none found. Returns the first data-value-type found if many inputs have the same name.
-    tryToFindTypeFromDataAttr: function(name, $form) {
-      var escapedName, selector, $input, typeFromDataAttr;
+
+    // Check if this input should be skipped when it has a falsy value,
+    // depending on the options to skip values by name or type, and the data-skip-falsy attribute.
+    shouldSkipFalsy: function($form, name, nameWithNoType, type, opts) {
+      var f = $.serializeJSON;
+      
+      var skipFromDataAttr = f.attrFromInputWithName($form, name, 'data-skip-falsy');
+      if (skipFromDataAttr != null) {
+        return skipFromDataAttr !== 'false'; // any value is true, except if explicitly using 'false' 
+      }
+
+      var optForFields = opts.skipFalsyValuesForFields;
+      if (optForFields && (optForFields.indexOf(nameWithNoType) !== -1 || optForFields.indexOf(name) !== -1)) {
+        return true;
+      }
+      
+      var optForTypes = opts.skipFalsyValuesForTypes;
+      if (type == null) type = 'string'; // assume fields with no type are targeted as string
+      if (optForTypes && optForTypes.indexOf(type) !== -1) {
+        return true
+      }
+
+      return false;
+    },
+
+    // Finds the first input in $form with this name, and get the given attr from it.
+    // Returns undefined if no input or no attribute was found.
+    attrFromInputWithName: function($form, name, attrName) {
+      var escapedName, selector, $input, attrValue;
       escapedName = name.replace(/(:|\.|\[|\]|\s)/g,'\\$1'); // every non-standard character need to be escaped by \\
       selector = '[name="' + escapedName + '"]';
-      $input = $form.find(selector).add($form.filter(selector));
-      typeFromDataAttr = $input.attr('data-value-type'); // NOTE: this returns only the first $input element if multiple are matched with the same name (i.e. an "array[]"). So, arrays with different element types specified through the data-value-type attr is not supported.
-      return typeFromDataAttr || null;
+      $input = $form.find(selector).add($form.filter(selector)); // NOTE: this returns only the first $input element if multiple are matched with the same name (i.e. an "array[]"). So, arrays with different element types specified through the data-value-type attr is not supported.
+      return $input.attr(attrName);
     },
 
     // Raise an error if the type is not recognized.
@@ -25284,7 +25304,7 @@ L.Map.include({
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.2';
+  var VERSION = '4.17.4';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -26839,9 +26859,9 @@ L.Map.include({
      * Shortcut fusion is an optimization to merge iteratee calls; this avoids
      * the creation of intermediate arrays and can greatly reduce the number of
      * iteratee executions. Sections of a chain sequence qualify for shortcut
-     * fusion if the section is applied to an array of at least `200` elements
-     * and any iteratees accept only one argument. The heuristic for whether a
-     * section qualifies for shortcut fusion is subject to change.
+     * fusion if the section is applied to an array and iteratees accept only
+     * one argument. The heuristic for whether a section qualifies for shortcut
+     * fusion is subject to change.
      *
      * Chaining is supported in custom builds as long as the `_#value` method is
      * directly or indirectly included in the build.
@@ -27000,8 +27020,8 @@ L.Map.include({
 
     /**
      * By default, the template delimiters used by lodash are like those in
-     * embedded Ruby (ERB). Change the following template settings to use
-     * alternative delimiters.
+     * embedded Ruby (ERB) as well as ES2015 template strings. Change the
+     * following template settings to use alternative delimiters.
      *
      * @static
      * @memberOf _
@@ -27148,8 +27168,7 @@ L.Map.include({
           resIndex = 0,
           takeCount = nativeMin(length, this.__takeCount__);
 
-      if (!isArr || arrLength < LARGE_ARRAY_SIZE ||
-          (arrLength == length && takeCount == length)) {
+      if (!isArr || (!isRight && arrLength == length && takeCount == length)) {
         return baseWrapperValue(array, this.__actions__);
       }
       var result = [];
@@ -27263,7 +27282,7 @@ L.Map.include({
      */
     function hashHas(key) {
       var data = this.__data__;
-      return nativeCreate ? data[key] !== undefined : hasOwnProperty.call(data, key);
+      return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
     }
 
     /**
@@ -27734,24 +27753,6 @@ L.Map.include({
      */
     function arrayShuffle(array) {
       return shuffleSelf(copyArray(array));
-    }
-
-    /**
-     * Used by `_.defaults` to customize its `_.assignIn` use.
-     *
-     * @private
-     * @param {*} objValue The destination value.
-     * @param {*} srcValue The source value.
-     * @param {string} key The key of the property to assign.
-     * @param {Object} object The parent object of `objValue`.
-     * @returns {*} Returns the value to assign.
-     */
-    function assignInDefaults(objValue, srcValue, key, object) {
-      if (objValue === undefined ||
-          (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) {
-        return srcValue;
-      }
-      return objValue;
     }
 
     /**
@@ -28366,8 +28367,7 @@ L.Map.include({
       if (value == null) {
         return value === undefined ? undefinedTag : nullTag;
       }
-      value = Object(value);
-      return (symToStringTag && symToStringTag in value)
+      return (symToStringTag && symToStringTag in Object(value))
         ? getRawTag(value)
         : objectToString(value);
     }
@@ -28571,7 +28571,7 @@ L.Map.include({
       if (value === other) {
         return true;
       }
-      if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
+      if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
         return value !== value && other !== other;
       }
       return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
@@ -28594,17 +28594,12 @@ L.Map.include({
     function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
       var objIsArr = isArray(object),
           othIsArr = isArray(other),
-          objTag = arrayTag,
-          othTag = arrayTag;
+          objTag = objIsArr ? arrayTag : getTag(object),
+          othTag = othIsArr ? arrayTag : getTag(other);
 
-      if (!objIsArr) {
-        objTag = getTag(object);
-        objTag = objTag == argsTag ? objectTag : objTag;
-      }
-      if (!othIsArr) {
-        othTag = getTag(other);
-        othTag = othTag == argsTag ? objectTag : othTag;
-      }
+      objTag = objTag == argsTag ? objectTag : objTag;
+      othTag = othTag == argsTag ? objectTag : othTag;
+
       var objIsObj = objTag == objectTag,
           othIsObj = othTag == objectTag,
           isSameTag = objTag == othTag;
@@ -29052,7 +29047,6 @@ L.Map.include({
      * @returns {Object} Returns the new object.
      */
     function basePick(object, paths) {
-      object = Object(object);
       return basePickBy(object, paths, function(value, path) {
         return hasIn(object, path);
       });
@@ -30445,8 +30439,7 @@ L.Map.include({
           var args = arguments,
               value = args[0];
 
-          if (wrapper && args.length == 1 &&
-              isArray(value) && value.length >= LARGE_ARRAY_SIZE) {
+          if (wrapper && args.length == 1 && isArray(value)) {
             return wrapper.plant(value).value();
           }
           var index = 0,
@@ -30753,7 +30746,7 @@ L.Map.include({
       var func = Math[methodName];
       return function(number, precision) {
         number = toNumber(number);
-        precision = nativeMin(toInteger(precision), 292);
+        precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
         if (precision) {
           // Shift with exponential notation to avoid floating-point issues.
           // See [MDN](https://mdn.io/round#Examples) for more details.
@@ -30858,7 +30851,7 @@ L.Map.include({
       thisArg = newData[2];
       partials = newData[3];
       holders = newData[4];
-      arity = newData[9] = newData[9] == null
+      arity = newData[9] = newData[9] === undefined
         ? (isBindKey ? 0 : func.length)
         : nativeMax(newData[9] - length, 0);
 
@@ -30876,6 +30869,63 @@ L.Map.include({
       }
       var setter = data ? baseSetData : setData;
       return setWrapToString(setter(result, newData), func, bitmask);
+    }
+
+    /**
+     * Used by `_.defaults` to customize its `_.assignIn` use to assign properties
+     * of source objects to the destination object for all destination properties
+     * that resolve to `undefined`.
+     *
+     * @private
+     * @param {*} objValue The destination value.
+     * @param {*} srcValue The source value.
+     * @param {string} key The key of the property to assign.
+     * @param {Object} object The parent object of `objValue`.
+     * @returns {*} Returns the value to assign.
+     */
+    function customDefaultsAssignIn(objValue, srcValue, key, object) {
+      if (objValue === undefined ||
+          (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) {
+        return srcValue;
+      }
+      return objValue;
+    }
+
+    /**
+     * Used by `_.defaultsDeep` to customize its `_.merge` use to merge source
+     * objects into destination objects that are passed thru.
+     *
+     * @private
+     * @param {*} objValue The destination value.
+     * @param {*} srcValue The source value.
+     * @param {string} key The key of the property to merge.
+     * @param {Object} object The parent object of `objValue`.
+     * @param {Object} source The parent object of `srcValue`.
+     * @param {Object} [stack] Tracks traversed source values and their merged
+     *  counterparts.
+     * @returns {*} Returns the value to assign.
+     */
+    function customDefaultsMerge(objValue, srcValue, key, object, source, stack) {
+      if (isObject(objValue) && isObject(srcValue)) {
+        // Recursively merge objects and arrays (susceptible to call stack limits).
+        stack.set(srcValue, objValue);
+        baseMerge(objValue, srcValue, undefined, customDefaultsMerge, stack);
+        stack['delete'](srcValue);
+      }
+      return objValue;
+    }
+
+    /**
+     * Used by `_.omit` to customize its `_.cloneDeep` use to only clone plain
+     * objects.
+     *
+     * @private
+     * @param {*} value The value to inspect.
+     * @param {string} key The key of the property to inspect.
+     * @returns {*} Returns the uncloned value or `undefined` to defer cloning to `_.cloneDeep`.
+     */
+    function customOmitClone(value) {
+      return isPlainObject(value) ? undefined : value;
     }
 
     /**
@@ -31049,9 +31099,9 @@ L.Map.include({
      */
     function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
       var isPartial = bitmask & COMPARE_PARTIAL_FLAG,
-          objProps = keys(object),
+          objProps = getAllKeys(object),
           objLength = objProps.length,
-          othProps = keys(other),
+          othProps = getAllKeys(other),
           othLength = othProps.length;
 
       if (objLength != othLength && !isPartial) {
@@ -31289,7 +31339,15 @@ L.Map.include({
      * @param {Object} object The object to query.
      * @returns {Array} Returns the array of symbols.
      */
-    var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
+    var getSymbols = !nativeGetSymbols ? stubArray : function(object) {
+      if (object == null) {
+        return [];
+      }
+      object = Object(object);
+      return arrayFilter(nativeGetSymbols(object), function(symbol) {
+        return propertyIsEnumerable.call(object, symbol);
+      });
+    };
 
     /**
      * Creates an array of the own and inherited enumerable symbols of `object`.
@@ -31773,29 +31831,6 @@ L.Map.include({
       data[1] = newBitmask;
 
       return data;
-    }
-
-    /**
-     * Used by `_.defaultsDeep` to customize its `_.merge` use.
-     *
-     * @private
-     * @param {*} objValue The destination value.
-     * @param {*} srcValue The source value.
-     * @param {string} key The key of the property to merge.
-     * @param {Object} object The parent object of `objValue`.
-     * @param {Object} source The parent object of `srcValue`.
-     * @param {Object} [stack] Tracks traversed source values and their merged
-     *  counterparts.
-     * @returns {*} Returns the value to assign.
-     */
-    function mergeDefaults(objValue, srcValue, key, object, source, stack) {
-      if (isObject(objValue) && isObject(srcValue)) {
-        // Recursively merge objects and arrays (susceptible to call stack limits).
-        stack.set(srcValue, objValue);
-        baseMerge(objValue, srcValue, undefined, mergeDefaults, stack);
-        stack['delete'](srcValue);
-      }
-      return objValue;
     }
 
     /**
@@ -33540,7 +33575,7 @@ L.Map.include({
      *
      * var users = [
      *   { 'user': 'barney',  'active': false },
-     *   { 'user': 'fred',    'active': false},
+     *   { 'user': 'fred',    'active': false },
      *   { 'user': 'pebbles', 'active': true }
      * ];
      *
@@ -36109,7 +36144,7 @@ L.Map.include({
       if (typeof func != 'function') {
         throw new TypeError(FUNC_ERROR_TEXT);
       }
-      start = start === undefined ? 0 : nativeMax(toInteger(start), 0);
+      start = start == null ? 0 : nativeMax(toInteger(start), 0);
       return baseRest(function(args) {
         var array = args[start],
             otherArgs = castSlice(args, 0, start);
@@ -36779,7 +36814,7 @@ L.Map.include({
      * date objects, error objects, maps, numbers, `Object` objects, regexes,
      * sets, strings, symbols, and typed arrays. `Object` objects are compared
      * by their own, not inherited, enumerable properties. Functions and DOM
-     * nodes are **not** supported.
+     * nodes are compared by strict equality, i.e. `===`.
      *
      * @static
      * @memberOf _
@@ -37799,7 +37834,9 @@ L.Map.include({
      * // => 3
      */
     function toSafeInteger(value) {
-      return baseClamp(toInteger(value), -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER);
+      return value
+        ? baseClamp(toInteger(value), -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER)
+        : (value === 0 ? value : 0);
     }
 
     /**
@@ -38053,7 +38090,7 @@ L.Map.include({
      * // => { 'a': 1, 'b': 2 }
      */
     var defaults = baseRest(function(args) {
-      args.push(undefined, assignInDefaults);
+      args.push(undefined, customDefaultsAssignIn);
       return apply(assignInWith, undefined, args);
     });
 
@@ -38077,7 +38114,7 @@ L.Map.include({
      * // => { 'a': { 'b': 2, 'c': 3 } }
      */
     var defaultsDeep = baseRest(function(args) {
-      args.push(undefined, mergeDefaults);
+      args.push(undefined, customDefaultsMerge);
       return apply(mergeWith, undefined, args);
     });
 
@@ -38739,7 +38776,7 @@ L.Map.include({
       });
       copyObject(object, getAllKeysIn(object), result);
       if (isDeep) {
-        result = baseClone(result, CLONE_DEEP_FLAG | CLONE_FLAT_FLAG | CLONE_SYMBOLS_FLAG);
+        result = baseClone(result, CLONE_DEEP_FLAG | CLONE_FLAT_FLAG | CLONE_SYMBOLS_FLAG, customOmitClone);
       }
       var length = paths.length;
       while (length--) {
@@ -39888,7 +39925,10 @@ L.Map.include({
      */
     function startsWith(string, target, position) {
       string = toString(string);
-      position = baseClamp(toInteger(position), 0, string.length);
+      position = position == null
+        ? 0
+        : baseClamp(toInteger(position), 0, string.length);
+
       target = baseToString(target);
       return string.slice(position, position + target.length) == target;
     }
@@ -40007,9 +40047,9 @@ L.Map.include({
         options = undefined;
       }
       string = toString(string);
-      options = assignInWith({}, options, settings, assignInDefaults);
+      options = assignInWith({}, options, settings, customDefaultsAssignIn);
 
-      var imports = assignInWith({}, options.imports, settings.imports, assignInDefaults),
+      var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn),
           importsKeys = keys(imports),
           importsValues = baseValues(imports, importsKeys);
 
@@ -42093,14 +42133,13 @@ L.Map.include({
     // Add `LazyWrapper` methods for `_.drop` and `_.take` variants.
     arrayEach(['drop', 'take'], function(methodName, index) {
       LazyWrapper.prototype[methodName] = function(n) {
-        var filtered = this.__filtered__;
-        if (filtered && !index) {
-          return new LazyWrapper(this);
-        }
         n = n === undefined ? 1 : nativeMax(toInteger(n), 0);
 
-        var result = this.clone();
-        if (filtered) {
+        var result = (this.__filtered__ && !index)
+          ? new LazyWrapper(this)
+          : this.clone();
+
+        if (result.__filtered__) {
           result.__takeCount__ = nativeMin(n, result.__takeCount__);
         } else {
           result.__views__.push({
@@ -42340,7 +42379,7 @@ L.Map.include({
 
 },{}],9:[function(require,module,exports){
 //! moment.js
-//! version : 2.17.0
+//! version : 2.17.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -46605,7 +46644,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.17.0';
+hooks.version = '2.17.1';
 
 setHookCallback(createLocal);
 
