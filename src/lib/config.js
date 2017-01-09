@@ -79,7 +79,7 @@ const conf = convict({
     title: {
       doc: 'Website name',
       format: String,
-      default: 'YouPin Web Admin',
+      default: 'Mafueng Web Admin',
       env: 'SITE_TITLE'
     },
     subtitle: {
