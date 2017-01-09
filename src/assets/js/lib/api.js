@@ -90,6 +90,11 @@ api.postTransition = (pinId, body) => {
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
+api.postPhoto = (formData) => {
+  const url = api._buildEndpoint('photos');
+  return fetch(url, { method: 'POST', body: formData });
+};
+
 api.getUsers = () => {
   const opts = {
     $limit: 100

@@ -42,7 +42,7 @@ const issueRouter = module.exports = {
           const $span = $reporter.find('span');
           $span.eq(0).text(owner.name);
           $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
-          $reporter.find('a.btn-flat').attr('href', 'mailto:' + data.owner);
+          $reporter.find('a.btn-flat').attr('href', 'mailto:' + owner.email);
 
           const $details = $('#details');
           $details.find('textarea')
@@ -71,33 +71,20 @@ const issueRouter = module.exports = {
           const $status = $('#status');
           const $select = $status.find('select');
 
-          // Populate status dropdown list
-          const $select_status = $select.eq(0);
-          if (data.status === 'unverified') { // cannot set back to 'unverified' from other statuses
-            $select_status.append('<option value="unverified">Unverified</option>');
-          }
-          $select_status
-            // .append('<option value="unverified">Unverified</option>')
-            .append('<option value="verified">Verified</option>')
-            .append('<option value="assigned">Assigned</option>')
-            .append('<option value="processing">Processing</option>')
-            .append('<option value="resolved">Resolved</option>')
-            .append('<option value="rejected">Rejected</option>')
-            .append('<option value="duplicated">Duplicated</option>')
-            .val(data.status)
-            .material_select();
-
           // Populate department dropdown list
-          const $select_department = $select.eq(2);
+          const $select_department = $select.eq(1);
           api.getDepartments()
           .then(departments => {
+            $select_department.append('<option value="">[Please select]</option>');
             departments.data.forEach(department => {
               $select_department.append('<option value="' + department._id + '">' +
                 department.name + '</option>');
             });
-            $select_department
-              .val(data.assigned_department)
-              .material_select();
+            if (data.assigned_department !== undefined && data.assigned_department !== '') {
+              $select_department
+                .val(data.assigned_department)
+                .material_select();
+            }
           });
 
           // update progress feed UI
@@ -115,8 +102,6 @@ const issueRouter = module.exports = {
           $('.materialboxed').materialbox();
 
           // Buttons
-          /* $('#reset').click(function() {
-          });*/
           $('#cancel').click(() => {
             $('#manage-issue-modal').modal('close');
           });
@@ -129,20 +114,10 @@ const issueRouter = module.exports = {
                 coordinates: $chips.eq(1).material_chip('data').map(d => d.tag),
                 type: 'Point'
               },
-              tags: $chips.eq(2).material_chip('data').map(d => d.tag)
+              tags: $chips.eq(2).material_chip('data').map(d => d.tag),
+              assigned_department: $select_department.val()
             };
-            const new_state = $select.eq(0).val();
-            switch (new_state) {
-              case 'assigned':
-                body.assigned_department = $select.eq(2).val();
-                break;
-              case 'processing':
-                body.processed_by = user._id;
-                break;
-              default:
-                break;
-            }
-            /* $select.eq(1).val(data.status.priority);
+            /* $select.eq(0).val(data.status.priority);
             $status.find('textarea').val(data.status.annotation)*/
 
             // Edit pin info (partially)
@@ -152,33 +127,15 @@ const issueRouter = module.exports = {
             .catch(err =>
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
-
-            // State transition
-            if (data.status !== new_state) {
-              const body_transition = {
-                state: new_state
-              };
-              switch (new_state) {
-                case 'assigned':
-                  body_transition.assigned_department = body.assigned_department;
-                  break;
-                case 'processing':
-                  body_transition.processed_by = body.processed_by;
-                  break;
-                default:
-                  break;
-              }
-              api.postTransition(id, body_transition)
-              .then(response => response.json())
-              .then(() => $('#manage-issue-modal').modal('close'))
-              .catch(err =>
-                Materialize.toast(err.message, 8000, 'dialog-error large')
-              );
-            }
           });
+          if (user.is_superuser && (data.status === 'unverified' || data.status === 'verified')) {
+            $('#reject').show();
+          } else {
+            $('#reject').hide();
+          }
           $('#reject').click(() => {
             api.postTransition(id, {
-              state: 'verified'
+              state: 'rejected'
             })
             .then(response => response.json())
             .then(() => $('#manage-issue-modal').modal('close'))
@@ -186,65 +143,103 @@ const issueRouter = module.exports = {
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
           });
-          $('#acceptOrResolve')
+          $('#goToNextState')
             .text(() => {
               switch (data.status) {
+                case 'unverified':
+                  return 'Verify';
+                case 'verified':
+                  return 'Assign';
+                case 'assigned':
+                  return user.is_superuser ? 'Process' : 'Accept';
                 case 'processing':
                   return 'Resolve';
+                case 'resolved':
+                  return 'Process';
                 default:
-                  return 'Accept';
+                  return 'Recover';
               }
             })
             .click(() => {
               let body;
               switch (data.status) {
-                case 'processing':
+                case 'unverified':
+                default:
                   body = {
-                    state: 'resolved'
+                    state: 'verified'
                   };
                   break;
-                default:
+                case 'verified':
+                  body = {
+                    state: 'assigned',
+                    assigned_department: $select_department.val()
+                  };
+                  break;
+                case 'assigned':
+                case 'resolved':
                   body = {
                     state: 'processing',
                     processed_by: user._id
                   };
                   break;
+                case 'processing':
+                  body = {
+                    state: 'resolved'
+                  };
+                  break;
               }
 
-              api.postTransition(id, body)
-              .then(response => response.json())
-              .then(() => $('#manage-issue-modal').modal('close'))
-              .catch(err =>
-                Materialize.toast(err.message, 8000, 'dialog-error large')
-              );
+              if (data.status === 'verified' && $select_department.val() === '') {
+                Materialize.toast('Please select a department', 8000, 'dialog-error large');
+              } else {
+                api.postTransition(id, body)
+                .then(response => response.json())
+                .then(() => $('#manage-issue-modal').modal('close'))
+                .catch(err => {
+                  Materialize.toast(err.message, 8000, 'dialog-error large');
+                });
+              }
             });
           $('#post').click(() => {
             const $progress = $('#progress');
-            const progressData = {
-              photos: [
-                window.URL.createObjectURL($progress.find('input[type="file"]')[0].files[0])
-              ],
-              detail: $progress.find('textarea').val()
-            };
-            data.progresses.push(progressData);
+            const files = $progress.find('input[type="file"]')[0].files;
+            if (files.length > 0) {
+              const progressData = {
+                photos: [
+                  window.URL.createObjectURL(files[0])
+                ],
+                detail: $progress.find('textarea').val()
+              };
 
-            // update progress feed UI
-            prependProgressCard({
-              date: new Date(),
-              description: progressData.detail,
-              url: progressData.photos[0]
-            });
-            $('.materialboxed').materialbox();
+              // update progress feed UI
+              prependProgressCard({
+                date: new Date(),
+                description: progressData.detail,
+                url: progressData.photos[0]
+              });
+              $('.materialboxed').materialbox();
 
-            // Edit pin info (partially)
-            api.patchPin(id, {
-              owner: user._id,
-              progresses: data.progresses
-            })
-            .then(response => response.json())
-            .catch(err =>
-              Materialize.toast(err.message, 8000, 'dialog-error large')
-            );
+              // Edit pin info (partially)
+              const form = new FormData();
+              fetch(progressData.photos[0])
+              .then(response => response.blob())
+              .then(blob => {
+                form.append('image', blob);
+                api.postPhoto(form)
+                .then(response => response.json())
+                .then(photo_data => {
+                  progressData.photos[0] = photo_data.url;
+                  api.patchPin(id, {
+                    owner: user._id,
+                    $push: { progresses: progressData }
+                  })
+                  // .then(response => response.json())
+                  .catch(err =>
+                    Materialize.toast(err.message, 8000, 'dialog-error large')
+                  );
+                });
+              });
+            }
           });
         });
       });
@@ -258,7 +253,7 @@ const issueRouter = module.exports = {
     }).then(data => {
       const $status = $('#status');
       const $select = $status.find('select');
-      $select.eq(1).val(data.status.priority);
+      $select.eq(0).val(data.status.priority);
       $status.find('textarea')
         .val(data.status.annotation)
         .trigger('autoresize');
