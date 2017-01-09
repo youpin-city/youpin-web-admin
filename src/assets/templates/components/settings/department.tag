@@ -93,8 +93,9 @@ setting-department
         let $input = $modal.find('input[name="name"]');
 
         console.log('creating ' + $input.val());
+        console.log(user)
 
-        api.createDepartments( user.organization, $input.val() )
+        api.createDepartment( $input.val() )
          .then( (res) => {
             if( res.status != "201" ) {
              alert("something wrong : check console");
