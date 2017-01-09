@@ -84,6 +84,11 @@ api.createDepartment = (deptName) => {
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
 
+api.updateDepartment = (deptId, patchObj) => {
+  const url = api._buildEndpoint('departments/' + deptId);
+  return fetch(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
+};
+
 api.postTransition = (pinId, body) => {
   const url = api._buildEndpoint('pins/' + pinId + '/state_transition');
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
