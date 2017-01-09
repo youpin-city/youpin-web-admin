@@ -42,40 +42,44 @@ dashboard-table-summary
 
         let start_date = self.durationSelectors[selectorIdx].start;
 
-        api.getSummary( start_date, end_date, (data) => {
-          let departments = Object.keys(data);
+        api.getDepartments()
+        .then(departments => {
+          departments = departments.data.map(d => d.name);
+          api.getSummary( start_date, end_date, (data) => {
+            let available_departments = Object.keys(data);
+            let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
 
-          let attributes = departments.length > 0 ? Object.keys( data[departments[0]] ) : [];
-
-          let deptSummaries = _.map( departments, dept => {
-            return {
+            let deptSummaries = _.map( departments, dept => {
+              const data_dept = (data[dept] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data[dept];
+              return {
                 name: dept,
-                summary: data[dept],
-                performance: computePerformance(attributes, data[dept])
-            }
-          });
-
-          let all = _.reduce( attributes, (acc,attr) => {
-            acc[attr] = 0;
-            return acc;
-          }, {} );
-
-          all = _.reduce( deptSummaries, (acc, dept) => {
-             _.each( attributes, attr => {
-                acc[attr] += dept['summary'][attr];
+                summary: data_dept,
+                performance: computePerformance(attributes, data_dept)
+              }
             });
-            return acc;
-          }, all);
 
-          let orgSummary = {
-            name: 'All',
-            summary: all,
-            performance: computePerformance(attributes, all)
-          };
+            let all = _.reduce( attributes, (acc,attr) => {
+              acc[attr] = 0;
+              return acc;
+            }, {} );
 
-          self.data = [ orgSummary ].concat(deptSummaries);
+            all = _.reduce( deptSummaries, (acc, dept) => {
+               _.each( attributes, attr => {
+                  acc[attr] += dept['summary'][attr];
+              });
+              return acc;
+            }, all);
 
-          self.update();
+            let orgSummary = {
+              name: 'All',
+              summary: all,
+              performance: computePerformance(attributes, all)
+            };
+
+            self.data = [ orgSummary ].concat(deptSummaries);
+
+            self.update();
+          });
         });
       }
     }
@@ -88,17 +92,17 @@ dashboard-table-summary
     }
 
     function computePerformance( attributes, summary){
-        let total = _.reduce( attributes, (acc,attr) => {
-            acc += summary[attr];
-            return acc;
-          }, 0);
+      let total = _.reduce( attributes, (acc, attr) => {
+          acc += summary[attr];
+          return acc;
+        }, 0);
 
-        let divider = total - (summary['unverified'] + summary['rejected']);
-        if( divider == 0 ) {
-          return 0;
-        }
+      let divider = total - (summary['unverified'] + summary['rejected']);
+      if( divider === 0 ) {
+        return 0;
+      }
 
-        return summary['resolved'] / divider;
+      return summary['resolved'] / divider;
     }
 
     this.shouldHideRow = function(department){
