@@ -17,7 +17,7 @@ setting-department
         td
           b {dept.name}
         td
-          a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id) }")
+          a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id, dept.name) }")
             | Edit
 
   div(class="modal")#edit-department-form
@@ -25,7 +25,15 @@ setting-department
         h3 Edit Department
     .divider
     .modal-content
-        | something
+      h5 Department name
+      .input-field
+        input(type="text", name="departmentName", value="{editingDepartment.name}")
+
+    .row
+      .col.s12.right-align
+        a(onclick="{closeEditDepartmentModal}").btn-flat Cancel
+        | &nbsp;
+        a(onclick="{confirmEditDepartment}").btn Save
 
   div(class="modal")#create-department-form
     .modal-header
@@ -52,7 +60,6 @@ setting-department
 
     this.departments  = []
 
-
     self.loadData = () => {
       api.getDepartments().then( (res) => {
         self.departments = res.data;
@@ -62,11 +69,13 @@ setting-department
 
     self.loadData();
 
-    self.editDepartment = (deptId) => {
+    self.editDepartment = (deptId, deptName) => {
         return () => {
             let $modal = $editModal;
-
-            console.log('------');
+            self.editingDepartment = {
+              id: deptId,
+              name: deptName,
+            }
 
             $modal.trigger('openModal');
         }
@@ -77,8 +86,6 @@ setting-department
 
         let $input = $modal.find('input[name="name"]');
         $input.val('');
-
-        console.log('creating new department');
 
         $modal.trigger('openModal');
     }
@@ -104,3 +111,25 @@ setting-department
             self.loadData();
          });
     }
+
+    self.closeEditDepartmentModal = () => {
+      let $modal = $editModal;
+      $modal.trigger('closeModal');
+    };
+
+    self.confirmEditDepartment = () => {
+      const patch = {
+        name: $editModal.find('input[name="departmentName"]').val(),
+      }
+
+      api.updateDepartment(self.editingDepartment.id, patch)
+        .then((res) => {
+          if (res.status !== "200") {
+            alert("Cannot update department. Please contact system administrator.");
+            console.log(res);
+            return;
+          }
+          self.closeEditDepartmentModal();
+          self.loadData();
+        });
+    };
