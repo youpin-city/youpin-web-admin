@@ -75,10 +75,9 @@ api.getDepartments = () => {
   return fetch(url).then(response => response.json());
 };
 
-api.createDepartment = (orgId, deptName) => {
+api.createDepartment = (deptName) => {
   const body = {
     name: deptName,
-    organization: orgId
   };
 
   const url = api._buildEndpoint('departments');
