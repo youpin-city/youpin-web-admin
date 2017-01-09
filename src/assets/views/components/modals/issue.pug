@@ -29,15 +29,15 @@ mixin details
       .col.s6.right-align
         if user
           if user.is_superuser
-            //- a.btn-flat#reset Reset
-            //- | &nbsp;
-            a.btn-flat#cancel Cancel
+            a.btn-flat#reject Reject
             | &nbsp;
-            a.btn#confirm Confirm
+            a.btn-flat#goToNextState
+            | &nbsp;
+            a.btn#confirm Save
           else
             a.btn-flat#reject Reject
             | &nbsp;
-            a.btn-flat#acceptOrResolve
+            a.btn-flat#goToNextState
     .row
       .col.s12
         p
@@ -57,9 +57,6 @@ mixin details
               .col.s6
                 +details
           .col.s4#status
-            h5 Status
-            .input-field
-              select
             h5 Priority
             .input-field
               select
