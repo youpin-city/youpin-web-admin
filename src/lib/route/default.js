@@ -50,6 +50,10 @@ router.get('/issue', auth(), (req, res, next) => {
   });
 });
 
+router.get('/archive', auth(), (req, res, next) => {
+  res.render('archive');
+});
+
 router.get('/search', auth(), (req, res, next) => {
   res.locals.q = req.query.q;
   res.render('search');

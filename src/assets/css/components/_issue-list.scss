@@ -32,6 +32,13 @@ issue-list {
 
   li.issue {
 
+    @include flexbox;
+    @include flex-direction(row);
+    @include flex-wrap(nowrap);
+    @include justify-content(space-around);
+    @include align-items(streth);
+    @include align-content(stretch);
+
     border-radius: $ps-xxs;
     padding: $ps-small;
 
@@ -39,9 +46,21 @@ issue-list {
     border: 1px solid #eeeeee;
     margin: 1rem 0;
 
+    label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: $cl-darkgray;
+      margin-right: 0.5rem;
+    }
+    .meta {
+      font-size: $fs-xs;
+      .icon {
+        margin-right: 0.5rem;
+      }
+    }
+
     .issue-img {
-      float: left;
-      width: 20%;
+      @include flex(0, 1, 150px);
       img,
       .img {
         margin:  0px;
@@ -62,12 +81,11 @@ issue-list {
     }
 
     .issue-body {
-      float: left;
-      display: inline-block;
-      // border-right: dotted $ps-xxs $cl-red;
+      @include flex(2, 1, 320px);
       vertical-align: top;
       margin-left: $ps-small;
-      width: 60%;
+      width: 53%;
+      position: relative;
 
       .issue-desc {
         max-height: 60px;
@@ -76,25 +94,21 @@ issue-list {
         margin-bottom: $ps-small;
       }
 
-      .issue-id {
-        b {
-          margin-right: $ps-default;
-        }
+      footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 1rem;
       }
     }
 
-    .issue-category, .issue-location {
-      width: 50%;
-      display: inline-block;
-      float: left;
+    .issue-id {
+      b {
+        margin-right: $ps-default;
+      }
     }
 
-
     .bubble {
-      // padding: $ps-xxs $ps-default;
-      // border-radius: $ps-small;
-      // background: $cl-gray;
-      // color: $cl-white;
       padding: 0;
       color: $cl-primary;
       cursor: pointer;
@@ -105,17 +119,16 @@ issue-list {
     }
 
     .issue-tags {
-      margin-top: $ps-small;
       span {
          margin-right: $ps-xxs;
       }
     }
 
     .issue-info {
+      @include flex(1, 1, 200px);
        border-left: solid 1px $cl-lightgray;
-       float: left;
-       padding-left: $ps-xxs;
-       width: 17%;
+       padding: 0 $ps-xs;
+       width: 25%;
        display: inline-block;
        vertical-align: top;
        text-transform: capitalize;
@@ -126,7 +139,7 @@ issue-list {
        }
 
        .big-text {
-          font-size: $fs-lg;
+          font-size: $fs-md;
           float: right;
        }
 
@@ -138,7 +151,6 @@ issue-list {
 
     .bt-manage-issue {
        border: 1px solid $cl-gray;
-       // padding: $ps-default $ps-large;
        cursor: pointer;
        display: inline-block;
        width: 100%;

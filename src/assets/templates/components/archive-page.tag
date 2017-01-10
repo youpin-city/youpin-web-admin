@@ -1,8 +1,6 @@
-issue-page
-  div.bt-new-issue.right
-    a.btn(href='#manage-issue-modal') Create New Issue
+archive-page
   h1.page-title
-    | Issue
+    | Archive
   ul.status-selector
     li(each="{statuses}", class="{active: name == selectedStatus}", onclick="{parent.select(name)}")
       | {name}
@@ -35,7 +33,7 @@ issue-page
           queryOpts,
           {
             '$limit': 1,
-            is_archived: false,
+            is_archived: true,
             status: status
           }
         );
@@ -61,7 +59,7 @@ issue-page
 
         let query = _.extend({
           status: status,
-          is_archived: false
+          is_archived: true
         }, queryOpts );
 
         self.tags['issue-list'].load(query);
