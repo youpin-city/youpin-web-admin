@@ -81,10 +81,9 @@ const issueRouter = module.exports = {
                 department.name + '</option>');
             });
             if (data.assigned_department !== undefined && data.assigned_department !== '') {
-              $select_department
-                .val(data.assigned_department)
-                .material_select();
+              $select_department.val(data.assigned_department);
             }
+            $select_department.material_select();
           });
 
           // update progress feed UI
