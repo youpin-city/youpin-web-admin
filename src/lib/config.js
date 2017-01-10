@@ -18,7 +18,7 @@ const conf = convict({
   app_name: {
     doc: 'The application name',
     format: String,
-    default: 'youpin-web-admin',
+    default: 'mafueng-web-admin',
     env: 'APP_NAME'
   },
   version: {
@@ -114,7 +114,7 @@ const conf = convict({
   service: {
     api: {
       url: {
-        doc: 'YouPin API endpoint URL.',
+        doc: 'Mafueng API endpoint URL.',
         format: String,
         default: '',
         env: 'SERVICE_API_URL'
