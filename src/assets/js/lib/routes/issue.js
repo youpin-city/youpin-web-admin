@@ -127,12 +127,31 @@ const issueRouter = module.exports = {
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
           });
-          if (user.is_superuser && (data.status === 'unverified' || data.status === 'verified')) {
-            $('#reject').show();
+
+          const $archive = $('#archive');
+          if (user.is_superuser && (data.status === 'rejected' || data.status === 'resolved')) {
+            $archive.show();
           } else {
-            $('#reject').hide();
+            $archive.hide();
           }
-          $('#reject').click(() => {
+          $archive.click(() => {
+            api.patchPin(id, {
+              is_archived: true
+            })
+            .then(response => response.json())
+            .then(() => $('#manage-issue-modal').modal('close'))
+            .catch(err =>
+              Materialize.toast(err.message, 8000, 'dialog-error large')
+            );
+          });
+
+          const $reject = $('#reject');
+          if (user.is_superuser && (data.status === 'unverified' || data.status === 'verified')) {
+            $reject.show();
+          } else {
+            $reject.hide();
+          }
+          $reject.click(() => {
             api.postTransition(id, {
               state: 'rejected'
             })
@@ -142,6 +161,7 @@ const issueRouter = module.exports = {
               Materialize.toast(err.message, 8000, 'dialog-error large')
             );
           });
+
           $('#goToNextState')
             .text(() => {
               switch (data.status) {
