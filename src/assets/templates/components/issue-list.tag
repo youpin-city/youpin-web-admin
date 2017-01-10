@@ -8,57 +8,69 @@ issue-list
     div.clearfix
 
   div(class="{ hide: isShowingMap, 'list-view': true }")
-    ul.issue-list
+    ul.issue-list(if='{ pins.length > 0 }')
       li.issue.clearfix(each="{ p in pins }")
         .issue-img
           div.img.responsive-img(style='background-image: url("{ _.get(p.photos, "0") }");')
           //- img.issue-img(src="http://lorempixel.com/150/150/city/")
-        div.issue-body
+
           div.issue-id
-            b ID
-            span(href='#manage-issue-modal' data-id='{ p._id }') { p._id }
-          div.issue-desc { p.detail }
-          div.issue-category
-            div
-              b Category
-            span.bubble(each="{ cat in p.categories }") { cat }
+            label ID
+            span(href='#manage-issue-modal' data-id='{ p._id }') { p._id.slice(-10) }
 
-          div.issue-location
-            div
-              b Location
-            span.bubble Building A
-          div.clearfix
+        div.issue-body
+          div.issue-desc
+            //- b Description
+            div { p.detail }
 
-          div.issue-tags
-            div
-              b Tag
-            span.bubble(each="{ tag in p.tags }") { tag }
+          footer
+            div.meta.issue-location
+              i.icon.material-icons.tiny location_on
+              span
+                a.bubble(if='{ p.location && p.location.coordinates }', href='#')
+                  | See map
+                span.bubble(if='{ p.location_name }') { p.location_name }
+            div.meta.issue-category(if='{ p.categories && p.categories.length > 0 }')
+              i.icon.material-icons.tiny turned_in_not
+              span
+                span.bubble(each="{ cat in p.categories }") { cat }
+            div.meta.issue-tags(if='{ p.tags && p.tags.length > 0 }')
+              i.icon.material-icons.tiny label
+              span
+                span.bubble(each="{ tag in p.tags }") { tag }
         div.issue-info
           div
-            b Status
-          span.big-text { p.status }
-          div.clearfix
+            label Status
+            span.big-text { p.status }
 
           div
-            b Dept.
-          span.big-text { p.assigned_department ? p.assigned_department.name : '-' }
-          div.clearfix
+            label Dept.
+            span.big-text { p.assigned_department ? p.assigned_department.name : '-' }
 
-          div(title="assigned to")
-            i.icon.material-icons face
-            | { p.assigned_user.name }
+          div.meta(if='{p.owner}', title="assigned to")
+            i.icon.material-icons.tiny face
+            | { p.owner.name }
 
-          div(title="created at")
-            i.icon.material-icons access_time
+          div.meta(title="created at")
+            i.icon.material-icons.tiny access_time
             | { moment(p.created_time).fromNow() }
             //- | [date& time]
-          a.bt-manage-issue.btn(href='#!issue-id:{ p._id }') Issue
+          div
+            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Issue
+
+    div(if='{ pins.length === 0 }')
+      .spacing-large
+      .center
+        i.icon.material-icons.large location_off
+        h5 No issue
+
+      .spacing-large
 
     div.load-more-wrapper
       a.load-more(class="{active: hasMore}", onclick="{loadMore()}" ) Load More
 
   div(class="{ hide: !isShowingMap, 'map-view': true }")
-      div(id="issue-map")
+    div(id="issue-map")
 
   script.
     let self = this;

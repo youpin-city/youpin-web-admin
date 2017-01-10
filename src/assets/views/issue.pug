@@ -4,8 +4,6 @@ append content
   #page-issue.page.content-padding
     issue-page
 
-  - user.is_superuser = (user.role === 'organization_admin') || (user.role === 'super_admin')
-
 append app_script
   script.
     riot.mount('issue-page');
