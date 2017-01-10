@@ -6,4 +6,6 @@ append content
 
 append app_script
   script.
-    riot.mount('search-page')
+    riot.mount('search-page', {
+      q: !{JSON.stringify(q || '')}
+    });
