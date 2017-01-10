@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start:dev": "node bin/start.js && parallelshell 'pm2 logs' 'npm run watch'",
-    "stop:dev": "node bin/stop.js && pm2 ls",
+    "dev": "node bin/start.js && npm run build && parallelshell 'pm2 logs' 'npm run watch'",
+    "dev:stop": "node bin/stop.js && pm2 ls",
     "build:css": "echo '=> build:css' && node-sass --source-map true --output-style expanded -o public/css/ src/assets/css/ && postcss -u autoprefixer -r public/css/*.css",
     "watch:css": "onchange 'src/assets/css/**/*.scss' -v -- npm run build:css",
     "prebuild:js": "echo 'prebuild js' || mkdir -p public/js",
