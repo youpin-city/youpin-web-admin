@@ -50,6 +50,11 @@ router.get('/issue', auth, (req, res, next) => {
   });
 });
 
+router.get('/search', auth, (req, res, next) => {
+  res.locals.q = req.query.q;
+  res.render('search');
+});
+
 router.get('/test', auth, (req, res, next) => {
   res.render('test');
 });

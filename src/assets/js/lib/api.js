@@ -125,9 +125,10 @@ api.getPins = (status, opts) => {
   }
   opts = _.extend({
     $sort: '-created_time',
-    $limit: 10,
-    status: status
+    $limit: 10
   }, opts);
+
+  if (status) opts.status = status;
 
   const url = api._buildEndpoint('pins', opts);
   return fetch(url).then(response => response.json());
