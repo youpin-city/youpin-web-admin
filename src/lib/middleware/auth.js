@@ -47,54 +47,61 @@ export {
   reset_user
 };
 
-export default function auth(req, res, next) {
-  const jwt = req.cookies[cookie_auth_name];
-  const jwt_data = parse_jwt(jwt);
-  const user_id = jwt_data && jwt_data._id;
-  if (jwt) {
-    const options = {
-      headers: {
-        Authorization: 'Bearer ' + jwt
+export default function auth(check_auth = true) {
+  return (req, res, next) => {
+    const jwt = req.cookies[cookie_auth_name];
+    const jwt_data = parse_jwt(jwt);
+    const user_id = jwt_data && jwt_data._id;
+    if (jwt) {
+      const options = {
+        headers: {
+          Authorization: 'Bearer ' + jwt
+        }
+      };
+      req.api = api.APIFetch(conf.get('service.api.url'), options, _.identity);
+    }
+
+    let get_user;
+    if (jwt && user_id) {
+      get_user = req.api('/users/' + user_id);
+    } else {
+      get_user = Promise.resolve(null);
+    }
+
+    return get_user
+    .then(data => {
+      if (data) {
+        const user = data;
+        user.token = jwt;
+        // assign to user
+        req.user = res.locals.user = parse_user(user);
+        req.cookies[cookie_user_info] = user;
+        res.cookie(cookie_user_info, user, conf.get('service.cookie'));
       }
-    };
-    req.api = api.APIFetch(conf.get('service.api.url'), options, _.identity);
-  }
-
-  let get_user;
-  if (jwt && user_id) {
-    get_user = req.api('/users/' + user_id);
-  } else {
-    get_user = Promise.resolve(null);
-  }
-
-  return get_user
-  .then(data => {
-    if (data) {
-      const user = data;
-      user.token = jwt;
-      // assign to user
-      req.user = res.locals.user = parse_user(user);
-      req.cookies[cookie_user_info] = user;
-      res.cookie(cookie_user_info, user, conf.get('service.cookie'));
-    }
-  })
-  .catch(err => {
-    log.error(err);
-    reset_user(req, res);
-  })
-  .then(() => {
-    // require authenticated user
-    if (!req.user) {
-      res.redirect('/login');
-      return;
-    }
-    if (allowed_roles.indexOf(req.user.role) === -1) {
-      throw new createError.Unauthorized();
-    }
-    next();
-  })
-  .catch(err => {
-    reset_user(req, res);
-    next(err);
-  });
+    })
+    .catch(err => {
+      log.error(err);
+      reset_user(req, res);
+    })
+    .then(() => {
+      // require authenticated user
+      if (check_auth) {
+        if (!req.user) {
+          res.redirect('/login');
+          return;
+        }
+        const ok_roles = _.get(check_auth, 'admin') === true ? superuser_roles : allowed_roles;
+        if (ok_roles.indexOf(req.user.role) === -1) {
+          next(new createError.Unauthorized());
+          return;
+        }
+      }
+      next();
+    })
+    .catch(err => {
+      reset_user(req, res);
+      next(err);
+    });
+  };
 }
+

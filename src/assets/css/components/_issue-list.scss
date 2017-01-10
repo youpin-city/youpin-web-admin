@@ -57,6 +57,7 @@ issue-list {
         height: 0;
         padding-top: 100%;
         background-color: $cl-lightgray;
+        background-size: cover;
       }
     }
 
@@ -90,11 +91,17 @@ issue-list {
 
 
     .bubble {
-       padding: $ps-xxs $ps-default;
-       border-radius: $ps-small;
-       background: $cl-gray;
-       color: $cl-white;
-       cursor: pointer;
+      // padding: $ps-xxs $ps-default;
+      // border-radius: $ps-small;
+      // background: $cl-gray;
+      // color: $cl-white;
+      padding: 0;
+      color: $cl-primary;
+      cursor: pointer;
+
+      & + .bubble {
+        margin-left: 0.5rem;
+      }
     }
 
     .issue-tags {
@@ -105,7 +112,7 @@ issue-list {
     }
 
     .issue-info {
-       border-left: solid $ps-xxs $cl-lightgray;
+       border-left: solid 1px $cl-lightgray;
        float: left;
        padding-left: $ps-xxs;
        width: 17%;

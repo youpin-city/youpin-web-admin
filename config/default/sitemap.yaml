@@ -17,7 +17,6 @@ sitemap:
     authorized_roles:
         - super_admin
         - organization_admin
-        - department_head
     children:
         - name: sitenav.settings_department
           href: '/settings/department'
@@ -29,7 +28,6 @@ sitemap:
           authorized_roles:
             - super_admin
             - organization_admin
-            - department_head
 
 footer_link: []
   # - name: sitenav.privacy

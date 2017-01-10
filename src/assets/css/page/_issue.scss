@@ -5,23 +5,7 @@
   }
 
   .bt-new-issue {
-    background: $cl-primary;
-    color: $cl-white;
-    padding: $ps-xs $ps-default;
-    border-radius: $ps-xxs;
-    font-weight: $fw-bold;
-    float: right;
-    display: inline-block;
-    cursor: pointer;
-    font-size: $fs-xs;
-
-    span::after {
-      content: "+";
-      font-size: $fs-xl;
-      margin-left: $ps-small;
-      line-height: $fs-xs;
-      vertical-align: middle;
-    }
+    text-align: right;
   }
 
   .status-selector {

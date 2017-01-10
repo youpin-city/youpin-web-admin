@@ -10,7 +10,7 @@ import util from '../util';
 const router = require('express').Router(); // eslint-disable-line
 module.exports = router;
 
-router.get('/', auth, (req, res, next) => {
+router.get('/', auth(), (req, res, next) => {
   res.render('dashboard');
 });
 
@@ -38,7 +38,7 @@ router.get('/auth/failure', (req, res, next) => {
   res.send('Something went wrong. Try again.');
 });
 
-router.get('/issue', auth, (req, res, next) => {
+router.get('/issue', auth(), (req, res, next) => {
   // getPins()
   req.api('/pins')
   .then(result => {
@@ -50,25 +50,25 @@ router.get('/issue', auth, (req, res, next) => {
   });
 });
 
-router.get('/search', auth, (req, res, next) => {
+router.get('/search', auth(), (req, res, next) => {
   res.locals.q = req.query.q;
   res.render('search');
 });
 
-router.get('/test', auth, (req, res, next) => {
+router.get('/test', auth(), (req, res, next) => {
   res.render('test');
 });
 
 
-router.get('/settings', auth, (req, res, next) => {
+router.get('/settings', auth({ admin: true }), (req, res, next) => {
   res.redirect('settings/user');
 });
 
-router.get('/settings/department', auth, (req, res, next) => {
+router.get('/settings/department', auth({ admin: true }), (req, res, next) => {
   res.render('settings/department');
 });
 
-router.get('/settings/user', auth, (req, res, next) => {
+router.get('/settings/user', auth({ admin: true }), (req, res, next) => {
   if (['super_admin', 'organization_admin'].indexOf(req.user.role) === -1) {
     next(new createError.Unauthorized());
     return;
@@ -86,6 +86,6 @@ router.get('/settings/user', auth, (req, res, next) => {
 
 
 // all other methods, show not found page
-router.all('/*', auth, (req, res, next) => {
+router.all('/*', (req, res, next) => {
   next(createError(404));
 });
