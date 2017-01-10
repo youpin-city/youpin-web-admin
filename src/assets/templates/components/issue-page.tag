@@ -1,10 +1,10 @@
 issue-page
+  div.bt-new-issue.right
+    a.btn(href='#manage-issue-modal') Create New Issue
   h1.page-title
     | Issue
-    div.bt-new-issue
-      a.btn(href='#manage-issue-modal') Create New Issue
   ul.status-selector
-      li(each="{statuses}", class="{active: name == selectedStatus}", onclick="{parent.select(name)}") {name}({totalIssues})
+    li(each="{statuses}", class="{active: name == selectedStatus}", onclick="{parent.select(name)}") {name}({totalIssues})
 
   issue-list
 

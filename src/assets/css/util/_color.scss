@@ -12,6 +12,11 @@ $primary: (
   "lighten-1":  $cl-primary-active
 );
 
+$secondary: (
+  "base":       $cl-secondary,
+  "lighten-1":  $cl-secondary-active
+);
+
 $materialize-red: (
   "base":       #e51c23,
   "lighten-5":  #fdeaeb,
@@ -344,6 +349,7 @@ $shades: (
 
 $colors: (
   "primary": $primary,
+  "secondary": $secondary,
   "materialize-red": $materialize-red,
   "red": $red,
   "pink": $pink,
