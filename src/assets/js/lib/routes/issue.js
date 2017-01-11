@@ -17,6 +17,10 @@ const issueRouter = module.exports = {
         // '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
     }
 
+    function modalClose(modal, trigger) {
+      location.hash = '';
+    }
+
     function ready(modal, trigger) {
       const id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
       $('#id').text(id);
@@ -279,7 +283,8 @@ const issueRouter = module.exports = {
 
       // Init Materialize
       $('.modal').modal({
-        ready: ready
+        ready: ready,
+        complete: modalClose
       });
       $('select').material_select();
     });

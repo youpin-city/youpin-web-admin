@@ -16,9 +16,9 @@ archive-page
     let queryOpts = {};
 
     if( user.role == 'super_admin' || user.role == 'organization_admin' ) {
-      this.statusesForRole =  ['unverified', 'verified', 'assigned', 'processing', 'resolved', 'rejected'];
+      this.statusesForRole =  ['resolved', 'rejected'];
     } else {
-      this.statusesForRole =  ['assigned', 'processing', 'resolved'];
+      this.statusesForRole =  ['resolved'];
       queryOpts['assigned_department'] = user.department;
     }
 
