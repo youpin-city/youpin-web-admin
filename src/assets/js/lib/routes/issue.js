@@ -63,8 +63,8 @@ const issueRouter = module.exports = {
           $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => ({ tag: d })) });
           $chips.eq(2).material_chip({ data: data.tags.map(d => ({ tag: d })) });
 
-          // Disable chips aka tags when the user role is of a department
-          if (user.is_superuser !== true) {
+          // Disable chips aka tags when the user role is non-admin
+          if (!user.is_superuser) {
             $chips.find('i').remove();
             $chips.find('input')
               .attr('placeholder', '')
@@ -74,6 +74,12 @@ const issueRouter = module.exports = {
           // Dropdown lists
           const $status = $('#status');
           const $select = $status.find('select');
+
+          // Disable dropdown when the user role is non-admin
+          if (!user.is_superuser) {
+            $status.find('input')
+              .prop('disabled', true);
+          }
 
           // Populate department dropdown list
           const $select_department = $select.eq(1);
@@ -104,7 +110,6 @@ const issueRouter = module.exports = {
           $('.slider').slider('pause');
           $('.materialboxed').materialbox();
 
-          console.log(data);
           // Buttons
           $('#cancel').click(() => {
             $('#manage-issue-modal').modal('close');
@@ -225,8 +230,15 @@ const issueRouter = module.exports = {
                 });
               }
             });
+
+          // Area to update issue progress
+          const $progress = $('#progress');
+          // Disable progress if the issue is not accepted
+          const isAssigned = (data.status === 'assigned');
+          $progress.find('textarea, input').prop('disabled', isAssigned);
+          $progress.find('a').toggleClass('disabled', isAssigned);
+          // Set Post button event
           $('#post').click(() => {
-            const $progress = $('#progress');
             const files = $progress.find('input[type="file"]')[0].files;
             if (files.length > 0) {
               const progressData = {
