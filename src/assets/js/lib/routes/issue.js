@@ -104,6 +104,7 @@ const issueRouter = module.exports = {
           $('.slider').slider('pause');
           $('.materialboxed').materialbox();
 
+          console.log(data);
           // Buttons
           $('#cancel').click(() => {
             $('#manage-issue-modal').modal('close');

@@ -21,6 +21,14 @@ mixin details
     h5 Tag
     .chips.chips-initial
 
+mixin priority
+  h5 Priority
+  .input-field
+    select
+      option(value='urgent') Urgent
+      option(value='normal') Normal
+      option(value='trivial') Trivial
+
 .modal#manage-issue-modal
   .modal-header
     .row
@@ -59,12 +67,7 @@ mixin details
               .col.s6
                 +details
           .col.s4#status
-            h5 Priority
-            .input-field
-              select
-                option(value='urgent') Urgent
-                option(value='normal') Normal
-                option(value='trivial') Trivial
+            +priority
             h5 Department
             .input-field
               select
@@ -76,6 +79,8 @@ mixin details
             h5 Details
             +reporter
             +details
+            #status
+              +priority
           .col.s6#progress
             h5 Progress
             .input-field
