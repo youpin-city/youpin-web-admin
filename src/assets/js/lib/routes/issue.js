@@ -150,7 +150,8 @@ const issueRouter = module.exports = {
           });
 
           const $reject = $('#reject');
-          if (user.is_superuser && (data.status === 'unverified' || data.status === 'verified')) {
+          if ((user.is_superuser && (data.status === 'unverified' || data.status === 'verified')) ||
+              (!user.is_superuser && data.status === 'assigned')) {
             $reject.show();
           } else {
             $reject.hide();
