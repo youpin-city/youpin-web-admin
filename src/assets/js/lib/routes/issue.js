@@ -85,6 +85,7 @@ const issueRouter = module.exports = {
           const $select_department = $select.eq(1);
           api.getDepartments()
           .then(departments => {
+            $select_department.empty();
             $select_department.append('<option value="">[Please select]</option>');
             departments.data.forEach(department => {
               $select_department.append('<option value="' + department._id + '">' +
