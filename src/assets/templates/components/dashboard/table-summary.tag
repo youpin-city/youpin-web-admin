@@ -21,7 +21,7 @@ dashboard-table-summary
       td.numeric-col { summary.processing || 0}
       td.numeric-col { summary.resolved || 0}
       td.numeric-col { summary.rejected || 0}
-      td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance }
+      td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
   script.
 
