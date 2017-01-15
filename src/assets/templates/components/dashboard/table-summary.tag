@@ -7,6 +7,7 @@ dashboard-table-summary
   table.summary
     tr
       th.team Team
+      th.pending Pending
       th.assigned Assigned
       th.processing Processing
       th.resolved Resolved
@@ -15,10 +16,11 @@ dashboard-table-summary
 
     tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
       td.team { name }
-      td.numeric-col { summary.assigned }
-      td.numeric-col { summary.processing }
-      td.numeric-col { summary.resolved }
-      td.numeric-col { summary.rejected }
+      td.numeric-col { summary.pending || 0}
+      td.numeric-col { summary.assigned || 0}
+      td.numeric-col { summary.processing || 0}
+      td.numeric-col { summary.resolved || 0}
+      td.numeric-col { summary.rejected || 0}
       td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance }
 
   script.
