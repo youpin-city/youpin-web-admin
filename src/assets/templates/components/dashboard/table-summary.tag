@@ -95,16 +95,17 @@ dashboard-table-summary
 
     function computePerformance( attributes, summary){
       let total = _.reduce( attributes, (acc, attr) => {
-          acc += summary[attr];
+          acc += (summary[attr] || 0);
           return acc;
         }, 0);
-
-      let divider = total - (summary['unverified'] + summary['rejected']);
+      console.log(summary);
+      console.log(total);
+      let divider = total - ((summary.unverified || 0 ) + (summary.rejected || 0 ));
       if( divider === 0 ) {
         return 0;
       }
-
-      return summary['resolved'] / divider;
+      console.log(divider);
+      return (summary.resolved || 0) / divider;
     }
 
     this.shouldHideRow = function(department){
