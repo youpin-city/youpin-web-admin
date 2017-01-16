@@ -11,6 +11,10 @@ const router = require('express').Router(); // eslint-disable-line
 module.exports = router;
 
 router.get('/', auth(), (req, res, next) => {
+  if (req.user.role === 'public_relations') {
+    res.redirect('archive');
+    return;
+  }
   res.render('dashboard');
 });
 
@@ -38,7 +42,7 @@ router.get('/auth/failure', (req, res, next) => {
   res.send('Something went wrong. Try again.');
 });
 
-router.get('/issue', auth(), (req, res, next) => {
+router.get('/issue', auth({ deny: ['public_relations'] }), (req, res, next) => {
   // getPins()
   req.api('/pins')
   .then(result => {
@@ -54,15 +58,10 @@ router.get('/archive', auth(), (req, res, next) => {
   res.render('archive');
 });
 
-router.get('/search', auth(), (req, res, next) => {
+router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => {
   res.locals.q = req.query.q;
   res.render('search');
 });
-
-router.get('/test', auth(), (req, res, next) => {
-  res.render('test');
-});
-
 
 router.get('/settings', auth({ admin: true }), (req, res, next) => {
   res.redirect('settings/user');

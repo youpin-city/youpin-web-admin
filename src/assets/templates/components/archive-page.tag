@@ -15,11 +15,15 @@ archive-page
 
     let queryOpts = {};
 
-    if( user.role == 'super_admin' || user.role == 'organization_admin' ) {
+    if( user.role === 'super_admin' || user.role === 'organization_admin' ) {
       this.statusesForRole =  ['resolved', 'rejected'];
     } else {
       this.statusesForRole =  ['resolved'];
-      queryOpts['assigned_department'] = user.department;
+      // Non-admins can see only from their department
+      // Exception, PR can see all departments
+      if (user.role !== 'public_relations') {
+        queryOpts['assigned_department'] = user.department;
+      }
     }
 
     this.statuses = [];

@@ -7,10 +7,11 @@ import api from '../api';
 
 const cookie_auth_name = 'feathers-jwt';
 const cookie_user_info = 'user';
-const allowed_roles = [
+const staff_roles = [
   'super_admin',
   'organization_admin',
-  'department_head'
+  'department_head',
+  'public_relations'
 ];
 const superuser_roles = [
   'super_admin',
@@ -43,7 +44,7 @@ function parse_user(user) {
 export {
   cookie_auth_name,
   cookie_user_info,
-  allowed_roles,
+  staff_roles,
   reset_user
 };
 
@@ -90,7 +91,27 @@ export default function auth(check_auth = true) {
           res.redirect('/login');
           return;
         }
-        const ok_roles = _.get(check_auth, 'admin') === true ? superuser_roles : allowed_roles;
+
+        // Allow this role
+        const allow_roles = _.get(check_auth, 'allow');
+        if (allow_roles) {
+          if (allow_roles.indexOf(req.user.role) >= 0) {
+            next();
+            return;
+          }
+        }
+
+        // Deny this role
+        const deny_roles = _.get(check_auth, 'deny');
+        if (deny_roles) {
+          if (deny_roles.indexOf(req.user.role) >= 0) {
+            next(new createError.Unauthorized());
+            return;
+          }
+        }
+
+        // Deny non-admin
+        const ok_roles = _.get(check_auth, 'admin') === true ? superuser_roles : staff_roles;
         if (ok_roles.indexOf(req.user.role) === -1) {
           next(new createError.Unauthorized());
           return;
