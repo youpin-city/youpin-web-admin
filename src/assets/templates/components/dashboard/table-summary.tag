@@ -52,11 +52,12 @@ dashboard-table-summary
           departments = departments.data.map(d => d.name);
           // Sort department by name.
           departments.sort();
+          // Add 'None' departments for non-assigned pins
+          departments.push('None');
 
           api.getSummary( start_date, end_date, (data) => {
             let available_departments = Object.keys(data);
             let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
-
             let deptSummaries = _.map( departments, dept => {
               const data_dept = (data[dept] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data[dept];
               return {
