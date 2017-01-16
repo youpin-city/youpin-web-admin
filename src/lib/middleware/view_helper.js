@@ -28,12 +28,12 @@ module.exports = (req, res, next) => {
     version: conf.get('version'),
     baseurl: conf.get('site.host'),
     api_url: conf.get('service.api.url'),
-    dict: i18n.locales
+    dict: i18n.locales,
+    service: {
+      map: conf.get('service.map'),
+      here: conf.get('service.here')
+    }
   };
-
-  res.locals.user_name = 'Ma Fueng';
-  // choose from "super_admin", "organization_admin", "department_admin", "department_worker"
-  res.locals.user_role = 'department_admin';
 
   next();
 };

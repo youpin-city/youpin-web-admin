@@ -22,3 +22,5 @@ npm-debug.log
 *.DS_Store
 
 config/current
+public/css
+public/js

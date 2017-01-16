@@ -1,0 +1,20 @@
+extends ../components/layout
+
+append content
+
+  #page-error.page
+    .container
+      .row.no-spacing
+        .col.s12.m6.offset-m3.l4.offset-l4
+
+          .spacing-large
+
+          .center
+
+            i.icon.material-icons.large do_not_disturb
+
+            h4.center= __('error.forbidden')
+
+            h5= __('error.forbidden_description')
+
+          .spacing-large

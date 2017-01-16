@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "youpin-web-admin",
+      "name": "mafueng-web-admin",
       "script": "index.js",
       "args": [],
       "no-daemon": false,
@@ -21,5 +21,16 @@
       "min_uptime": 10000,
       "max_restarts": 1
     }
-  ]
+  ],
+  "deploy" : {
+    "production" : {
+      "user" : "root",
+      "host" : ["128.199.87.142"],
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:youpin-city/youpin-web-admin.git",
+      "path" : "/opt/mafueng-web-admin.production",
+      "post-deploy" : "cp ../shared/.env . && ln -fs `pwd`/config/production config/current && npm install && npm run build && pm2 startOrRestart ecosystem.json --env production",
+      "pre-deploy-local" : "echo '[production] deploy completed.'"
+    }
+  }
 }

@@ -29,11 +29,10 @@ header#header
 
         if user
           li
-            a#desktop-logout-btn.hide-on-global-search(href=site_url('', null, { 'logout': '1' }))
-              .image.profile-image(style='background-image: url("' + user.image + '")')
+            a#desktop-logout-btn.hide-on-global-search(href=site_url('logout'))= __('action.logout')
         else
           li
-            a#desktop-login-btn.hide-on-global-search(href=site_url('', null, { 'login': '1' }))= __('action.login')
+            a#desktop-login-btn.hide-on-global-search(href=site_url('login'))= __('action.login')
 
 
   nav#site-nav-left
@@ -43,11 +42,20 @@ header#header
 
     ul#site-nav-left-menu.nav-list.hide-on-small-and-down
       for nav in sitemap
-        - nav_route = nav.name.replace(/^sitenav\./, '');
-        - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+        - nav_route = nav.name.replace(/^sitenav\./, '');ref;
+        - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
+        - if( nav.authorized_roles && user && !nav.authorized_roles.find( r => r == user.role ) ) { continue; }
         li(class={ active: is_active })
           a(href=site_url(nav.href))
             | #{__(nav.name)}
+
+        for child in nav.children
+          - nav_route = child.name.replace(/^sitenav\./, '');
+          - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === child.href;
+          - if( user && !child.authorized_roles.find( r => r == user.role ) ) { continue; }
+          li(class={ active: is_active, 'sub-menu': true })
+            a(href=site_url(child.href))
+              | #{__(child.name)}
 
 
 nav#mobile-nav.modal
@@ -70,7 +78,7 @@ nav#mobile-nav.modal
   ul.site-nav.nav-list.clearfix
     for nav in sitemap
       - nav_route = nav.name.replace(/^sitenav\./, '');
-      - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === nav.href;
+      - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
       li(class={ active: is_active })
         a(href=site_url(nav.href))
           | #{__(nav.name)}

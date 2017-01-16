@@ -13,12 +13,14 @@ else root = {};
   window._ = require('lodash');
   window.Promise = require('bluebird');
   window.fetch = require('isomorphic-fetch');
+  window.queryString = require('querystring');
+
 
   // jQuery
   window.$ = window.jQuery = require('jquery');
   require('jquery-serializejson');
   // require('materialize-css/dist/js/materialize.js');
-  require('jquery.scrollTo');
+  require('jquery.scrollto');
 
   // riot
   window.riot = require('riot');
@@ -30,6 +32,9 @@ else root = {};
 
   // scrollmagic
   window.ScrollMagic = require('scrollmagic');
+
+  // Leaflet
+  require('leaflet');
 
   // cookie
   window.Cookie = require('js-cookie');

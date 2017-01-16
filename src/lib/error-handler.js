@@ -29,6 +29,14 @@ module.exports = (err, req, res, next) => {
     case 'html':
       // page nav group
       switch (status) {
+        case 401:
+          res.locals.page = util.page_info(req, req.url.slice(1), req.__('error.' + status));
+          res.render('error/401_unauthorized');
+          break;
+        case 403:
+          res.locals.page = util.page_info(req, req.url.slice(1), req.__('error.' + status));
+          res.render('error/403_forbidden');
+          break;
         case 404:
           res.locals.page = util.page_info(req, req.url.slice(1), req.__('error.' + status));
           res.render('error/404_notfound');

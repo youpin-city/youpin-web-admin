@@ -1,0 +1,11 @@
+extends ../components/layout
+
+append content
+  #page-setting-user.page.content-padding
+    setting-user
+
+append app_script
+  script.
+    riot.mount('setting-user', {
+      availableRoles: !{JSON.stringify(availableRoles)}
+    })

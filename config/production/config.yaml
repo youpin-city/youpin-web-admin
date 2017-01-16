@@ -1,0 +1,10 @@
+---
+env: production
+port: 11200
+site:
+  protocol: https
+  hostname: admin.mafueng.youpin.city
+debug: true
+service:
+  api:
+    url: https://mafueng-api.youpin.city/

@@ -87,6 +87,7 @@ header#header {
           line-height: 40px;
           margin: 0;
         }
+
       }
     }
 
@@ -172,11 +173,19 @@ header#header {
           transition: color .2s ease-out;
         }
 
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
         &.active {
-          background-color: transparent;
+          // background-color: transparent;
           > a {
             color: $cl-primary;
           }
+        }
+
+        &.sub-menu {
+            margin-left: $ps-default;
         }
       }
     }

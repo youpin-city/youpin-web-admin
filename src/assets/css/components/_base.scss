@@ -61,6 +61,7 @@ a {
 
 // Icon
 i.icon {
+  vertical-align: middle;
   &.tiny {
     font-size: 1.3rem;
   }
@@ -81,4 +82,11 @@ hr {
 
 main {
   overflow: hidden;
+}
+
+table {
+  td,
+  th {
+    padding: 0.5rem;
+  }
 }

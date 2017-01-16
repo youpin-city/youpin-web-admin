@@ -1,0 +1,28 @@
+#page-issue {
+  h1 {
+    border-bottom: solid $ps-xxs $bgc-tap;
+    margin-bottom: 0;
+  }
+
+  .bt-new-issue {
+    text-align: right;
+  }
+
+  .status-selector {
+    margin: 0;
+
+    li {
+      padding: $ps-small $ps-small;
+      display: inline-block;
+      color: $cl-gray;
+      font-weight: $fw-bold;
+      cursor: pointer;
+      text-transform: capitalize;
+
+      &.active {
+        border-top: solid $ps-xxs $cl-red;
+        color: $cl-primary;
+      }
+    }
+  }
+}

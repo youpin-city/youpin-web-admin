@@ -8,11 +8,15 @@ append head
     :scss
       .page {
         .site-logo {
-          width: 100px;
+          width: 206px;
           height: 60px;
           margin: 2rem auto;
           background-image: url('/public/img/logo-l.png');
         }
+      }
+
+      .facebook-login {
+        background-color: #3b5998;
       }
 
 append content
@@ -20,20 +24,11 @@ append content
     .container
       .row
         .col.s12.m8.offset-m2
-
           #login-box.content-padding.opaque-bg
+            .row
+              .col.s12.m8.offset-m2
+                .site-logo.bg
 
-            .site-logo.bg
-
-            h1.page-title= _.startCase(__('action.login'))
-
-            form(action='/?login=1', method='GET')
-              .input-field
-                input#login-email(type='email', name='email')
-                label(for='login-email') Email
-              .input-field
-                input#login-password(type='password', name='password')
-                label(for='login-password') Password
-              .input-field
-                input(type='hidden', name='login', value='1')
-                button.btn(type='submit')= __('action.login')
+                .input-field
+                  a.facebook-login.btn.btn-block(href=site_url('/auth/facebook/login', app_config.api_url, { successRedirect: success_url, failureRedirect: failure_url }))
+                    | Login with Facebook

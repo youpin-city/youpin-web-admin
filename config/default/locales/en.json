@@ -1,9 +1,9 @@
 {
   "site": {
-    "name": "YouPin Web Admin",
-    "fullname": "YouPin Web Admin",
+    "name": "Mafueng Web Admin",
+    "fullname": "Mafueng Web Admin",
     "description": "",
-    "copyright": "© 2016 YouPin."
+    "copyright": "© 2016 Mafueng."
   },
   "format": {
     "date_full": "D MMMM YYYY",
@@ -20,7 +20,9 @@
     "issue": "Issue",
     "archive": "Archive",
     "report": "Report",
-    "settings": "Settings"
+    "settings": "Settings",
+    "settings_user": "User",
+    "settings_department": "Department"
   },
   "action": {
     "read": "Read More",
@@ -33,9 +35,15 @@
     "logout": "Log Out"
   },
   "error": {
+    "401": "Unauthorized",
+    "403": "Forbidden",
     "404": "Page not found",
     "pagenotfound": "Page not found",
-    "pagenotfound_description": "Check if you've got correct address"
+    "pagenotfound_description": "Check if you've got correct address",
+    "unauthorized": "Unauthorized",
+    "unauthorized_description": "Check your permission with admin",
+    "forbidden": "Forbidden",
+    "forbidden_description": "Check with admin"
   },
   "word": {
     "language": "Language",

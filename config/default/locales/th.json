@@ -1,9 +1,9 @@
 {
   "site": {
-    "name": "YouPin Web Admin",
-    "fullname": "YouPin Web Admin",
+    "name": "Mafueng Web Admin",
+    "fullname": "Mafueng Web Admin",
     "description": "",
-    "copyright": "© 2016 YouPin."
+    "copyright": "© 2016 Mafueng."
   },
   "format": {
     "date_full": "D MMMM YYYY",
@@ -20,7 +20,9 @@
     "issue": "Issue",
     "archive": "Archive",
     "report": "Report",
-    "settings": "Settings"
+    "settings": "Settings",
+    "settings_user": "User",
+    "settings_department": "Department"
   },
   "action": {
     "read": "อ่านต่อ",
@@ -33,9 +35,15 @@
     "logout": "ออกจากระบบ"
   },
   "error": {
+    "401": "ไม่มีสิทธิ์ดูหน้านี้",
+    "403": "ไม่สามารถดูหน้านี้ได้",
     "404": "ไม่พบหน้าที่ต้องการ",
     "pagenotfound": "ไม่พบหน้าที่ต้องการ",
-    "pagenotfound_description": "ลองตรวจสอบใหม่อีกครั้ง"
+    "pagenotfound_description": "ลองตรวจสอบใหม่อีกครั้ง",
+    "unauthorized": "ไม่มีสิทธิ์ดูหน้านี้",
+    "unauthorized_description": "ลองตรวจสอบกับทางสารบัญ",
+    "forbidden": "ไม่สามารถดูหน้านี้ได้",
+    "forbidden_description": "ลองตรวจสอบกับทางสารบัญ"
   },
   "word": {
     "language": "ภาษา",
