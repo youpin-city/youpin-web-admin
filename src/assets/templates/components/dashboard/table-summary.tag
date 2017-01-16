@@ -50,6 +50,8 @@ dashboard-table-summary
             departments.data = departments.data.filter(d => d._id === user.department);
           }
           departments = departments.data.map(d => d.name);
+          // Sort department by name.
+          departments.sort();
 
           api.getSummary( start_date, end_date, (data) => {
             let available_departments = Object.keys(data);
