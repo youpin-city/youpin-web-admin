@@ -169,9 +169,7 @@ const issueRouter = module.exports = {
         $('#goToNextState')
           .text(() => {
             switch (data.status) {
-              case 'unverified':
-                return 'Verify';
-              case 'verified':
+              case 'pending':
                 return 'Assign';
               case 'assigned':
                 return user.is_superuser ? 'Process' : 'Accept';
