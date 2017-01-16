@@ -184,13 +184,7 @@ const issueRouter = module.exports = {
           .click(() => {
             let body;
             switch (data.status) {
-              case 'unverified':
-              default:
-                body = {
-                  state: 'verified'
-                };
-                break;
-              case 'verified':
+              case 'pending':
                 body = {
                   state: 'assigned',
                   assigned_department: $select_department.val()
@@ -210,7 +204,7 @@ const issueRouter = module.exports = {
                 break;
             }
 
-            if (data.status === 'verified' && $select_department.val() === '') {
+            if (data.status === 'pending' && $select_department.val() === '') {
               Materialize.toast('Please select a department', 8000, 'dialog-error large');
             } else {
               api.postTransition(id, body)
