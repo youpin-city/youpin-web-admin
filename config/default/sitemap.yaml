@@ -3,9 +3,17 @@ sitemap:
   - name: sitenav.dashboard
     href: "/"
     children: []
+    authorized_roles:
+      - super_admin
+      - organization_admin
+      - department_head
   - name: sitenav.issue
     href: "/issue"
     children: []
+    authorized_roles:
+      - super_admin
+      - organization_admin
+      - department_head
   - name: sitenav.archive
     href: "/archive"
     children: []
