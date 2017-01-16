@@ -107,7 +107,7 @@ dashboard-table-summary
           return acc;
         }, 0);
 
-      let divider = total - ((summary.unverified || 0 ) + (summary.rejected || 0 ));
+      let divider = total - ((summary.pending || 0 ) + (summary.rejected || 0 ));
       if( divider === 0 ) {
         return 0;
       }
