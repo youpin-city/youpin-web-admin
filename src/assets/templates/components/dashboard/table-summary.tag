@@ -7,6 +7,7 @@ dashboard-table-summary
   table.summary
     tr
       th.team Team
+      th.pending Pending
       th.assigned Assigned
       th.processing Processing
       th.resolved Resolved
@@ -15,11 +16,12 @@ dashboard-table-summary
 
     tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
       td.team { name }
-      td.numeric-col { summary.assigned }
-      td.numeric-col { summary.processing }
-      td.numeric-col { summary.resolved }
-      td.numeric-col { summary.rejected }
-      td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance }
+      td.numeric-col { summary.pending || 0}
+      td.numeric-col { summary.assigned || 0}
+      td.numeric-col { summary.processing || 0}
+      td.numeric-col { summary.resolved || 0}
+      td.numeric-col { summary.rejected || 0}
+      td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
   script.
 
@@ -44,7 +46,11 @@ dashboard-table-summary
 
         api.getDepartments()
         .then(departments => {
+          if (!user.is_superuser) {
+            departments.data = departments.data.filter(d => d._id === user.department);
+          }
           departments = departments.data.map(d => d.name);
+
           api.getSummary( start_date, end_date, (data) => {
             let available_departments = Object.keys(data);
             let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
@@ -76,7 +82,8 @@ dashboard-table-summary
               performance: computePerformance(attributes, all)
             };
 
-            self.data = [ orgSummary ].concat(deptSummaries);
+            self.data = user.is_superuser ? [ orgSummary ] : [];
+            self.data = self.data.concat(deptSummaries);
 
             self.update();
           });
@@ -93,16 +100,16 @@ dashboard-table-summary
 
     function computePerformance( attributes, summary){
       let total = _.reduce( attributes, (acc, attr) => {
-          acc += summary[attr];
+          acc += (summary[attr] || 0);
           return acc;
         }, 0);
 
-      let divider = total - (summary['unverified'] + summary['rejected']);
+      let divider = total - ((summary.unverified || 0 ) + (summary.rejected || 0 ));
       if( divider === 0 ) {
         return 0;
       }
 
-      return summary['resolved'] / divider;
+      return (summary.resolved || 0) / divider;
     }
 
     this.shouldHideRow = function(department){
