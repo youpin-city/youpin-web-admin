@@ -77,6 +77,7 @@ router.get('/settings/user', auth({ admin: true }), (req, res, next) => {
     return;
   }
   const availableRoles = [
+    { id: 'public_relations', name: 'Public Relations' },
     { id: 'department_head', name: 'Department Head' },
     { id: 'organization_admin', name: 'Admin' }
   ];

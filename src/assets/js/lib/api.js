@@ -56,7 +56,8 @@ api.getRecentActivities = (cb) => {
     $limit: 10
   };
 
-  if (user.role !== 'organization_admin') {
+  // Admin can see all activities from every department
+  if (['super_admin', 'organization_admin'].indexOf(user.role) === -1) {
     opts = _.extend(opts, {
       department: user.department
     });

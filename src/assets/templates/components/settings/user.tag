@@ -26,7 +26,7 @@ setting-user
 
   div#change-role-form(class="modal")
     .modal-header
-        h3 Change role of {editingUser.name}
+      h3 Change role of {editingUser.name}
     .divider
     .modal-content
       h5 Role
@@ -82,11 +82,11 @@ setting-user
       $departmentSelector = $changeRoleModal.find('select[name="department"]');
 
       $roleSelector.on('change', () => {
-          let selectedRole = $roleSelector.val();
+        let selectedRole = $roleSelector.val();
       });
     });
 
-    this.users = [];
+    self.users = [];
 
 
     self.loadData = () => {
@@ -96,9 +96,13 @@ setting-user
       });
     };
 
-
     api.getDepartments().then( (res) => {
       self.departments = res.data;
+      self.departments = [{
+        _id: '',
+        name: 'No Department',
+        organization: ''
+      }].concat(self.departments);
       self.loadData();
     });
 
@@ -119,11 +123,12 @@ setting-user
     self.confirmChangeRole = () => {
       let patch = {
         role: $roleSelector.val(),
-        department: [$departmentSelector.val()]
+        department: _.compact([$departmentSelector.val()])
       }
 
+      // Super Admin must has no department
       if( patch.role == "super_admin" ) {
-        delete patch['department'];
+        patch.department = null;
       }
 
       api.updateUser(self.editingUser._id, patch).then( (res) => {
