@@ -218,7 +218,7 @@ const issueRouter = module.exports = {
 
             if (data.status === 'pending' && $select_department.val() === '') {
               Materialize.toast('Please select a department', 8000, 'dialog-error large');
-            } if (data.status === 'assigned' && $select_department.val() === '') {
+            } else if (data.status === 'assigned' && $select_department.val() === '') {
               Materialize.toast('Please select a department officer', 8000, 'dialog-error large');
             } else {
               api.postTransition(id, body)
