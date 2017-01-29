@@ -55,53 +55,63 @@ const issueRouter = module.exports = {
         $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => ({ tag: d })) });
         $chips.eq(2).material_chip({ data: data.tags.map(d => ({ tag: d })) });
 
-        // Disable chips aka tags when the user role is non-admin
-        if (!user.is_superuser) {
+        // Dropdown lists
+        const $status = $('#status');
+        const $select = $status.find('select');
+        const $select_department = $select.eq(1); // Department OR department officer
+        $select_department.empty();
+        $select_department.append('<option value="">[Please select]</option>');
+
+        if (user.is_superuser) {
+          // Populate department dropdown list
+          api.getDepartments()
+          .then(departments => {
+            departments.data.forEach(department => {
+              $select_department.append('<option value="' + department._id + '">' +
+                department.name + '</option>');
+            });
+            if (data.assigned_department !== undefined && data.assigned_department !== '') {
+              $select_department.val(data.assigned_department._id);
+            }
+            $select_department.material_select();
+          });
+        } else {
+          // Populate department officer dropdown list
+          api.getUsers({ role: 'department_officer', department: user.department })
+          .then(users => {
+            users.data.forEach(user => {
+              $select_department.append('<option value="' + user._id + '">' +
+                user.name + '</option>');
+            });
+            if (data.assigned_users !== undefined && data.assigned_users.length > 0) {
+              $select_department.val(data.assigned_users[0]._id);
+            }
+            $select_department.material_select();
+          });
+
+          // update progress feed UI
+          data.progresses.forEach((progress) =>
+            prependProgressCard({
+              date: progress.created_time,
+              description: progress.detail,
+              url: progress.photos[0]
+            })
+          );
+
+          // Disable admin UI elements
           $chips.find('i').remove();
           $chips.find('input')
             .attr('placeholder', '')
             .prop('disabled', true);
-        }
-
-        // Dropdown lists
-        const $status = $('#status');
-        const $select = $status.find('select');
-
-        // Disable dropdown when the user role is non-admin
-        if (!user.is_superuser) {
           $status.find('input')
             .prop('disabled', true);
         }
-
-        // Populate department dropdown list
-        const $select_department = $select.eq(1);
-        api.getDepartments()
-        .then(departments => {
-          $select_department.empty();
-          $select_department.append('<option value="">[Please select]</option>');
-          departments.data.forEach(department => {
-            $select_department.append('<option value="' + department._id + '">' +
-              department.name + '</option>');
-          });
-          if (data.assigned_department !== undefined && data.assigned_department !== '') {
-            $select_department.val(data.assigned_department);
-          }
-          $select_department.material_select();
-        });
-
-        // update progress feed UI
-        data.progresses.forEach((progress) =>
-          prependProgressCard({
-            date: progress.created_time,
-            description: progress.detail,
-            url: progress.photos[0]
-          })
-        );
 
         // Init Materialize
         $('.slider').slider({ height: $('.slider img').width() });
         $('.slider').slider('pause');
         $('.materialboxed').materialbox();
+        $('select').material_select();
 
         // Buttons
         $('#cancel').click(() => {
@@ -194,10 +204,12 @@ const issueRouter = module.exports = {
               case 'resolved':
                 body = {
                   state: 'processing',
-                  processed_by: user._id
+                  processed_by: $select_department.val(),
+                  assigned_users: [$select_department.val()]
                 };
                 break;
               case 'processing':
+              default:
                 body = {
                   state: 'resolved'
                 };
@@ -206,6 +218,8 @@ const issueRouter = module.exports = {
 
             if (data.status === 'pending' && $select_department.val() === '') {
               Materialize.toast('Please select a department', 8000, 'dialog-error large');
+            } else if (data.status === 'assigned' && $select_department.val() === '') {
+              Materialize.toast('Please select a department officer', 8000, 'dialog-error large');
             } else {
               api.postTransition(id, body)
               .then(response => response.json())
