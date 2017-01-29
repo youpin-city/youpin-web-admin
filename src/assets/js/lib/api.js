@@ -100,10 +100,12 @@ api.postPhoto = (formData) => {
   return fetch(url, { method: 'POST', body: formData });
 };
 
-api.getUsers = () => {
-  const opts = {
-    $limit: 100
-  };
+api.getUsers = (opts) => {
+  if (opts === undefined) {
+    opts = {
+      $limit: 100
+    };
+  }
 
   const url = api._buildEndpoint('users', opts);
   return fetch(url, { headers: headers }).then(response => response.json());

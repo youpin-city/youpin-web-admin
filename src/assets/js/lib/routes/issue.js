@@ -71,11 +71,23 @@ const issueRouter = module.exports = {
                 department.name + '</option>');
             });
             if (data.assigned_department !== undefined && data.assigned_department !== '') {
-              $select_department.val(data.assigned_department);
+              $select_department.val(data.assigned_department._id);
             }
+            $select_department.material_select();
           });
         } else {
-          // TODO Populate department officer dropdown list
+          // Populate department officer dropdown list
+          api.getUsers({ role: 'department_officer', department: user.department })
+          .then(users => {
+            users.data.forEach(user => {
+              $select_department.append('<option value="' + user._id + '">' +
+                user.name + '</option>');
+            });
+            if (data.assigned_users !== undefined && data.assigned_users.length > 0) {
+              $select_department.val(data.assigned_users[0]._id);
+            }
+            $select_department.material_select();
+          });
 
           // update progress feed UI
           data.progresses.forEach((progress) =>
@@ -192,7 +204,8 @@ const issueRouter = module.exports = {
               case 'resolved':
                 body = {
                   state: 'processing',
-                  processed_by: $select_department.val() // user._id
+                  processed_by: $select_department.val(),
+                  assigned_users: [$select_department.val()]
                 };
                 break;
               case 'processing':
