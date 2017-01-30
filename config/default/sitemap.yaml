@@ -19,9 +19,9 @@ sitemap:
   - name: sitenav.archive
     href: "/archive"
     children: []
-  # - name: sitenav.report
-  #   href: "/report"
-  #   children: []
+  - name: sitenav.report
+    href: "/report"
+    children: []
   - name: sitenav.settings
     href: "/settings"
     authorized_roles:
