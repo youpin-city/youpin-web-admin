@@ -1,5 +1,5 @@
 dashboard-new-issue-list
-  div.new-issue-list
+  div.new-issue-list.opaque-bg.content-padding
     h1.page-title New issue this week
     ul
       li(each="{data}").item

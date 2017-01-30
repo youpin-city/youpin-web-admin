@@ -1,4 +1,4 @@
-/* global util app user api Materialize*/
+/* global util _ app user api Materialize */
 
 const modalId = '#manage-issue-modal';
 const dataKey = ' issue-id';
@@ -24,10 +24,7 @@ const issueRouter = module.exports = {
     function ready(modal, trigger) {
       const id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
       $('#id').text(id);
-      fetch(util.site_url('/pins/' + id, app.config.api_url), {
-        method: 'GET'
-      })
-      .then(response => response.json())
+      api.getPin(id)
       .then(data => {
         const owner = data.owner;
         data.photos.forEach(d =>
@@ -36,9 +33,9 @@ const issueRouter = module.exports = {
 
         const $reporter = $('#reporter');
         const $span = $reporter.find('span');
-        $span.eq(0).text(owner.name);
+        $span.eq(0).text(_.get(owner, 'name'));
         $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:' + owner.email);
+        $reporter.find('a.btn-flat').attr('href', 'mailto:' + _.get(owner, 'email'));
 
         const $details = $('#details');
         $details.find('textarea')
@@ -176,6 +173,52 @@ const issueRouter = module.exports = {
           );
         });
 
+        // Merge Issues Button
+        if (data.is_merged) {
+          $('#merge-issue-btn')
+          .hide();
+        } else {
+          $('#merge-issue-btn')
+          .attr('href', util.site_url('merge/') + data._id)
+          .show();
+        }
+
+        if (data.is_merged) {
+          $('#merged-parent').show();
+          $('#merged-parent ul.list').empty();
+          if (data.merged_parent_pin) {
+            $('#merged-parent ul.list').append(
+              $('<li/>').append(
+                $('<a/>')
+                .attr('href', '#!issue-id:' + data.merged_parent_pin)
+                .append('<i class="icon material-icons tiny">bookmark</i>')
+                .append('<span>Main Issue</span>')
+              )
+            );
+          }
+        } else {
+          $('#merged-parent').hide();
+          $('#merged-parent ul.list').empty();
+        }
+        if ((data.merged_children_pins || []).length > 0) {
+          $('#merged-children').show();
+          $('#merged-children ul.list').empty();
+          _.forEach(data.merged_children_pins || [], pin_id => {
+            $('#merged-children ul.list').append(
+              $('<li/>').append(
+                $('<a/>')
+                .attr('href', '#!issue-id:' + pin_id)
+                .append('<i class="icon material-icons tiny">bookmark</i>')
+                .append('<span>Issue:' + pin_id + '</span>')
+              )
+            );
+          });
+        } else {
+          $('#merged-children').hide();
+          $('#merged-children ul.list').empty();
+        }
+
+        // Next State Button
         $('#goToNextState')
           .text(() => {
             switch (data.status) {

@@ -1,27 +1,29 @@
 dashboard-table-summary
   h1.page-title Overview
-  ul.duration-selector
-    li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
-        div {dur.name}
 
-  table.summary
-    tr
-      th.team Team
-      th.pending Pending
-      th.assigned Assigned
-      th.processing Processing
-      th.resolved Resolved
-      th.rejected Rejected
-      th.performance Performance Index
+  div.performance-table.opaque-bg.content-padding
+    ul.duration-selector
+      li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
+          div {dur.name}
 
-    tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
-      td.team { name }
-      td.numeric-col { summary.pending || 0}
-      td.numeric-col { summary.assigned || 0}
-      td.numeric-col { summary.processing || 0}
-      td.numeric-col { summary.resolved || 0}
-      td.numeric-col { summary.rejected || 0}
-      td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
+    table.summary
+      tr
+        th.team Team
+        th.pending Pending
+        th.assigned Assigned
+        th.processing Processing
+        th.resolved Resolved
+        th.rejected Rejected
+        th.performance Performance Index
+
+      tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
+        td.team { name }
+        td.numeric-col { summary.pending || 0}
+        td.numeric-col { summary.assigned || 0}
+        td.numeric-col { summary.processing || 0}
+        td.numeric-col { summary.resolved || 0}
+        td.numeric-col { summary.rejected || 0}
+        td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
   script.
 

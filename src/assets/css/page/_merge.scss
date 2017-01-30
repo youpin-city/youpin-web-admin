@@ -1,37 +1,24 @@
-issue-list,
-merge-issue-list {
-  .menu-bar  {
-    .sorting {
-      float: left;
-      border-radius: $ps-xxs;
-      background: $cl-gray;
-      padding: $gs-default/16 $ps-default;
+#page-merge {
+  .filter-bar {
+    .row {
+      margin-bottom: 0;
     }
-
-    .list-or-map {
-      vertical-align: middle;
-      float: right;
-
-      span {
-        font-size: $fs-sm;
-        font-weight: $fw-bold;
-
-        color: $cl-gray;
-
-        &.active {
-          color: $cl-primary;
-        }
-        cursor: pointer;
-      }
-
-      span.separator {
-        margin: 0 $ps-xxs;
-      }
-
+    select,
+    .select-dropdown {
+      margin: 0;
     }
   }
+  // .search-box {
+  //   background: white;
+  //   padding: 0 2rem;
+  //   border-radius: 4rem;
+  //   font-size: 1.8rem;
+  //   line-height: 2.4;
+  //   height: auto;
+  // }
 
-  li.issue {
+  li.issue,
+  .issue-item {
     @include flexbox;
     @include flex-direction(row);
     @include flex-wrap(nowrap);
@@ -64,7 +51,7 @@ merge-issue-list {
     }
 
     .issue-img {
-      @include flex(0, 1, 150px);
+      @include flex(0, 1, 60px);
       img,
       .img {
         margin:  0px;
@@ -162,56 +149,4 @@ merge-issue-list {
     }
   }
 
-  .load-more-wrapper {
-      text-align: center;
-  }
-
-  a.load-more {
-       display: none;
-
-       padding: $ps-xs $ps-default;
-
-       border: 1px solid;
-       cursor: pointer;
-
-       border-radius: $ps-xxs;
-
-       color: $cl-white;
-       background: $cl-primary;
-
-       &.active {
-           display: inline-block;
-       }
-  }
-
-
-  .map-view {
-      margin: $ps-xs 0;
-
-      #issue-map {
-           width: 100%;
-           height: 500px;
-      }
-  }
-}
-
-.issue-view-modal {
-  .main-content {
-    border-right: 1px solid $cl-verylightgray;
-  }
-
-  #merged-parent,
-  #merged-children {
-    ul.list {
-      margin: 0;
-    }
-  }
-}
-
-.leaflet-map-pane {
-  z-index: 2 !important;
-}
-
-.leaflet-google-layer {
-  z-index: 1 !important;
 }

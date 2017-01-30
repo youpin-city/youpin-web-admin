@@ -7,20 +7,21 @@ setting-department
       a.btn(onclick="{createDepartment}")
         | Create Department
 
-  table
-    thead
-      tr
-        th Department
-        th(style='width: 120px;')
-    tbody
-      tr(each="{dept in departments}" ).department
-        td
-          b {dept.name}
-        td
-          a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id, dept.name) }")
-            | Edit
+  .opaque-bg.content-padding
+    table
+      thead
+        tr
+          th Department
+          th(style='width: 120px;')
+      tbody
+        tr(each="{dept in departments}" ).department
+          td
+            b {dept.name}
+          td
+            a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id, dept.name) }")
+              | Edit
 
-  div(class="modal")#edit-department-form
+  #edit-department-form.modal
     .modal-header
         h3 Edit Department
     .divider

@@ -29,7 +29,19 @@ mixin priority
       option(value='normal') Normal
       option(value='trivial') Trivial
 
-.modal#manage-issue-modal
+mixin merge_tool
+  a#merge-issue-btn.btn-flat.btn-block Merge Issue
+
+mixin merged_parent
+  #merged-parent
+    h5 Merged To
+    ul.list
+mixin merged_children
+  #merged-children
+    h5 Duplicates
+    ul.list
+
+.modal#manage-issue-modal.issue-view-modal
   .modal-header
     .row
       .col.s6
@@ -60,13 +72,13 @@ mixin priority
     .row
       if user
         if user.is_superuser
-          .col.s8
+          .col.s6.l9.main-content
             .row
-              .col.s6
+              .col.s12.l6
                 +reporter
-              .col.s6
+              .col.s12.l6
                 +details
-          .col.s4#status
+          .col.s6.l3#status
             +priority
             h5 Department
             .input-field
@@ -74,8 +86,11 @@ mixin priority
             h5 Annotation
             .input-field
               textarea.materialize-textarea
+            +merged_parent
+            +merged_children
+            +merge_tool
         else
-          .col.s6
+          .col.s6.main-content
             h5 Details
             +reporter
             +details

@@ -1,12 +1,11 @@
 dashboard-recent-activity
-  div.recent-activity
+  div.recent-activity.opaque-bg.content-padding
     b Recent Activity
     ul
       li(each="{data}").activity
-        span
-            a(href="#!issue-id:{ pin_id }")
-              b { description } </br>
-            | { timestamp }
+        .activity-item
+          a(href="#!issue-id:{ pin_id }") { description }
+          div.meta-time { timestamp }
 
 
   script.

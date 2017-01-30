@@ -63,6 +63,12 @@ router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => 
   res.render('search');
 });
 
+router.get('/merge/:id', auth({ deny: ['public_relations'] }), (req, res, next) => {
+  res.locals.pin_id = req.params.id;
+  res.locals.q = req.query.q;
+  res.render('merge');
+});
+
 router.get('/settings', auth({ admin: true }), (req, res, next) => {
   res.redirect('settings/user');
 });

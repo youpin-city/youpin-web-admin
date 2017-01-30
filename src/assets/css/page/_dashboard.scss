@@ -110,24 +110,33 @@
         }
     }
 
+    .performance-table {
+        padding-top: 0;
+    }
+
     .recent-activity {
         padding: $ps-xs;
 
         li.activity {
-            margin-bottom: $ps-small;
-            padding: 0px;
+            border-bottom: 1px solid $cl-verylightgray;
+            padding: $ps-xs 0;
 
-            span {
+            .activity-item {
                 display: inline-block;
-                margin-left: $ps-xs;
+                padding: 0 $ps-xs;
                 vertical-align: middle;
+                a {
+                    @include text-hover($cl-darkgray, $cl-link);
+                }
+                .meta-time {
+                    color: $cl-gray;
+                    font-size: $fs-xs;
+                }
             }
         }
     }
 
     .new-issue-list {
-        padding: $ps-xs;
-
         $li-height: 80px;
         li.item {
             margin-top: $ps-small;
