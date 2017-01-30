@@ -1,4 +1,4 @@
-/* global util _ app user api Materialize */
+/* global util _ app user api Materialize*/
 
 const modalId = '#manage-issue-modal';
 const dataKey = ' issue-id';
@@ -11,31 +11,35 @@ const issueRouter = module.exports = {
   setup: () => {
     function prependProgressCard(d) {
       $('#cards').prepend('<div class="card"><div class="card-image">' +
-        '<img class="materialboxed" src=' + d.url + '></div>' +
+        (d.url ? '<img class="materialboxed" src=' + d.url + '></div>' : '') +
         '<div class="card-content"><p>' + d.description + '</p>' +
         'on ' + new Date(d.date).toLocaleDateString() + '</p></div></div>');
         // '<p>' + d.name + ' on ' + d.date.toLocaleDateString() + '</p></div></div>');
     }
 
     function modalClose(modal, trigger) {
+      const $modal = $('#manage-issue-modal');
       location.hash = '';
+      $modal.find('.slider .slides').empty();
+      $modal.find('#cards').empty();
     }
 
     function ready(modal, trigger) {
+      const $modal = $('#manage-issue-modal');
       const id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
       $('#id').text(id);
       api.getPin(id)
       .then(data => {
-        const owner = data.owner;
+        const owner = _.get(data, 'owner');
         data.photos.forEach(d =>
-          $('.slides').append('<li><img class="materialboxed" src=' + d + '></li>')
+          $modal.find('.slider .slides').append('<li><img class="materialboxed" src=' + d + '></li>')
         );
 
         const $reporter = $('#reporter');
         const $span = $reporter.find('span');
-        $span.eq(0).text(_.get(owner, 'name'));
+        $span.eq(0).text(owner.name);
         $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:' + _.get(owner, 'email'));
+        $reporter.find('a.btn-flat').attr('href', 'mailto:' + owner.email);
 
         const $details = $('#details');
         $details.find('textarea')
@@ -72,7 +76,8 @@ const issueRouter = module.exports = {
             }
             $select_department.material_select();
           });
-        } else {
+          $modal.find('#status').show();
+        } else if (user.role === 'department_head') {
           // Populate department officer dropdown list
           api.getUsers({ role: 'department_officer', department: user.department })
           .then(users => {
@@ -86,6 +91,19 @@ const issueRouter = module.exports = {
             $select_department.material_select();
           });
 
+          // Disable admin UI elements
+          $chips.find('i').remove();
+          $chips.find('input')
+            .attr('placeholder', '')
+            .prop('disabled', true);
+          $status.find('input')
+            .prop('disabled', true);
+          $modal.find('#status').show();
+        } else {
+          $modal.find('#status').hide();
+        }
+
+        if (['department_head', 'department_officer'].indexOf(user.role) >= 0) {
           // update progress feed UI
           data.progresses.forEach((progress) =>
             prependProgressCard({
@@ -94,14 +112,6 @@ const issueRouter = module.exports = {
               url: progress.photos[0]
             })
           );
-
-          // Disable admin UI elements
-          $chips.find('i').remove();
-          $chips.find('input')
-            .attr('placeholder', '')
-            .prop('disabled', true);
-          $status.find('input')
-            .prop('disabled', true);
         }
 
         // Init Materialize
@@ -172,7 +182,6 @@ const issueRouter = module.exports = {
             Materialize.toast(err.message, 8000, 'dialog-error large')
           );
         });
-
         // Merge Issues Button
         if (data.is_merged) {
           $('#merge-issue-btn')
@@ -282,23 +291,28 @@ const issueRouter = module.exports = {
         // Set Post button event
         $('#post').click(() => {
           const files = $progress.find('input[type="file"]')[0].files;
+          const progress_text = $progress.find('textarea').val();
+          if (files.length === 0 && !progress_text) {
+            return;
+          }
+          const progressData = {
+            photos: files.length > 0
+              ? [ window.URL.createObjectURL(files[0]) ]
+              : [],
+            detail: progress_text
+          };
+
+          // update progress feed UI
+          prependProgressCard({
+            date: new Date(),
+            description: progressData.detail,
+            url: progressData.photos[0]
+          });
+          $('.materialboxed').materialbox();
+
+          // Edit pin info (partially)
           if (files.length > 0) {
-            const progressData = {
-              photos: [
-                window.URL.createObjectURL(files[0])
-              ],
-              detail: $progress.find('textarea').val()
-            };
-
-            // update progress feed UI
-            prependProgressCard({
-              date: new Date(),
-              description: progressData.detail,
-              url: progressData.photos[0]
-            });
-            $('.materialboxed').materialbox();
-
-            // Edit pin info (partially)
+            // upload photo first, if any
             const form = new FormData();
             fetch(progressData.photos[0])
             .then(response => response.blob())
@@ -312,12 +326,27 @@ const issueRouter = module.exports = {
                   owner: user._id,
                   $push: { progresses: progressData }
                 })
-                // .then(response => response.json())
+                .then(response => {
+                  $progress.find('textarea').val('');
+                  $progress.find('input[type="file"]').val('');
+                })
                 .catch(err =>
                   Materialize.toast(err.message, 8000, 'dialog-error large')
                 );
               });
             });
+          } else {
+            // post without photo
+            api.patchPin(id, {
+              owner: user._id,
+              $push: { progresses: progressData }
+            })
+            .then(response => {
+              $progress.find('textarea').val('');
+            })
+            .catch(err =>
+              Materialize.toast(err.message, 8000, 'dialog-error large')
+            );
           }
         });
       });
