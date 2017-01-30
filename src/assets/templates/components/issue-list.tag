@@ -48,16 +48,16 @@ issue-list
             label Dept.
             span.big-text { p.assigned_department ? p.assigned_department.name : '-' }
 
-          div.meta(if='{p.owner}', title="assigned to")
+          div.meta(if='{p.assigned_user_names}', title="assigned to")
             i.icon.material-icons.tiny face
-            | { p.owner.name }
+            | { p.assigned_user_names }
 
           div.meta(title="created at")
             i.icon.material-icons.tiny access_time
             | { moment(p.created_time).fromNow() }
             //- | [date& time]
           div
-            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Manage Issue
+            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Issue
 
     div(if='{ pins.length === 0 }')
       .spacing-large
@@ -92,7 +92,12 @@ issue-list
         self.currentQueryOpts = opts;
 
         api.getPins(opts).then( res => {
-          self.pins = res.data;
+          self.pins = _.map(res.data, pin => {
+            pin.assigned_user_names = _.get(pin, 'assigned_users.length', 0) > 0
+              ? _.map(pin.assigned_users, u => u.name).join(', ')
+              : '';
+            return pin;
+          });
           self.updateHasMoreButton(res);
           self.isShowingMap = false;
 

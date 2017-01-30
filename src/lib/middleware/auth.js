@@ -11,6 +11,7 @@ const staff_roles = [
   'super_admin',
   'organization_admin',
   'department_head',
+  'department_officer',
   'public_relations'
 ];
 const superuser_roles = [
