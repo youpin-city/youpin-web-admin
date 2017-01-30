@@ -79,7 +79,7 @@ const conf = convict({
     title: {
       doc: 'Website name',
       format: String,
-      default: 'Mafueng Web Admin',
+      default: 'iCare Web Admin',
       env: 'SITE_TITLE'
     },
     subtitle: {
@@ -114,7 +114,7 @@ const conf = convict({
   service: {
     api: {
       url: {
-        doc: 'Mafueng API endpoint URL.',
+        doc: 'iCare API endpoint URL.',
         format: String,
         default: '',
         env: 'SERVICE_API_URL'

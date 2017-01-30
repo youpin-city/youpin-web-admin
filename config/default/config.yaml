@@ -25,20 +25,21 @@ service:
     id:
   facebook:
     app_id:
-    page: https://www.facebook.com/youpin.city
+    page: https://www.facebook.com/icare.chula.engineering
+    chatbot: https://m.me/281055212289797
   mail_recipient:
     email:
-      - '"YouPin Saraban" <saraban@youpin.city>'
+      - '"iCare Chula Engineering" <icare@eng.chula.ac.th>'
   mail_sender:
-    service: sendgrid
+    service: smtp
     config:
       auth:
         api_user: ''
         api_key: ''
     signature:
-      from_email: noreply@byoupin.city
-      from_name: YouPin
-      from: '"YouPin" <noreply@youpin.city>'
+      from_email: icare@eng.chula.ac.th
+      from_name: iCare Chula Engineering
+      from: '"iCare Chula Engineering" <icare@eng.chula.ac.th>'
       footer: |
 
         ---------------------------------------------------------------------------------
