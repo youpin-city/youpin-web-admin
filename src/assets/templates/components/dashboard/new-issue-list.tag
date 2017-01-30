@@ -8,7 +8,7 @@ dashboard-new-issue-list
         span
           a(href="#!issue-id:{_id}")
             b { detail } </br>
-          | { created_time } / { status } / { assigned_department.name } / { level }
+          div { _.compact([ created_time, status, assigned_department.name, level ]).join(' / ')  }
 
 
   script.

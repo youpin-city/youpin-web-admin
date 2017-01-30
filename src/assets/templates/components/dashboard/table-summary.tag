@@ -50,11 +50,11 @@ dashboard-table-summary
         .then(departments => {
           api.getUsers({ department: user.department }) // role: 'department_officer',
           .then(officers => {
+            user.department_name = _.get(departments.data.filter(d => d._id === user.department), '0.name', '');
+
             departments = departments.data.map(d => d.name);
             departments.sort(); // Sort department by name.
             departments.push('None'); // Add 'None' departments for non-assigned pins
-
-            user.department_name = departments.data.filter(d => d._id === user.department)[0].name;
 
             api.getSummary( start_date, end_date, (data) => {
               let available_departments = Object.keys(data);
