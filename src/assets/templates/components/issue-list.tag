@@ -41,7 +41,8 @@ issue-list
         div.issue-info
           div
             label Status
-            span.big-text { p.status }
+            span.big-text(if='{ p.is_merged }') Merged
+            span.big-text(if='{ !p.is_merged }') { p.status }
 
           div
             label Dept.
@@ -56,7 +57,7 @@ issue-list
             | { moment(p.created_time).fromNow() }
             //- | [date& time]
           div
-            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Issue
+            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Manage Issue
 
     div(if='{ pins.length === 0 }')
       .spacing-large

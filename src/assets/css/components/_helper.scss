@@ -124,3 +124,15 @@ $full-container-max-width: 1440px;
   }
 }
 
+.opaque-bg {
+  border: 1px solid $cl-verylightgray;
+  background-color: $cl-white;
+
+  &.color-b {
+    background-color: $cl-verylightgray;
+  }
+}
+
+.content-padding {
+  padding: 2rem 2rem;
+}

@@ -1,0 +1,12 @@
+extends components/layout
+
+append content
+  #page-merge.page.content-padding
+    merge-page
+
+append app_script
+  script.
+    riot.mount('merge-page', {
+      id: !{JSON.stringify(pin_id || '')},
+      q: !{JSON.stringify(q || '')}
+    });

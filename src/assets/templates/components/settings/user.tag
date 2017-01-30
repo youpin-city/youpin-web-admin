@@ -7,22 +7,23 @@ setting-user
       a.btn(onclick="{createUser}")
         | Create User
 
-  table
-    thead
-        th Name
-        th Email
-        th Department
-        th Role
-        th(style='min-width: 100px;')
+  .opaque-bg.content-padding
+    table
+      thead
+          th Name
+          th Email
+          th Department
+          th Role
+          th(style='min-width: 100px;')
 
-    tr(each="{user in users}" ).user
-        td {user.name}
-        td {user.email}
-        td {user.department.name}
-        td {user.role}
-        td
-          a.btn.btn-small.btn-block(onclick="{ changeRole(user) }")
-            | Edit
+      tr(each="{user in users}" ).user
+          td {user.name}
+          td {user.email}
+          td {user.department.name}
+          td {user.role}
+          td
+            a.btn.btn-small.btn-block(onclick="{ changeRole(user) }")
+              | Edit
 
   div#change-role-form(class="modal")
     .modal-header

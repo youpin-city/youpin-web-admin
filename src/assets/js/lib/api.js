@@ -121,6 +121,11 @@ api.updateUser = (userId, patchObj) => {
   return fetch(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
 };
 
+api.getPin = (pinId) => {
+  const url = api._buildEndpoint('pins/' + pinId);
+  return fetch(url).then(response => response.json());
+};
+
 api.getPins = (status, opts) => {
   if (typeof status === 'object') {
     opts = status;
@@ -140,4 +145,13 @@ api.getPins = (status, opts) => {
 api.patchPin = (pinId, body) => {
   const url = api._buildEndpoint('pins/' + pinId);
   return fetch(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
+};
+
+api.mergePins = (child_id, parent_id) => {
+  const body = {
+    mergedParentPin: parent_id,
+  };
+
+  const url = api._buildEndpoint('pins/' + child_id + '/merging');
+  return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
 };
