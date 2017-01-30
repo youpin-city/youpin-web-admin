@@ -6,7 +6,7 @@ merge-page
 
   .full-container
     .row
-      .col.s6
+      .col.s5
         h5.section-title Merge this issue
         .issue-item.clearfix(if='{ pin }', each="{ p in [pin] }")
           .issue-img
@@ -52,7 +52,9 @@ merge-page
               i.icon.material-icons.tiny access_time
               | { moment(p.created_time).fromNow() }
               //- | [date& time]
-
+      .col.s1
+        div(style='margin-top: 7rem;')
+          span.icon.material-icons arrow_forward
       .col.s6
         div(if='{ !parent_pin }')
           h5.section-title Select main issue

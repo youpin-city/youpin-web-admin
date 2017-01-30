@@ -1,5 +1,5 @@
 issue-page
-  div.bt-new-issue.right
+  //- div.bt-new-issue.right
     a.btn(href='#manage-issue-modal') Create New Issue
   h1.page-title
     | Issue
