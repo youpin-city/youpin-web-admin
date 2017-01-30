@@ -23,6 +23,6 @@ describe('First page', () => {
   it('should have the right title', () => {
     browser.url('/');
     const title = browser.getTitle();
-    expect(title.toLowerCase()).to.contain('mafueng');
+    expect(title.toLowerCase()).to.contain('icare');
   });
 });
