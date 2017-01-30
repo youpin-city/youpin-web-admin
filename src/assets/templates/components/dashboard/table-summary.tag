@@ -46,49 +46,63 @@ dashboard-table-summary
 
         api.getDepartments()
         .then(departments => {
-          if (!user.is_superuser) {
-            departments.data = departments.data.filter(d => d._id === user.department);
-          }
-          departments = departments.data.map(d => d.name);
-          // Sort department by name.
-          departments.sort();
-          // Add 'None' departments for non-assigned pins
-          departments.push('None');
+          api.getUsers({ department: user.department }) // role: 'department_officer',
+          .then(officers => {
+            departments = departments.data.map(d => d.name);
+            departments.sort(); // Sort department by name.
+            departments.push('None'); // Add 'None' departments for non-assigned pins
 
-          api.getSummary( start_date, end_date, (data) => {
-            let available_departments = Object.keys(data);
-            let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
-            let deptSummaries = _.map( departments, dept => {
-              const data_dept = (data[dept] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data[dept];
-              return {
-                name: dept,
-                summary: data_dept,
-                performance: computePerformance(attributes, data_dept)
+            user.department_name = departments.data.filter(d => d._id === user.department)[0].name;
+
+            api.getSummary( start_date, end_date, (data) => {
+              let available_departments = Object.keys(data);
+              let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
+
+              let summaries = [];
+              if (user.is_superuser) { // Department summary
+                summaries = _.map( departments, dept => {
+                  const data_dept = (data[dept] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data[dept].total;
+                  return {
+                    name: dept,
+                    summary: data_dept,
+                    performance: computePerformance(attributes, data_dept)
+                  }
+                });
+              } else { // Officer summary
+                summaries = _.map( officers.data, officer => {
+                  const data_dept = data[user.department_name];
+                  const data_officer = (data_dept === undefined || data_dept[officer.name] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data_dept[officer.name];
+                  return {
+                    name: officer.name,
+                    summary: data_officer,
+                    performance: computePerformance(attributes, data_officer)
+                  }
+                });
               }
+
+              let all = _.reduce( attributes, (acc,attr) => {
+                acc[attr] = 0;
+                return acc;
+              }, {} );
+
+              all = _.reduce( summaries, (acc, dept) => {
+                 _.each( attributes, attr => {
+                    acc[attr] += dept['summary'][attr];
+                });
+                return acc;
+              }, all);
+
+              let orgSummary = {
+                name: 'All',
+                summary: all,
+                performance: computePerformance(attributes, all)
+              };
+
+              self.data = user.is_superuser ? [ orgSummary ] : [];
+              self.data = self.data.concat(summaries);
+
+              self.update();
             });
-
-            let all = _.reduce( attributes, (acc,attr) => {
-              acc[attr] = 0;
-              return acc;
-            }, {} );
-
-            all = _.reduce( deptSummaries, (acc, dept) => {
-               _.each( attributes, attr => {
-                  acc[attr] += dept['summary'][attr];
-              });
-              return acc;
-            }, all);
-
-            let orgSummary = {
-              name: 'All',
-              summary: all,
-              performance: computePerformance(attributes, all)
-            };
-
-            self.data = user.is_superuser ? [ orgSummary ] : [];
-            self.data = self.data.concat(deptSummaries);
-
-            self.update();
           });
         });
       }
@@ -98,7 +112,7 @@ dashboard-table-summary
     this.selectDuration(0)();
 
     function generateStartDate(period, adjPeriod, unit ){
-        return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
+      return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
     }
 
     function computePerformance( attributes, summary){
