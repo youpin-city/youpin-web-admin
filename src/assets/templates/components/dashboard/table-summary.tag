@@ -48,7 +48,7 @@ dashboard-table-summary
 
         api.getDepartments()
         .then(departments => {
-          api.getUsers({ department: user.department }) // role: 'department_officer',
+          api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
           .then(officers => {
             user.department_name = _.get(departments.data.filter(d => d._id === user.department), '0.name', '');
 
@@ -63,7 +63,7 @@ dashboard-table-summary
               let summaries = [];
               if (user.is_superuser) { // Department summary
                 summaries = _.map( departments, dept => {
-                  const data_dept = (data[dept] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data[dept].total;
+                  const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
                   return {
                     name: dept,
                     summary: data_dept,
@@ -73,7 +73,7 @@ dashboard-table-summary
               } else { // Officer summary
                 summaries = _.map( officers.data, officer => {
                   const data_dept = data[user.department_name];
-                  const data_officer = (data_dept === undefined || data_dept[officer.name] === undefined) ? attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {}) : data_dept[officer.name];
+                  const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
                   return {
                     name: officer.name,
                     summary: data_officer,
