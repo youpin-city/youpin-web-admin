@@ -22,12 +22,12 @@ setting-user
           td {user.department.name}
           td {user.role}
           td
-            a.btn.btn-small.btn-block(onclick="{ changeRole(user) }")
+            a.btn.btn-small.btn-block(onclick="{ editUser(user) }")
               | Edit
 
-  div#change-role-form(class="modal")
+  div#edit-user-form(class="modal")
     .modal-header
-      h3 Change role of {editingUser.name}
+      h3 Edit user {editingUser.name}
     .divider
     .modal-content
       h5 Role
@@ -39,13 +39,16 @@ setting-user
         .input-field.col.s12
           select(name="department")
             option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id === editingUser.department._id }" ) {dept.name}
+      h5 Email
+      .input-field
+        input(type="text", name="email", value="{editingUser.email}")
       div.padding
 
     .row
       .col.s12.right-align
-        a(onclick="{closeChangeRoleModal}").btn-flat Cancel
+        a(onclick="{closeEditUserModal}").btn-flat Cancel
         | &nbsp;
-        a(onclick="{confirmChangeRole}").btn Save
+        a(onclick="{confirmEditUser}").btn Save
 
   div(class="modal")#create-user-form
     .modal-header
@@ -72,15 +75,15 @@ setting-user
 
   script.
     let self = this;
-    let $changeRoleModal, $createModal, $roleSelector, $departmentSelector;
+    let $editUserModal, $createModal, $roleSelector, $departmentSelector;
 
     self.availableRoles = opts.availableRoles || [];
     $(document).ready(() => {
-      $changeRoleModal  = $('#change-role-form').modal();
+      $editUserModal  = $('#edit-user-form').modal();
       $createModal = $('#create-user-form').modal();
 
-      $roleSelector = $changeRoleModal.find('select[name="role"]')
-      $departmentSelector = $changeRoleModal.find('select[name="department"]');
+      $roleSelector = $editUserModal.find('select[name="role"]')
+      $departmentSelector = $editUserModal.find('select[name="department"]');
 
       $roleSelector.on('change', () => {
         let selectedRole = $roleSelector.val();
@@ -107,7 +110,7 @@ setting-user
       self.loadData();
     });
 
-    self.changeRole = ( userObj ) => {
+    self.editUser = ( userObj ) => {
       return () => {
         self.editingUser = userObj;
         self.update();
@@ -115,16 +118,17 @@ setting-user
         $roleSelector.material_select();
         $departmentSelector.material_select();
 
-        let $modal = $changeRoleModal;
+        let $modal = $editUserModal;
 
         $modal.trigger('openModal');
       }
     };
 
-    self.confirmChangeRole = () => {
+    self.confirmEditUser = () => {
       let patch = {
         role: $roleSelector.val(),
-        department: _.compact([$departmentSelector.val()])
+        department: _.compact([$departmentSelector.val()]),
+        email: $editUserModal.find('input[name="email"]').val(),
       }
 
       // Super Admin must has no department
@@ -138,13 +142,13 @@ setting-user
           console.log(res);
           return;
         }
-        self.closeChangeRoleModal();
+        self.closeEditUserModal();
         self.loadData();
       });
     };
 
-    self.closeChangeRoleModal = () => {
-      let $modal = $changeRoleModal;
+    self.closeEditUserModal = () => {
+      let $modal = $editUserModal;
       $modal.trigger('closeModal');
     };
 
