@@ -22,6 +22,7 @@ const issueRouter = module.exports = {
       location.hash = '';
       $modal.find('.slider .slides').empty();
       $modal.find('#cards').empty();
+      $('.btn-flat, .btn').unbind('click');
     }
 
     function ready(modal, trigger) {
@@ -32,7 +33,8 @@ const issueRouter = module.exports = {
       .then(data => {
         const owner = _.get(data, 'owner');
         data.photos.forEach(d =>
-          $modal.find('.slider .slides').append('<li><img class="materialboxed" src=' + d + '></li>')
+          $modal.find('.slider .slides')
+            .append('<li><img class="materialboxed" src=' + d + '></li>')
         );
 
         const $reporter = $('#reporter');
@@ -297,7 +299,7 @@ const issueRouter = module.exports = {
           }
           const progressData = {
             photos: files.length > 0
-              ? [ window.URL.createObjectURL(files[0]) ]
+              ? [window.URL.createObjectURL(files[0])]
               : [],
             detail: progress_text
           };
