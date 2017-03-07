@@ -3,7 +3,7 @@ env: development
 port: 11100
 site:
   protocol: http
-  hostname: admin.mafueng-dev.youpin.city
+  hostname: admin.icare.youpin.city
 debug: true
 service:
   api:
