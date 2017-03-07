@@ -47,7 +47,7 @@ issue-item.issue.clearfix(class='{className}')
 
   .issue-compact
     div.issue-desc
-      collapsible-content(interactive='false', height='4.2rem', default='collapsed')
+      collapsible-content(interactive='false', height='3.6rem', default='collapsed')
         a(href='#!issue-id:{ item._id }') { item.detail }
     ul.meta-list
       li.meta(title="created at")

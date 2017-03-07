@@ -35,6 +35,11 @@ $activity-width: 320px;
     color: $cl-darkgray;
   }
 
+  #big-number-table {
+    padding: 2rem 0;
+    background-color: $cl-white;
+  }
+
   ul.duration-selector {
     margin: 0px;
     border-bottom: solid $ps-xxs $cl-verylightgray;
