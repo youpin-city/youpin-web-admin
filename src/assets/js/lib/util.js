@@ -196,24 +196,31 @@ function device_pixel_ratio() {
   return window.devicePixelRatio || window.screen.availWidth / document.documentElement.clientWidth;
 }
 
-function cssSizeInPixel(size) {
+function cssSizeInPixel(size, refElement) {
   let rootFontSize;
   let baseFontSize;
   let m;
   let sign;
   let num;
   let unit;
-  const cssSizeRegex = /^(-?)([0-9.]*[0-9])([a-z]+)$/i;
+  const cssSizeRegex = /^(-?)([0-9.]*[0-9])([a-z]+)?$/i;
   const matches = cssSizeRegex.exec(size.toString());
   if (matches) {
+    refElement = refElement ? $(refElement)[0] : $('html')[0];
     // get root font size in pixel
-    rootFontSize = window.getComputedStyle($('html')[0])['font-size'];
+    rootFontSize = window.getComputedStyle(refElement)['font-size'];
     m = cssSizeRegex.exec(rootFontSize);
     baseFontSize = m ? +m[2] : 10;
     num = matches[1] === '-' ? -matches[2] : +matches[2];
     unit = matches[3];
     if (unit === 'rem') { num = num * baseFontSize; }
     // if (unit === 'em') ...
+    // when unit is empty, use how many line-heights
+    if (!unit) {
+      const lineheight = window.getComputedStyle(refElement)['line-height'];
+      const lh = cssSizeRegex.exec(lineheight);
+      num = num * +lh[2];
+    }
     return num;
   }
   return size;

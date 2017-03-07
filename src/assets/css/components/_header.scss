@@ -19,6 +19,7 @@ header#header {
 
   #site-nav-top {
     position: relative;
+    position: fixed;
     z-index: 2;
     display: block;
     background-color: $cl-white;
@@ -143,6 +144,7 @@ header#header {
 
   #site-nav-left {
     position: absolute;
+    position: fixed;
     z-index: 1;
     top: $desktop-nav-height;
     bottom: 0;

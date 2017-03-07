@@ -1,3 +1,157 @@
+
+.issue {
+  @include flexbox;
+  @include flex-direction(row);
+  @include flex-wrap(nowrap);
+  @include justify-content(flex-start);
+  @include align-items(streth);
+  @include align-content(stretch);
+
+  border-radius: $ps-xxs;
+  padding: $ps-small;
+
+  background: white;
+  border: 1px solid #eeeeee;
+  margin: 1rem 0;
+
+  label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: $cl-darkgray;
+    margin-right: 0.5rem;
+  }
+  .meta {
+    font-size: $fs-xs;
+    .icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .issue-select {
+    @include flex(0, 0, 50px);
+  }
+
+  .issue-img {
+    @include flex(0, 1, 150px);
+    img,
+    .img {
+      display: block;
+      margin:  0px;
+      padding: 0px;
+      vertical-align: middle;
+
+      $size: 20%;
+      line-height: $size;
+      width:   $size;
+      height:  $size;
+
+      width: 100%;
+      height: 0;
+      padding-top: 100%;
+      background-color: $cl-lightgray;
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  .issue-body {
+    @include flex(2, 1, 320px);
+    vertical-align: top;
+    margin-left: $ps-small;
+    width: 53%;
+    position: relative;
+
+    .issue-desc {
+      max-height: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: $ps-small;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 1rem;
+    }
+  }
+
+  .issue-id {
+    b {
+      margin-right: $ps-default;
+    }
+  }
+
+  .bubble {
+    padding: 0;
+    color: $cl-primary;
+    cursor: pointer;
+
+    & + .bubble {
+      margin-left: 0.5rem;
+    }
+  }
+
+  .issue-tags {
+    span {
+       margin-right: $ps-xxs;
+    }
+  }
+
+  .issue-info {
+    @include flex(1, 1, 200px);
+     border-left: solid 1px $cl-lightgray;
+     padding: 0 $ps-xs;
+     width: 25%;
+     display: inline-block;
+     vertical-align: top;
+     text-transform: capitalize;
+
+     div {
+       vertical-align: middle;
+       padding: $ps-xxs 0px;
+     }
+
+     .big-text {
+        font-size: $fs-md;
+        float: right;
+     }
+
+     .icon {
+         vertical-align: middle;
+         margin-right: $ps-xxs;
+     }
+  }
+
+  .bt-manage-issue {
+     border: 1px solid $cl-gray;
+     cursor: pointer;
+     display: inline-block;
+     width: 100%;
+     text-align: center;
+  }
+
+  .issue-compact { display: none; }
+}
+
+.issue.is-compact {
+  margin-top: 0;
+  margin-bottom: 0;
+  overflow: auto;
+  .issue-img {
+    @include flex(0, 0, 80px);
+    .issue-id { display: none; }
+  }
+  .issue-body { display: none; }
+  .issue-info { display: none; }
+  .issue-compact {
+    display: inline-block;
+    @include flex(1, 1, 200px);
+    // border-left: solid 1px $cl-lightgray;
+    padding: 0 $ps-xs;
+  }
+}
+
 issue-list,
 merge-issue-list {
   .menu-bar  {
@@ -31,136 +185,136 @@ merge-issue-list {
     }
   }
 
-  li.issue {
-    @include flexbox;
-    @include flex-direction(row);
-    @include flex-wrap(nowrap);
-    @include justify-content(space-around);
-    @include align-items(streth);
-    @include align-content(stretch);
+  // li.issue {
+  //   @include flexbox;
+  //   @include flex-direction(row);
+  //   @include flex-wrap(nowrap);
+  //   @include justify-content(space-around);
+  //   @include align-items(streth);
+  //   @include align-content(stretch);
 
-    border-radius: $ps-xxs;
-    padding: $ps-small;
+  //   border-radius: $ps-xxs;
+  //   padding: $ps-small;
 
-    background: white;
-    border: 1px solid #eeeeee;
-    margin: 1rem 0;
+  //   background: white;
+  //   border: 1px solid #eeeeee;
+  //   margin: 1rem 0;
 
-    label {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: $cl-darkgray;
-      margin-right: 0.5rem;
-    }
-    .meta {
-      font-size: $fs-xs;
-      .icon {
-        margin-right: 0.5rem;
-      }
-    }
+  //   label {
+  //     font-size: 1.2rem;
+  //     font-weight: bold;
+  //     color: $cl-darkgray;
+  //     margin-right: 0.5rem;
+  //   }
+  //   .meta {
+  //     font-size: $fs-xs;
+  //     .icon {
+  //       margin-right: 0.5rem;
+  //     }
+  //   }
 
-    .issue-select {
-      @include flex(0, 0, 50px);
-    }
+  //   .issue-select {
+  //     @include flex(0, 0, 50px);
+  //   }
 
-    .issue-img {
-      @include flex(0, 1, 150px);
-      img,
-      .img {
-        margin:  0px;
-        padding: 0px;
-        vertical-align: middle;
+  //   .issue-img {
+  //     @include flex(0, 1, 150px);
+  //     img,
+  //     .img {
+  //       margin:  0px;
+  //       padding: 0px;
+  //       vertical-align: middle;
 
-        $size: 20%;
-        line-height: $size;
-        width:   $size;
-        height:  $size;
+  //       $size: 20%;
+  //       line-height: $size;
+  //       width:   $size;
+  //       height:  $size;
 
-        width: 100%;
-        height: 0;
-        padding-top: 100%;
-        background-color: $cl-lightgray;
-        background-size: cover;
-      }
-    }
+  //       width: 100%;
+  //       height: 0;
+  //       padding-top: 100%;
+  //       background-color: $cl-lightgray;
+  //       background-size: cover;
+  //     }
+  //   }
 
-    .issue-body {
-      @include flex(2, 1, 320px);
-      vertical-align: top;
-      margin-left: $ps-small;
-      width: 53%;
-      position: relative;
+  //   .issue-body {
+  //     @include flex(2, 1, 320px);
+  //     vertical-align: top;
+  //     margin-left: $ps-small;
+  //     width: 53%;
+  //     position: relative;
 
-      .issue-desc {
-        max-height: 60px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-bottom: $ps-small;
-      }
+  //     .issue-desc {
+  //       max-height: 60px;
+  //       overflow: hidden;
+  //       text-overflow: ellipsis;
+  //       margin-bottom: $ps-small;
+  //     }
 
-      footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 1rem;
-      }
-    }
+  //     footer {
+  //       position: absolute;
+  //       bottom: 0;
+  //       left: 0;
+  //       right: 1rem;
+  //     }
+  //   }
 
-    .issue-id {
-      b {
-        margin-right: $ps-default;
-      }
-    }
+  //   .issue-id {
+  //     b {
+  //       margin-right: $ps-default;
+  //     }
+  //   }
 
-    .bubble {
-      padding: 0;
-      color: $cl-primary;
-      cursor: pointer;
+  //   .bubble {
+  //     padding: 0;
+  //     color: $cl-primary;
+  //     cursor: pointer;
 
-      & + .bubble {
-        margin-left: 0.5rem;
-      }
-    }
+  //     & + .bubble {
+  //       margin-left: 0.5rem;
+  //     }
+  //   }
 
-    .issue-tags {
-      span {
-         margin-right: $ps-xxs;
-      }
-    }
+  //   .issue-tags {
+  //     span {
+  //        margin-right: $ps-xxs;
+  //     }
+  //   }
 
-    .issue-info {
-      @include flex(1, 1, 200px);
-       border-left: solid 1px $cl-lightgray;
-       padding: 0 $ps-xs;
-       width: 25%;
-       display: inline-block;
-       vertical-align: top;
-       text-transform: capitalize;
+  //   .issue-info {
+  //     @include flex(1, 1, 200px);
+  //      border-left: solid 1px $cl-lightgray;
+  //      padding: 0 $ps-xs;
+  //      width: 25%;
+  //      display: inline-block;
+  //      vertical-align: top;
+  //      text-transform: capitalize;
 
-       div {
-         vertical-align: middle;
-         padding: $ps-xxs 0px;
-       }
+  //      div {
+  //        vertical-align: middle;
+  //        padding: $ps-xxs 0px;
+  //      }
 
-       .big-text {
-          font-size: $fs-md;
-          float: right;
-       }
+  //      .big-text {
+  //         font-size: $fs-md;
+  //         float: right;
+  //      }
 
-       .icon {
-           vertical-align: middle;
-           margin-right: $ps-xxs;
-       }
-    }
+  //      .icon {
+  //          vertical-align: middle;
+  //          margin-right: $ps-xxs;
+  //      }
+  //   }
 
-    .bt-manage-issue {
-       border: 1px solid $cl-gray;
-       cursor: pointer;
-       display: inline-block;
-       width: 100%;
-       text-align: center;
-    }
-  }
+  //   .bt-manage-issue {
+  //      border: 1px solid $cl-gray;
+  //      cursor: pointer;
+  //      display: inline-block;
+  //      width: 100%;
+  //      text-align: center;
+  //   }
+  // }
 
   .load-more-wrapper {
       text-align: center;

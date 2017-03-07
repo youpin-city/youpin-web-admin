@@ -2,7 +2,9 @@ dashboard-new-issue-list
   div.new-issue-list.opaque-bg.content-padding
     h1.page-title New issue this week
     ul
-      li(each="{data}").item
+      li(each="{item in data}").item
+        issue-item(item='{item}', type='compact')
+      //-li(each="{data}").item
         a(href="#!issue-id:{_id}")
           img(src="{photos[0]}")
         span
@@ -10,16 +12,11 @@ dashboard-new-issue-list
             b { detail } </br>
           div { _.compact([ created_time, status, assigned_department.name, level ]).join(' / ')  }
 
-
   script.
     let self = this;
     self.data = [];
 
     api.getNewIssues( (data) => {
-      self.data = _.map( data.data, d => {
-        d.created_time = moment(d.created_time).fromNow();
-        return d;
-      });
-
+      if (data && data.data) self.data = data.data;
       self.update();
     });

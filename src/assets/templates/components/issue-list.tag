@@ -9,55 +9,8 @@ issue-list
 
   div(class="{ hide: isShowingMap, 'list-view': true }")
     ul.issue-list(if='{ pins.length > 0 }')
-      li.issue.clearfix(each="{ p in pins }")
-        .issue-img
-          div.img.responsive-img(style='background-image: url("{ _.get(p.photos, "0") }");')
-          //- img.issue-img(src="http://lorempixel.com/150/150/city/")
-
-          div.issue-id
-            label ID
-            span(href='#manage-issue-modal' data-id='{ p._id }') { p._id.slice(-10) }
-
-        div.issue-body
-          div.issue-desc
-            //- b Description
-            div { p.detail }
-
-          footer
-            div.meta.issue-location
-              i.icon.material-icons.tiny location_on
-              span
-                a.bubble(if='{ p.location && p.location.coordinates }', href='#')
-                  | See map
-                span.bubble(if='{ p.location_name }') { p.location_name }
-            div.meta.issue-category(if='{ p.categories && p.categories.length > 0 }')
-              i.icon.material-icons.tiny turned_in_not
-              span
-                span.bubble(each="{ cat in p.categories }") { cat }
-            div.meta.issue-tags(if='{ p.tags && p.tags.length > 0 }')
-              i.icon.material-icons.tiny label
-              span
-                span.bubble(each="{ tag in p.tags }") { tag }
-        div.issue-info
-          div
-            label Status
-            span.big-text(if='{ p.is_merged }') Merged
-            span.big-text(if='{ !p.is_merged }') { p.status }
-
-          div
-            label Dept.
-            span.big-text { p.assigned_department ? p.assigned_department.name : '-' }
-
-          div.meta(if='{p.assigned_user_names}', title="assigned to")
-            i.icon.material-icons.tiny face
-            | { p.assigned_user_names }
-
-          div.meta(title="created at")
-            i.icon.material-icons.tiny access_time
-            | { moment(p.created_time).fromNow() }
-            //- | [date& time]
-          div
-            a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ p._id }') Issue
+      li(each='{ p in pins }')
+        issue-item(item='{ p }')
 
     div(if='{ pins.length === 0 }')
       .spacing-large

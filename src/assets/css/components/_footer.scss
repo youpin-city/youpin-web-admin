@@ -51,6 +51,7 @@ footer#footer {
   }
 
   @media #{$small-and-down} {
+    margin: 0;
     .section-name {
       font-size: $fs-h5;
     }
@@ -62,7 +63,6 @@ footer#footer {
     }
   }
 }
-
 
 // Mobile nav modal
 body.mobile-nav-active {
