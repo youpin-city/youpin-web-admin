@@ -1,0 +1,77 @@
+
+collapsible-content {
+  display: block;
+  // margin-bottom: 1rem;
+
+  a {
+    font-family: $ff-header;
+    font-weight: $fw-bold;
+    font-size: $fs-xs;
+  }
+
+  .collapsible-wrapper {
+    position: relative;
+
+    p {
+      margin-bottom: $fs-p * $lh-normal;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .toggle-expand-btn {
+      display: none;
+      width: 100%;
+      height: 10rem;
+      position: absolute;
+      bottom: 0;
+      cursor: pointer;
+      @include background-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
+      @include transition(all 0.3s ease-in-out);
+
+      &:hover,
+      &:focus,
+      &:active {
+        height: 20rem;
+      }
+
+      &.hide {
+        display: none !important;
+      }
+    }
+
+    &.collapsed {
+      max-height: 20rem;
+      overflow: hidden;
+      .toggle-expand-btn {
+        display: block;
+      }
+    }
+  }
+  .faux-ellipsis {
+    display: none;
+  }
+
+}
+
+collapsible-content[interactive='false'] {
+  .collapsible-wrapper.collapsed {
+    .faux-ellipsis {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      &:before {
+        display: block;
+        content: '...';
+      }
+    }
+  }
+  .toggle-expand-btn {
+    display: none;
+  }
+  footer {
+    display: none;
+  }
+}

@@ -4,7 +4,9 @@ dashboard-recent-activity
     ul
       li(each="{data}").activity
         .activity-item
-          a(href="#!issue-id:{ pin_id }") { description }
+          collapsible-content(interactive='false', height='5.4rem', default='collapsed')
+            a(href="#!issue-id:{ pin_id }")
+              .description { description }
           div.meta-time { timestamp }
 
 

@@ -1,7 +1,9 @@
 $nav-left-width: 200px;
+$nav-top-height: 64px;
 
 main {
   .page {
+    margin-top: $nav-top-height;
     margin-left: $nav-left-width;
     @media #{$small-and-down} {
       margin-left: 0;
@@ -20,10 +22,21 @@ main {
   }
 }
 
-// Mobile nav modal
+// No header
 body.hide-header {
   main {
     .page {
+      margin-top: 0;
+      margin-left: 0;
+    }
+  }
+}
+
+// No sidebar
+body.hide-sidebar {
+  main {
+    footer#footer {
+      left: 0;
       margin-left: 0;
     }
   }
