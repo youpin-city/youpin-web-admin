@@ -3,7 +3,7 @@ env: production
 port: 11200
 site:
   protocol: https
-  hostname: admin.mafueng.youpin.city
+  hostname: admin.icare.eng.chula.ac.th
 debug: true
 service:
   api:
