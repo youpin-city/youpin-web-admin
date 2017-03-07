@@ -121,6 +121,11 @@ api.updateUser = (userId, patchObj) => {
   return fetch(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
 };
 
+api.createPin = (pinObj) => {
+  const url = api._buildEndpoint('pins');
+  return fetch(url, { method: 'POST', body: JSON.stringify(pinObj), headers: headers });
+};
+
 api.getPin = (pinId) => {
   const url = api._buildEndpoint('pins/' + pinId);
   return fetch(url).then(response => response.json());
