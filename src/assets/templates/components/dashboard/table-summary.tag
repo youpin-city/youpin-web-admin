@@ -1,6 +1,15 @@
 dashboard-table-summary
   h1.page-title Overview
 
+  #big-number-table(show='{ status_list.length > 0 }')
+    .level
+      .level-item.has-text-centered(each='{ s in status_list }')
+        div
+          p.heading { s.name }
+          p.title { s.count }
+
+  .spacing
+
   div.performance-table.opaque-bg.content-padding
     ul.duration-selector
       li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
@@ -31,16 +40,23 @@ dashboard-table-summary
     let ymd = 'YYYY-MM-DD';
     let end_date = moment().add(1,'day').format(ymd);
 
+    self.status_list = [];
     self.activeSelector = 0;
 
-    this.durationSelectors = [
+    self.durationSelectors = [
       { name: 'week', start: generateStartDate('week', 'day', 1) },
       { name: '1 months', start: generateStartDate('month', 'month', 0) },
       { name: '2 months', start: generateStartDate('month', 'month', -1) },
       { name: '6 months', start: generateStartDate('month', 'month', -5) }
     ];
 
-    this.selectDuration  = function(selectorIdx) {
+    self.on('mount', () => {
+      // Initialize selector
+      self.selectDuration(0)();
+      self.loadStatusCount();
+    });
+
+    self.selectDuration = function(selectorIdx) {
       return function(){
         self.activeSelector = selectorIdx;
 
@@ -110,9 +126,6 @@ dashboard-table-summary
       }
     }
 
-    // Initialize selector
-    this.selectDuration(0)();
-
     function generateStartDate(period, adjPeriod, unit ){
       return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
     }
@@ -134,3 +147,33 @@ dashboard-table-summary
     this.shouldHideRow = function(department){
         return user.role != "organization_admin" && user.department != department;
     }
+
+    self.loadStatusCount = (queryOpts = {}) => {
+      const status_keys = [
+        'pending',
+        'assigned',
+        'processing'
+      ];
+      Promise.map( status_keys, status => {
+        let opts = _.extend(
+          {},
+          queryOpts,
+          {
+            '$limit': 1,
+            is_archived: false,
+            status: status
+          }
+        );
+
+        return api.getPins(opts).then( res => {
+          return {
+            name: status,
+            count: res.total
+          }
+        })
+      })
+      .then( data => {
+        self.status_list = data || [];
+        self.update();
+      });
+    };

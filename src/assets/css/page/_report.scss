@@ -1,3 +1,86 @@
 #page-report {
 
+
+  .report-tool {
+    padding: 1rem;
+    background-color: $cl-white;
+
+    .input {
+      border-width: 1px;
+      border-style: solid;
+      border: 1px solid $cl-border;
+      margin: 0;
+    }
+  }
+
+
+  .performance-summary {
+    border-bottom: $ps-xxs solid $cl-verylightgray;
+
+    th {
+      border-left: solid $ps-xs;
+      background: $cl-verylightgray;
+      vertical-align: top;
+
+      &.team {
+        boder-left-color: $cl-darkgreen;
+      }
+
+      &.assigned {
+        border-left-color: $cl-blue;
+      }
+
+      &.processing {
+        border-left-color: $cl-orange;
+      }
+
+      &.resolved {
+        border-left-color: $cl-green;
+      }
+
+      &.rejected {
+        border-left-color: $cl-red;
+      }
+
+      &.performance {
+        border: none;
+      }
+
+    }
+
+    .row {
+      border-bottom: 1px solid $cl-verylightgray;
+
+      .team {
+        color: $cl-primary;
+        width: 20%;
+      }
+
+      .performance {
+        background:  $cl-lightgray;
+        width: 15%;
+
+        &.positive::after {
+          float: right;
+          color: $cl-green;
+          content: '▲'
+        }
+        &.negative::after {
+          float: right;
+          color: $cl-red;
+          content: '▼';
+        }
+      }
+
+      .numeric-col {
+         text-align: right;
+         padding-right: $ps-small;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
+  }
+
 }

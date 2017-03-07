@@ -1,0 +1,14 @@
+// @import '../util/variables';
+
+.breadcrumb {
+  font-size: $fs-sm;
+  a {
+    color: $cl-default;
+    &:hover {
+      color: $cl-link-active;
+    }
+  }
+  strong {
+    color: $cl-primary;
+  }
+}

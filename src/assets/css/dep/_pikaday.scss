@@ -1,0 +1,119 @@
+
+// Colours
+$pd-text-color: $cl-default;
+$pd-title-color: $cl-default;
+$pd-title-bg: $cl-white;
+$pd-picker-bg: $cl-white;
+$pd-picker-border: $bdc-default;
+$pd-picker-border-bottom: $bdc-default;
+$pd-picker-shadow: rgba(0,0,0,.5) !default;
+$pd-th-color: $cl-gray;
+$pd-day-color: $cl-gray;
+$pd-day-bg: $cl-white;
+$pd-day-hover-color: $cl-primary;
+$pd-day-hover-bg: $cl-verylightgray;
+$pd-day-today-color: $cl-primary;
+$pd-day-selected-color: $cl-white;
+$pd-day-selected-bg: $cl-primary;
+$pd-day-selected-shadow: $cl-primary-active;
+$pd-day-disabled-color: $cl-disabled;
+$pd-week-color: $cl-primary;
+$pd-font-family: $ff-header;
+
+@import '../../../../node_modules/pikaday/scss/pikaday.scss';
+
+.pika-single {
+  font-weight: $fw-bold;
+}
+
+.pika-lendar {
+  width: 270px;
+}
+
+.pika-label {
+  font-weight: $fw-black;
+}
+
+.pika-table {
+  th {
+    border-bottom: 1px solid $cl-verylightgray;
+    border-radius: 3px;
+    line-height: $lh-normal;
+
+    abbr {
+      display: inline-block;
+      width: 100%;
+      padding: 5px;
+      cursor: pointer;
+      &:before {
+        display: block;
+        z-index: 1;
+        font-family: $ff-icon;
+        font-size: $fs-sm;
+      }
+    }
+
+    &.is-ondow {
+      abbr {
+        &:before {
+          content: '\f122';
+          color: $cl-primary;
+        }
+      }
+    }
+    &.is-offdow {
+      abbr {
+        color: $cl-silver;
+        position: relative;
+        &:before {
+          content: '\f12a';
+          color: $cl-red;
+        }
+      }
+    }
+
+    // &:hover {
+    //   color: $pd-day-hover-color;
+    //   background-color: $pd-day-hover-bg;
+    // }
+  }
+}
+.pika-button {
+  font-size: $fs-sm;
+  padding: 10px 10px;
+
+  .is-today & {
+    font-weight: $fw-black;
+  }
+
+  .is-selected & {
+    font-weight: $fw-black;
+  }
+
+  .is-outside-current-month &,
+  .is-disabled & {
+    color: $pd-day-color;
+  }
+
+  .is-off & {
+    color: $cl-silver;
+    position: relative;
+    &:before {
+      content: '\f12a';
+      position: absolute;
+      z-index: 1;
+      top: 9px;
+      bottom: 0;
+      left: 0;
+      right: 10px;
+      display: block;
+      font-family: $ff-icon;
+      color: $cl-red;
+    }
+  }
+  .is-off.is-outside-current-month &,
+  .is-off.is-disabled & {
+    color: $pd-day-color;
+  }
+
+}

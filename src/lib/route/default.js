@@ -59,7 +59,15 @@ router.get('/archive', auth(), (req, res, next) => {
 });
 
 router.get('/report', auth(), (req, res, next) => {
+  res.redirect('report/performance');
+});
+
+router.get('/report/performance', auth(), (req, res, next) => {
   res.render('report');
+});
+
+router.get('/report/assignment', auth(), (req, res, next) => {
+  next();
 });
 
 router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => {
