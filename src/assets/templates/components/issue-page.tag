@@ -130,7 +130,7 @@ issue-page
       });
       const $chips = $details.find('.chips-initial');
 
-      // Department seleciton for superuser
+      // Department selection for superuser
       var $select_department;
       if (user.is_superuser) {
         $select_department = $('#status').find('select').eq(1);
