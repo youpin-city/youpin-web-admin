@@ -241,7 +241,7 @@ const issueRouter = module.exports = {
               case 'processing':
                 return 'Resolve';
               case 'resolved':
-                return 'Process';
+                return 'Reprocess';
               default:
                 return 'Recover';
             }
