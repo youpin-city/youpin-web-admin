@@ -151,7 +151,8 @@ const issueRouter = module.exports = {
         });
 
         const $archive = $('#archive');
-        if (user.is_superuser && (data.status === 'rejected' || data.status === 'resolved')) {
+        if (user.is_superuser && !data.is_archived
+                              && (data.status === 'rejected' || data.status === 'resolved')) {
           $archive.show();
         } else {
           $archive.hide();
