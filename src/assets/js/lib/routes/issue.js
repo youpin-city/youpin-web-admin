@@ -105,16 +105,14 @@ const issueRouter = module.exports = {
           $modal.find('#status').hide();
         }
 
-        if (['department_head', 'department_officer'].indexOf(user.role) >= 0) {
-          // update progress feed UI
-          data.progresses.forEach((progress) =>
-            prependProgressCard({
-              date: progress.created_time,
-              description: progress.detail,
-              url: progress.photos[0]
-            })
-          );
-        }
+        // update progress feed UI
+        data.progresses.forEach((progress) =>
+          prependProgressCard({
+            date: progress.created_time,
+            description: progress.detail,
+            url: progress.photos[0]
+          })
+        );
 
         // Init Materialize
         $('.slider').slider({ height: $('.slider img').width() });
