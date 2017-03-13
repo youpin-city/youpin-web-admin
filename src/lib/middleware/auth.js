@@ -72,6 +72,7 @@ export default function auth(check_auth = true) {
 
     return get_user
     .then(data => {
+      console.log("Auth:", jwt, user_id, data);
       if (data) {
         const user = data;
         user.token = jwt;
