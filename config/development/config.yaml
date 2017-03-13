@@ -7,4 +7,4 @@ site:
 debug: true
 service:
   api:
-    url: http://mafueng-api-dev.youpin.city/
+    url: http://api.icare.eng.chula.ac.th/

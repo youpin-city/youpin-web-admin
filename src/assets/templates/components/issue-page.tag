@@ -49,6 +49,10 @@ issue-page
               option(value='urgent') Urgent
               option(value='normal') Normal
               option(value='trivial') Trivial
+          #select-department
+            h5 Department
+            .input-field
+              select
           h5 Annotation
           .input-field
             textarea.materialize-textarea
@@ -126,6 +130,26 @@ issue-page
       });
       const $chips = $details.find('.chips-initial');
 
+      // Department selection for superuser
+      var $select_department;
+      if (user.is_superuser) {
+        $select_department = $('#status').find('select').eq(1);
+        $select_department.empty();
+        $select_department.append('<option value="">[Please select]</option>');
+
+        // Populate department dropdown list
+        api.getDepartments()
+        .then(departments => {
+          departments.data.forEach(department => {
+            $select_department.append('<option value="' + department._id + '">' +
+              department.name + '</option>');
+          });
+          $select_department.material_select();
+        });
+      } else {
+        $modal.find('#select-department').hide();
+      }
+
       $('.materialboxed').materialbox();
       $('select').material_select();
 
@@ -133,8 +157,11 @@ issue-page
         // check required data fields
         const files = $('#photo').find('input[type="file"]')[0].files;
         const detail = $details.find('textarea').val();
+        const department = user.department || $select_department.val();
         if (files.length <= 0 || detail.length <= 0) {
           Materialize.toast('Photo and description are required.', 8000, 'dialog-error large')
+        } else if (user.is_superuser && department === '') {
+          Materialize.toast('Please select a department', 8000, 'dialog-error large')
         } else {
           // upload photo first
           fetch(window.URL.createObjectURL(files[0]))
@@ -165,7 +192,7 @@ issue-page
                 updated_time: current_time,
 
                 status: 'assigned',
-                assigned_department: user.department,
+                assigned_department: department,
                 organization: '583ddb7a3db23914407f9b50'
               };
               /* $select.eq(0).val(data.status.priority);

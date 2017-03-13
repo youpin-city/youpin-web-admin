@@ -41,7 +41,13 @@ const issueRouter = module.exports = {
         const $span = $reporter.find('span');
         $span.eq(0).text(owner.name);
         $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:' + owner.email);
+        const contactButton = $reporter.find('a.btn-flat');
+        if (owner.email && owner.email !== 'bot@mafueng.city') {
+          contactButton.attr('href', 'mailto:' + owner.email);
+          contactButton.show();
+        } else {
+          contactButton.hide();
+        }
 
         const $details = $('#details');
         $details.find('textarea')
@@ -105,16 +111,14 @@ const issueRouter = module.exports = {
           $modal.find('#status').hide();
         }
 
-        if (['department_head', 'department_officer'].indexOf(user.role) >= 0) {
-          // update progress feed UI
-          data.progresses.forEach((progress) =>
-            prependProgressCard({
-              date: progress.created_time,
-              description: progress.detail,
-              url: progress.photos[0]
-            })
-          );
-        }
+        // update progress feed UI
+        data.progresses.forEach((progress) =>
+          prependProgressCard({
+            date: progress.created_time,
+            description: progress.detail,
+            url: progress.photos[0]
+          })
+        );
 
         // Init Materialize
         $('.slider').slider({ height: $('.slider img').width() });
@@ -151,7 +155,8 @@ const issueRouter = module.exports = {
         });
 
         const $archive = $('#archive');
-        if (user.is_superuser && (data.status === 'rejected' || data.status === 'resolved')) {
+        if (user.is_superuser && !data.is_archived
+                              && (data.status === 'rejected' || data.status === 'resolved')) {
           $archive.show();
         } else {
           $archive.hide();
@@ -240,7 +245,7 @@ const issueRouter = module.exports = {
               case 'processing':
                 return 'Resolve';
               case 'resolved':
-                return 'Process';
+                return 'Reprocess';
               default:
                 return 'Recover';
             }
