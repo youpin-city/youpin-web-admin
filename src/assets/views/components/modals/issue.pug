@@ -86,8 +86,9 @@ mixin merged_children
           span#id
     .row
       .col.s6.main-content
-        +reporter
-        +details
+        if user
+          +reporter
+          +details
         #status
           +priority
           if user
