@@ -7,4 +7,4 @@ site:
 debug: true
 service:
   api:
-    url: http://api.icare.eng.chula.ac.th/
+    url: https://api.icare.eng.chula.ac.th/
