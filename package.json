@@ -101,6 +101,7 @@
     "parallelshell": "^2.0.0",
     "pikaday": "boonmeelab/pikaday",
     "postcss-cli": "^2.5.2",
+    "qs": "^6.4.0",
     "redux": "^3.5.2",
     "scrollmagic": "^2.0.5",
     "sinon": "^1.17.6",
