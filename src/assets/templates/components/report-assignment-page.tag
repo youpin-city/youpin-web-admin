@@ -1,8 +1,9 @@
-report-page
+report-assignment-page
   .breadcrumb
     span
       strong Report
-  h1.page-title Performance Index
+  h1.page-title User Assignment
+    | : "{user.department_name}"
 
   .report-tool
     .level.is-mobile
@@ -19,6 +20,15 @@ report-page
             .control
               .date-to-picker
               input.input(type='text', name='date_to', value='{ date["to"] }')
+        //- .level-item
+          div
+            label.label Period
+            .control
+              .select
+                select(onchange='{ changePeriod }')
+                  option(value='7') Week
+                  option(value='30') Month
+                  option(value='120') Quarter
 
   .spacing-small
 
@@ -33,8 +43,8 @@ report-page
         table.performance-summary
           tr
             th.team Team
-            th.pending.has-text-right Pending
-            th.assigned.has-text-right Assigned
+            //- th.pending.has-text-right Pending
+            //- th.assigned.has-text-right Assigned
             th.processing.has-text-right Processing
             th.resolved.has-text-right Resolved
             th.rejected.has-text-right Rejected
@@ -42,13 +52,12 @@ report-page
 
           tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
             td.team { name }
-            td.numeric-col { summary.pending || 0}
-            td.numeric-col { summary.assigned || 0}
+            //- td.numeric-col { summary.pending || 0}
+            //- td.numeric-col { summary.assigned || 0}
             td.numeric-col { summary.processing || 0}
             td.numeric-col { summary.resolved || 0}
             td.numeric-col { summary.rejected || 0}
-            td.performance(class="{  positive: performance > 0, negative: performance < 0 }")
-              | {  performance.toFixed(2) }
+            td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
 
   script.
@@ -111,44 +120,28 @@ report-page
       let attributes = [];
 
       return Promise.resolve({})
-      // .then(() =>
-      //   api.getPerformance(self.date.from, self.date.to)
-      //   .then(result => {
-      //     console.log('Perf:', result);
-      //   })
-      // )
+      .then(() =>
+        api.getPerformance(self.date.from, self.date.to)
+        .then(result => {
+          console.log('Perf:', result);
+        })
+      )
       .then(() =>
         api.getSummary( start_date, end_date, (data) => {
           available_departments = Object.keys(data);
           attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
 
-          // Department summary
-          // summaries = _.map( self.departments, dept => {
-          //   const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-          //   return {
-          //     name: dept,
-          //     summary: data_dept,
-          //     performance: computePerformance(attributes, data_dept)
-          //   }
-          // });
-
-          return Promise.all(self.departments)
-          .map(dept => {
-            const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
+          // Officer summary
+          summaries = _.map( self.officers, officer => {
+            const data_dept = data[user.department_name];
+            const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
             return {
-              name: dept,
-              summary: data_dept
-            };
-          })
-          .map(sum => api.getPerformance(self.date.from, self.date.to, sum.name)
-            .then(result => {
-              sum.performance = result.current_resolved_pin / (result.prev_active_pins + result.current_new_pins);
-              return sum;
-            })
-          )
-          .then(result => {
-            summaries = result;
+              name: officer.name,
+              summary: data_officer,
+              performance: computePerformance(attributes, data_officer)
+            }
           });
+
         })
       )
       .then(() => {

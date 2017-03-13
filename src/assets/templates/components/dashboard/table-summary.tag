@@ -18,12 +18,12 @@ dashboard-table-summary
     table.summary
       tr
         th.team Team
-        th.pending Pending
-        th.assigned Assigned
-        th.processing Processing
-        th.resolved Resolved
-        th.rejected Rejected
-        th.performance Performance Index
+        th.pending.has-text-right Pending
+        th.assigned.has-text-right Assigned
+        th.processing.has-text-right Processing
+        th.resolved.has-text-right Resolved
+        th.rejected.has-text-right Rejected
+        th.performance.has-text-right Performance Index
 
       tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
