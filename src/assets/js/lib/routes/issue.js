@@ -41,7 +41,13 @@ const issueRouter = module.exports = {
         const $span = $reporter.find('span');
         $span.eq(0).text(owner.name);
         $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
-        $reporter.find('a.btn-flat').attr('href', 'mailto:' + owner.email);
+        const contactButton = $reporter.find('a.btn-flat');
+        if (owner.email && owner.email !== 'bot@mafueng.city') {
+          contactButton.attr('href', 'mailto:' + owner.email);
+          contactButton.show();
+        } else {
+          contactButton.hide();
+        }
 
         const $details = $('#details');
         $details.find('textarea')
