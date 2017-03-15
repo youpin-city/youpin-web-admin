@@ -20,7 +20,19 @@ report-page
               .date-to-picker
               input.input(type='text', name='date_to', value='{ date["to"] }')
 
-  .spacing-small
+  .spacing
+
+  .big-number-table(show='{ category_list.length > 0 }')
+    .columns(each='{ row in category_row }')
+      .column.is-3.has-text-centered(each='{ c in row }')
+        div
+          p.heading { c.name }
+          p.title
+            span.success-number { c.resolved }
+            span / { c.total }
+          p Rejected: { c.rejected }
+
+  .spacing
 
   .section
     .columns
@@ -33,7 +45,7 @@ report-page
         table.performance-summary
           tr
             th.team Team
-            th.pending.has-text-right Pending
+            //- th.pending.has-text-right Pending
             th.assigned.has-text-right Assigned
             th.processing.has-text-right Processing
             th.resolved.has-text-right Resolved
@@ -42,7 +54,7 @@ report-page
 
           tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
             td.team { name }
-            td.numeric-col { summary.pending || 0}
+            //- td.numeric-col { summary.pending || 0}
             td.numeric-col { summary.assigned || 0}
             td.numeric-col { summary.processing || 0}
             td.numeric-col { summary.resolved || 0}
@@ -61,9 +73,10 @@ report-page
     };
     self.data = [];
     self.departments = [];
-    self.officers = [];
+    self.category_list = [];
 
     self.on('mount', () => {
+      self.loadCategoryCount();
       self.setupCloseDateCalendar($(self.root).find('.date-from-picker'), 'from');
       self.setupCloseDateCalendar($(self.root).find('.date-to-picker'), 'to');
       self.loadDepartment()
@@ -75,15 +88,16 @@ report-page
       return api.getDepartments()
       .then(result => {
         dept = result;
-        return api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
+        return api.getUsers((user.department) ? { department: user.department } : undefined)
       })
       .then(result => {
-        self.officers = result.data || [];
         user.department_name = _.get(dept.data.filter(d => d._id === user.department), '0.name', '');
-
-        self.departments = dept.data.map(d => d.name);
-        self.departments.sort(); // Sort department by name.
-        self.departments.push('None'); // Add 'None' departments for non-assigned pins
+        self.departments = dept.data || [];
+        _.sortBy(self.departments, ['name', '_id']);
+        self.departments.push({
+          _id: '1234',
+          name: 'None'
+        });
       });
     }
 
@@ -111,38 +125,24 @@ report-page
       let attributes = [];
 
       return Promise.resolve({})
-      // .then(() =>
-      //   api.getPerformance(self.date.from, self.date.to)
-      //   .then(result => {
-      //     console.log('Perf:', result);
-      //   })
-      // )
       .then(() =>
         api.getSummary( start_date, end_date, (data) => {
           available_departments = Object.keys(data);
           attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
 
-          // Department summary
-          // summaries = _.map( self.departments, dept => {
-          //   const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-          //   return {
-          //     name: dept,
-          //     summary: data_dept,
-          //     performance: computePerformance(attributes, data_dept)
-          //   }
-          // });
-
           return Promise.all(self.departments)
           .map(dept => {
-            const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-            return {
-              name: dept,
-              summary: data_dept
-            };
+            const name = dept.name;
+            dept.summary = (data[name]) ? data[name].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
+            return dept;
           })
-          .map(sum => api.getPerformance(self.date.from, self.date.to, sum.name)
+          .map(sum => api.getPerformance(self.date.from, self.date.to, sum._id)
             .then(result => {
-              sum.performance = result.current_resolved_pin / (result.prev_active_pins + result.current_new_pins);
+              if (result.prev_active_pins + result.current_new_pins === 0) {
+                sum.performance = 0.0;
+              } else {
+                sum.performance = result.current_resolved_pin / (result.prev_active_pins + result.current_new_pins);
+              }
               return sum;
             })
           )
@@ -214,4 +214,38 @@ report-page
     self.changePeriod = (e) => {
       self.period = +e.currentTarget.value;
       self.loadData();
+    };
+
+    self.loadCategoryCount = (queryOpts = {}) => {
+      const cats = app.get('issue.categories') || [];
+      Promise.map( cats, cat => {
+        let opts = _.extend(
+          {},
+          queryOpts,
+          {
+            '$limit': 1,
+            //- is_archived: false,
+            categories: cat.value
+          }
+        );
+
+        return api.getPins(opts).then( res => {
+          return {
+            id: cat.value,
+            name: cat.text,
+            total: res.total,
+            resolved: 0,
+            rejected: 0
+          }
+        })
+      })
+      .then( data => {
+        self.category_list = data || [];
+        self.category_row = [];
+        const row = 4;
+        for (let i=0; i<self.category_list.length / row; i++) {
+          self.category_row.push(self.category_list.slice(i * row, (i + 1) * row));
+        }
+        self.update();
+      });
     };
