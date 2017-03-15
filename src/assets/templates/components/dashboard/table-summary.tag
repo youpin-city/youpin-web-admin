@@ -18,7 +18,7 @@ dashboard-table-summary
     table.summary
       tr
         th.team Team
-        th.pending.has-text-right Pending
+        //- th.pending.has-text-right Pending
         th.assigned.has-text-right Assigned
         th.processing.has-text-right Processing
         th.resolved.has-text-right Resolved
@@ -27,7 +27,7 @@ dashboard-table-summary
 
       tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
-        td.numeric-col { summary.pending || 0}
+        //- td.numeric-col { summary.pending || 0}
         td.numeric-col { summary.assigned || 0}
         td.numeric-col { summary.processing || 0}
         td.numeric-col { summary.resolved || 0}

@@ -69,7 +69,6 @@ report-assignment-page
       to: moment().format('YYYY-MM-DD')
     };
     self.data = [];
-    self.departments = [];
     self.officers = [];
 
     self.on('mount', () => {
@@ -89,10 +88,6 @@ report-assignment-page
       .then(result => {
         self.officers = result.data || [];
         user.department_name = _.get(dept.data.filter(d => d._id === user.department), '0.name', '');
-
-        self.departments = dept.data.map(d => d.name);
-        self.departments.sort(); // Sort department by name.
-        self.departments.push('None'); // Add 'None' departments for non-assigned pins
       });
     }
 

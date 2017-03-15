@@ -13,6 +13,16 @@
     }
   }
 
+  .big-number-table {
+    padding: 2rem 0;
+    background-color: $cl-white;
+    .success-number {
+      color: $cl-success;
+    }
+    .error-number {
+      color: $cl-error;
+    }
+  }
 
   .performance-summary {
     border-bottom: $ps-xxs solid $cl-verylightgray;
