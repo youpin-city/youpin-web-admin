@@ -32,46 +32,48 @@ setting-user
     .modal-content
       h5 Role
       .input-field.col.s12
-        select(name="role")
+        select.browser-default(name="role")
           option(each="{ role in availableRoles }", value="{role.id}", selected="{ role.id === editingUser.role }") {role.name}
       div.department-selector-wrapper
         h5 Department
         .input-field.col.s12
-          select(name="department")
+          select.browser-default(name="department")
             option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id === editingUser.department._id }" ) {dept.name}
       h5 Email
-      .input-field
-        input(type="text", name="email", value="{editingUser.email}")
+      .input-field.control
+        input.input(type="text", name="email", value="{editingUser.email}")
       div.padding
 
-    .row
-      .col.s12.right-align
-        a(onclick="{closeEditUserModal}").btn-flat Cancel
-        | &nbsp;
-        a(onclick="{confirmEditUser}").btn Save
+    .modal-footer
+      .row
+        .col.s12.right-align
+          a(onclick="{closeEditUserModal}").btn-flat Cancel
+          | &nbsp;
+          a(onclick="{confirmEditUser}").btn Save
 
   div(class="modal")#create-user-form
     .modal-header
       h3 Create User
     .modal-content
       h5 Name
-      .input-field
-        input(type="text",name="name")
+      .input-field.control
+        input.input(type="text",name="name")
       h5 Email
-      .input-field
-        input(type="text",name="email")
+      .input-field.control
+        input.input(type="text",name="email")
       h5 Password
-      .input-field
-        input(type="password",name="password")
+      .input-field.control
+        input.input(type="password",name="password")
       h5 Confirm Password
-      .input-field
-        input(type="password",name="confirm-password")
+      .input-field.control
+        input.input(type="password",name="confirm-password")
 
-    .row
-      .col.s12.right-align
-        a(onclick="{closeCreateModal}").btn-flat Cancel
-        | &nbsp;
-        a(onclick="{confirmCreate}").btn Create
+    .modal-footer
+      .row
+        .col.s12.right-align
+          a(onclick="{closeCreateModal}").btn-flat Cancel
+          | &nbsp;
+          a(onclick="{confirmCreate}").btn Create
 
   script.
     let self = this;

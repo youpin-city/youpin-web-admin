@@ -32,7 +32,7 @@ dashboard-table-summary
         td.numeric-col { summary.processing || 0}
         td.numeric-col { summary.resolved || 0}
         td.numeric-col { summary.rejected || 0}
-        td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
+        td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
   script.
 
@@ -64,10 +64,8 @@ dashboard-table-summary
 
         api.getDepartments()
         .then(departments => {
-          api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
+          api.getUsers((user.dept) ? { department: user.dept._id } : undefined) // role: 'department_officer',
           .then(officers => {
-            user.department_name = _.get(departments.data.filter(d => d._id === user.department), '0.name', '');
-
             departments = departments.data.map(d => d.name);
             departments.sort(); // Sort department by name.
             departments.push('None'); // Add 'None' departments for non-assigned pins
@@ -88,7 +86,7 @@ dashboard-table-summary
                 });
               } else { // Officer summary
                 summaries = _.map( officers.data, officer => {
-                  const data_dept = data[user.department_name];
+                  const data_dept = data[user.dept.name];
                   const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
                   return {
                     name: officer.name,

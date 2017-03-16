@@ -29,8 +29,8 @@ sitemap:
           - super_admin
           - organization_admin
           - department_head
-      - name: sitenav.report_assignment
-        href: "/report/assignment"
+      - name: sitenav.report_department
+        href: "/report/department"
         children: []
         authorized_roles:
           - super_admin

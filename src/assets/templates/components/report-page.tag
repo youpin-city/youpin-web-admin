@@ -1,47 +1,35 @@
 report-page
-  .breadcrumb
-    span
-      strong Report
-  h1.page-title Performance Index
-
   .report-tool
+    .breadcrumb
+      span
+        strong Report
+    h1.page-title Performance
+    h3.section-title แสดงตามช่วงเวลา
+      | {moment(date['from']).format('DD/MM/YYYY')}
+      | -
+      | {moment(date['to']).format('DD/MM/YYYY')}
+
     .level.is-mobile
       .level-left
         .level-item
           div
-            label.label From
+            label.label ตั้งแต่
             .control
               .date-from-picker
               input.input(type='text', name='date_from', value='{ date["from"] }')
         .level-item
           div
-            label.label To
+            label.label ถึง
             .control
               .date-to-picker
               input.input(type='text', name='date_to', value='{ date["to"] }')
 
   .spacing
 
-  .big-number-table(show='{ category_list.length > 0 }')
-    .columns(each='{ row in category_row }')
-      .column.is-3.has-text-centered(each='{ c in row }')
-        div
-          p.heading { c.name }
-          p.title
-            span.success-number { c.resolved }
-            span / { c.total }
-          p Rejected: { c.rejected }
-
-  .spacing
-
   .section
+    h3.section-title เรื่องแยกตามสถานะ
     .columns
       .column
-        h3.page-title Show data between
-          | {moment(date['from']).format('DD/MM/YYYY')}
-          | -
-          | {moment(date['to']).format('DD/MM/YYYY')}
-
         table.performance-summary
           tr
             th.team Team
@@ -59,9 +47,27 @@ report-page
             td.numeric-col { summary.processing || 0}
             td.numeric-col { summary.resolved || 0}
             td.numeric-col { summary.rejected || 0}
-            td.performance(class="{  positive: performance > 0, negative: performance < 0 }")
-              | {  performance.toFixed(2) }
+            td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
 
+  .spacing
+
+  .section(show='{ category_list.length > 0 }')
+    h3.section-title แยกตามหมวด
+    .big-number-table.category-table
+      .columns(each='{ row in category_row }')
+        .column.is-3.has-text-centered(each='{ c in row }')
+          div
+            .container.clearfix
+              p.heading { c.name }
+            .container.clearfix
+              p.subtitle.left Total
+              p.title.has-text-right { c.total }
+            .container.clearfix
+              p.subtitle.left Resolved
+              p.title.has-text-right.success-number { c.resolved }
+            .container.clearfix
+              p.subtitle.left Rejected
+              p.title.has-text-right.error-number { c.rejected }
 
   script.
     let self = this;
@@ -91,7 +97,6 @@ report-page
         return api.getUsers((user.department) ? { department: user.department } : undefined)
       })
       .then(result => {
-        user.department_name = _.get(dept.data.filter(d => d._id === user.department), '0.name', '');
         self.departments = dept.data || [];
         _.sortBy(self.departments, ['name', '_id']);
         self.departments.push({
@@ -209,11 +214,6 @@ report-page
       $(window).on('resize.' + self.picker[name].__id, function() {
         self.picker[name].adjustPosition();
       });
-    };
-
-    self.changePeriod = (e) => {
-      self.period = +e.currentTarget.value;
-      self.loadData();
     };
 
     self.loadCategoryCount = (queryOpts = {}) => {
