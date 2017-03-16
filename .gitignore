@@ -20,6 +20,7 @@ npm-debug.log
 .idea
 *.swp
 *.DS_Store
+.vscode
 
 config/current
 public/css

@@ -1,0 +1,106 @@
+#page-report {
+
+  .report-tool {
+    padding: 1rem;
+    background-color: $cl-white;
+
+    // .input {
+    //   border: 1px solid $cl-border;
+    //   margin: 0;
+    // }
+  }
+
+  .big-number-table {
+    padding: 2rem 0;
+    background-color: $cl-white;
+    .success-number {
+      color: $cl-success;
+    }
+    .error-number {
+      color: $cl-error;
+    }
+  }
+
+  .category-table {
+    .heading {
+      font-size: $fs-6;
+    }
+    .title {
+      font-size: $fs-2;
+      margin: 0;
+    }
+    .subtitle {
+      font-size: $fs-7;
+    }
+  }
+
+  .performance-summary {
+    border-bottom: $ps-xxs solid $cl-verylightgray;
+
+    th {
+      border-left: solid $ps-xs;
+      background: $cl-verylightgray;
+      vertical-align: top;
+
+      &.team {
+        border-left-color: $cl-darkgreen;
+      }
+
+      &.assigned {
+        border-left-color: $cl-blue;
+      }
+
+      &.processing {
+        border-left-color: $cl-orange;
+      }
+
+      &.resolved {
+        border-left-color: $cl-green;
+      }
+
+      &.rejected {
+        border-left-color: $cl-red;
+      }
+
+      &.performance {
+        border: none;
+      }
+
+    }
+
+    .row {
+      border-bottom: 1px solid $cl-verylightgray;
+
+      .team {
+        color: $cl-primary;
+        width: 20%;
+      }
+
+      .performance {
+        background:  $cl-lightgray;
+        width: 15%;
+
+        &.positive::before {
+          float: left;
+          color: $cl-green;
+          content: '▲'
+        }
+        &.negative::left {
+          float: right;
+          color: $cl-red;
+          content: '▼';
+        }
+      }
+
+      .numeric-col {
+         text-align: right;
+         padding-right: $ps-small;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
+  }
+
+}

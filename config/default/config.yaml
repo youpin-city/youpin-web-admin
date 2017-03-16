@@ -44,3 +44,33 @@ service:
 
         ---------------------------------------------------------------------------------
         Do not reply to this email. This is an automated response email.
+
+issue:
+  categories:
+    - value: repair
+      text: แจ้งซ่อม
+      selected: false
+    - value: service
+      text: บริการ
+      selected: false
+    - value: it
+      text: IT
+      selected: false
+    - value: suggestion
+      text: เสนอแนะ
+      selected: false
+    - value: classroom
+      text: ห้องเรียน
+      selected: false
+    - value: safety
+      text: ปลอดภัย
+      selected: false
+    - value: sanitary
+      text: ความสะอาด
+      selected: false
+    - value: traffic
+      text: จราจร
+      selected: false
+    - value: others
+      text: อื่น ๆ
+      selected: false

@@ -1,6 +1,15 @@
 dashboard-table-summary
   h1.page-title Overview
 
+  #big-number-table(show='{ status_list.length > 0 }')
+    .level
+      .level-item.has-text-centered(each='{ s in status_list }')
+        div
+          p.heading { s.name }
+          p.title { s.count }
+
+  .spacing
+
   div.performance-table.opaque-bg.content-padding
     ul.duration-selector
       li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
@@ -9,21 +18,21 @@ dashboard-table-summary
     table.summary
       tr
         th.team Team
-        th.pending Pending
-        th.assigned Assigned
-        th.processing Processing
-        th.resolved Resolved
-        th.rejected Rejected
-        th.performance Performance Index
+        //- th.pending.has-text-right Pending
+        th.assigned.has-text-right Assigned
+        th.processing.has-text-right Processing
+        th.resolved.has-text-right Resolved
+        th.rejected.has-text-right Rejected
+        th.performance.has-text-right Performance Index
 
       tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
-        td.numeric-col { summary.pending || 0}
+        //- td.numeric-col { summary.pending || 0}
         td.numeric-col { summary.assigned || 0}
         td.numeric-col { summary.processing || 0}
         td.numeric-col { summary.resolved || 0}
         td.numeric-col { summary.rejected || 0}
-        td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
+        td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
 
   script.
 
@@ -31,16 +40,23 @@ dashboard-table-summary
     let ymd = 'YYYY-MM-DD';
     let end_date = moment().add(1,'day').format(ymd);
 
+    self.status_list = [];
     self.activeSelector = 0;
 
-    this.durationSelectors = [
+    self.durationSelectors = [
       { name: 'week', start: generateStartDate('week', 'day', 1) },
       { name: '1 months', start: generateStartDate('month', 'month', 0) },
       { name: '2 months', start: generateStartDate('month', 'month', -1) },
       { name: '6 months', start: generateStartDate('month', 'month', -5) }
     ];
 
-    this.selectDuration  = function(selectorIdx) {
+    self.on('mount', () => {
+      // Initialize selector
+      self.selectDuration(0)();
+      self.loadStatusCount();
+    });
+
+    self.selectDuration = function(selectorIdx) {
       return function(){
         self.activeSelector = selectorIdx;
 
@@ -48,10 +64,8 @@ dashboard-table-summary
 
         api.getDepartments()
         .then(departments => {
-          api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
+          api.getUsers((user.dept) ? { department: user.dept._id } : undefined) // role: 'department_officer',
           .then(officers => {
-            user.department_name = _.get(departments.data.filter(d => d._id === user.department), '0.name', '');
-
             departments = departments.data.map(d => d.name);
             departments.sort(); // Sort department by name.
             departments.push('None'); // Add 'None' departments for non-assigned pins
@@ -72,7 +86,7 @@ dashboard-table-summary
                 });
               } else { // Officer summary
                 summaries = _.map( officers.data, officer => {
-                  const data_dept = data[user.department_name];
+                  const data_dept = data[user.dept.name];
                   const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
                   return {
                     name: officer.name,
@@ -110,9 +124,6 @@ dashboard-table-summary
       }
     }
 
-    // Initialize selector
-    this.selectDuration(0)();
-
     function generateStartDate(period, adjPeriod, unit ){
       return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
     }
@@ -134,3 +145,33 @@ dashboard-table-summary
     this.shouldHideRow = function(department){
         return user.role != "organization_admin" && user.department != department;
     }
+
+    self.loadStatusCount = (queryOpts = {}) => {
+      const status_keys = [
+        'pending',
+        'assigned',
+        'processing'
+      ];
+      Promise.map( status_keys, status => {
+        let opts = _.extend(
+          {},
+          queryOpts,
+          {
+            '$limit': 1,
+            is_archived: false,
+            status: status
+          }
+        );
+
+        return api.getPins(opts).then( res => {
+          return {
+            name: status,
+            count: res.total
+          }
+        })
+      })
+      .then( data => {
+        self.status_list = data || [];
+        self.update();
+      });
+    };

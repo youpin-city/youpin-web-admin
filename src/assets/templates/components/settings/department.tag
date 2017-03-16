@@ -27,28 +27,30 @@ setting-department
     .divider
     .modal-content
       h5 Department name
-      .input-field
-        input(type="text", name="departmentName", value="{editingDepartment.name}")
+      .input-field.control
+        input.input(type="text", name="departmentName", value="{editingDepartment.name}")
 
-    .row
-      .col.s12.right-align
-        a(onclick="{closeEditDepartmentModal}").btn-flat Cancel
-        | &nbsp;
-        a(onclick="{confirmEditDepartment}").btn Save
+    .modal-footer
+      .row
+        .col.s12.right-align
+          a(onclick="{closeEditDepartmentModal}").btn-flat Cancel
+          | &nbsp;
+          a(onclick="{confirmEditDepartment}").btn Save
 
   div(class="modal")#create-department-form
     .modal-header
       h3 Create Department
     .modal-content
       h5 Department name
-      .input-field
-        input(type="text",name="name")
+      .input-field.control
+        input.input(type="text",name="name")
 
-    .row
-      .col.s12.right-align
-        a(onclick="{closeCreateModal}").btn-flat Cancel
-        | &nbsp;
-        a(onclick="{confirmCreate}").btn Create
+    .modal-footer
+      .row
+        .col.s12.right-align
+          a(onclick="{closeCreateModal}").btn-flat Cancel
+          | &nbsp;
+          a(onclick="{confirmCreate}").btn Create
 
   script.
     let self = this;

@@ -10,6 +10,7 @@ html {
   font-family: $ff-default;
   margin: 0;
   padding: 0;
+  background-color: $cl-veryverylightgray;
 }
 
 /* Typography */
@@ -23,7 +24,6 @@ body {
   font-size: $fs-p;
   font-weight: $fw-normal;
 
-  background-color: $cl-veryverylightgray;
   // letter-spacing: 0.01em; // greater readability
   -webkit-font-smoothing: antialiased; // subpixel-antialiased;
 }
@@ -61,6 +61,9 @@ a {
 
 // Icon
 i.icon {
+  width: auto; // fix bulma .icon
+  height: initial; // fix bulma .icon
+  line-height: initial; // fix bulma .icon
   vertical-align: middle;
   &.tiny {
     font-size: 1.3rem;
