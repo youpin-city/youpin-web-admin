@@ -76,10 +76,14 @@ export default function auth(check_auth = true) {
       if (data) {
         const user = data;
         user.token = jwt;
-        // assign to user
-        req.user = res.locals.user = parse_user(user);
-        req.cookies[cookie_user_info] = user;
-        res.cookie(cookie_user_info, user, conf.get('service.cookie'));
+        return req.api('/departments/' + user.department)
+        .then(data => {
+          // assign to user
+          user.dept = data;
+          req.user = res.locals.user = parse_user(user);
+          req.cookies[cookie_user_info] = user;
+          res.cookie(cookie_user_info, user, conf.get('service.cookie'));
+        });
       }
     })
     .catch(err => {

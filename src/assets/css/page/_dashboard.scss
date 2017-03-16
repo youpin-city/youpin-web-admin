@@ -112,13 +112,13 @@ $activity-width: 320px;
         background:  $cl-lightgray;
         width: 15%;
 
-        &.positive::after {
-          float: right;
+        &.positive::before {
+          float: left;
           color: $cl-green;
           content: '▲'
         }
-        &.negative::after {
-          float: right;
+        &.negative::before {
+          float: left;
           color: $cl-red;
           content: '▼';
         }

@@ -1,45 +1,36 @@
-report-assignment-page
-  .breadcrumb
-    span
-      strong Report
-  h1.page-title User Assignment
-    | : "{user.department_name}"
-
+report-department-page
   .report-tool
+    .breadcrumb
+      span
+        strong Report
+    h1.page-title Department
+      | : { user && user.dept && user.dept.name}
+    h3.section-title แสดงตามช่วงเวลา
+      | {moment(date['from']).format('DD/MM/YYYY')}
+      | -
+      | {moment(date['to']).format('DD/MM/YYYY')}
+
     .level.is-mobile
       .level-left
         .level-item
           div
-            label.label From
+            label.label ตั้งแต่
             .control
               .date-from-picker
               input.input(type='text', name='date_from', value='{ date["from"] }')
         .level-item
           div
-            label.label To
+            label.label ถึง
             .control
               .date-to-picker
               input.input(type='text', name='date_to', value='{ date["to"] }')
-        //- .level-item
-          div
-            label.label Period
-            .control
-              .select
-                select(onchange='{ changePeriod }')
-                  option(value='7') Week
-                  option(value='30') Month
-                  option(value='120') Quarter
 
   .spacing-small
 
   .section
+    h3.section-title เรื่องแยกตามเจ้าหน้าที่
     .columns
       .column
-        h3.page-title Show data between
-          | {moment(date['from']).format('DD/MM/YYYY')}
-          | -
-          | {moment(date['to']).format('DD/MM/YYYY')}
-
         table.performance-summary
           tr
             th.team Team
@@ -57,7 +48,7 @@ report-assignment-page
             td.numeric-col { summary.processing || 0}
             td.numeric-col { summary.resolved || 0}
             td.numeric-col { summary.rejected || 0}
-            td.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
+            td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
 
 
   script.
@@ -87,7 +78,6 @@ report-assignment-page
       })
       .then(result => {
         self.officers = result.data || [];
-        user.department_name = _.get(dept.data.filter(d => d._id === user.department), '0.name', '');
       });
     }
 
@@ -128,7 +118,7 @@ report-assignment-page
 
           // Officer summary
           summaries = _.map( self.officers, officer => {
-            const data_dept = data[user.department_name];
+            const data_dept = data[user.dept.name];
             const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
             return {
               name: officer.name,
@@ -197,9 +187,4 @@ report-assignment-page
       $(window).on('resize.' + self.picker[name].__id, function() {
         self.picker[name].adjustPosition();
       });
-    };
-
-    self.changePeriod = (e) => {
-      self.period = +e.currentTarget.value;
-      self.loadData();
     };

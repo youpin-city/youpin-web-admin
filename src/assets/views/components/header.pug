@@ -12,27 +12,66 @@ header#header
   //-   a#mobile-nav-btn.button-collapse.modal-trigger(href='#mobile-nav')
   //-     i.icon.material-icons menu
 
-  nav#site-nav-top
-    .nav-wrapper
-
-      a#mobile-nav-btn.waves-effect.waves-light(href='#mobile-nav')
+  nav.nav#site-nav-top
+    .nav-left
+      a#mobile-nav-btn.nav-item.waves-effect.waves-light(href='#mobile-nav')
         i.icon.material-icons menu
-
-      a.brand-logo(href=site_url('/'))
+      a.nav-item.site-logo(href=site_url('/'))
         img(src=site_url('/public/img/logo-icon.png'))
 
       //- preloader(class='small')
 
-      ul#site-nav-top-menu.nav-list.right.hide-on-small-and-down
-        li
-          search-box
+    .nav-right.nav-menu
+      if user
+        .nav-item
+          a#desktop-logout-btn.button.hide-on-global-search(href=site_url('logout'))= __('action.logout')
+        .nav-item
+          .wrapper.hide-on-global-search
+            .content.has-text-left
+              strong.text= user.name.split(' ')[0]
+              span.text &nbsp;(#{user.dept && user.dept.name})
+            //- .content.has-text-left.is-small
+              strong.text user.dept && user.dept.name
+      else
+        .nav-item
+          a#desktop-login-btn.button.is-primary.hide-on-global-search(href=site_url('login'))= __('action.login')
 
-        if user
+      .nav-item
+        search-box
+      //- .nav-item
+        ul#site-nav-top-menu.nav-list.right.hide-on-small-and-down
           li
-            a#desktop-logout-btn.hide-on-global-search(href=site_url('logout'))= __('action.logout')
-        else
-          li
-            a#desktop-login-btn.hide-on-global-search(href=site_url('login'))= __('action.login')
+            search-box
+
+          if user
+            li
+
+            li
+              a#desktop-logout-btn.hide-on-global-search(href=site_url('logout'))= __('action.logout')
+          else
+            li
+              a#desktop-login-btn.hide-on-global-search(href=site_url('login'))= __('action.login')
+
+    //- .nav-wrapper
+
+    //-   a#mobile-nav-btn.waves-effect.waves-light(href='#mobile-nav')
+    //-     i.icon.material-icons menu
+
+    //-   a.brand-logo(href=site_url('/'))
+    //-     img(src=site_url('/public/img/logo-icon.png'))
+
+    //-   //- preloader(class='small')
+
+    //-   ul#site-nav-top-menu.nav-list.right.hide-on-small-and-down
+    //-     li
+    //-       search-box
+
+    //-     if user
+    //-       li
+    //-         a#desktop-logout-btn.hide-on-global-search(href=site_url('logout'))= __('action.logout')
+    //-     else
+    //-       li
+    //-         a#desktop-login-btn.hide-on-global-search(href=site_url('login'))= __('action.login')
 
 
   nav#site-nav-left
@@ -62,13 +101,17 @@ nav#mobile-nav.modal
   .site-title
     .right
       a.close-btn.modal-close(href='#!')
-        i.icon.material-icons close
-    a.brand-logo(href=site_url('/'))
-      img(src=site_url('/public/img/logo.png'))
+        //- i.icon.material-icons close
+    a.site-logo(href=site_url('/'))
+      img(src=site_url('/public/img/logo-land.png'))
 
   .search-container
-    i.icon.material-icons search
     form(action='/search')
+      .control.has-icon
+        input.input(type='search', name='q', placeholder='Title, keyword, author', tabindex='-1')
+        i.icon.material-icons search
+    //- i.icon.material-icons search
+    //- form(action='/search')
       input(type='search', name='q', placeholder='Title, keyword, author', tabindex='-1')
 
   if user && user.team

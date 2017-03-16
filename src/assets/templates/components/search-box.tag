@@ -15,6 +15,7 @@ search-box(class='{ open: open }')
         display: inline-block;
         opacity: 1;
         transition: all 0.2s ease-out;
+        vertical-align: top;
       }
       .search-box-wrapper {
         display: inline-block;

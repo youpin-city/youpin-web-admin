@@ -66,8 +66,8 @@ router.get('/report/performance', auth(), (req, res, next) => {
   res.render('report');
 });
 
-router.get('/report/assignment', auth(), (req, res, next) => {
-  res.render('report_assignment');
+router.get('/report/department', auth(), (req, res, next) => {
+  res.render('report_department');
 });
 
 router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => {
