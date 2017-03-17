@@ -1,33 +1,38 @@
 setting-user
   h1.page-title
-    | User Settings
+    | User List
 
   .row
     .col.s12.right-align
       a.btn(onclick="{createUser}")
         | Create User
 
-  .opaque-bg.content-padding
-    table
+  .opaque-bg.content-padding.is-overflow-auto
+    table.table.is-striped
       thead
-          th Name
-          th Email
+          th Name / Email
           th Department
           th Role
           th(style='min-width: 100px;')
 
       tr(each="{user in users}" ).user
-          td {user.name}
-          td {user.email}
+          td
+            div {user.name}
+            .content.is-small
+              div {user.email}
           td {user.department.name}
-          td {user.role}
+          td {_.find(availableRoles, ['id', user.role]).name}
           td
             a.btn.btn-small.btn-block(onclick="{ editUser(user) }")
               | Edit
 
+  .spacing
+  div.load-more-wrapper
+    a.load-more(class="{active: hasMore}", onclick="{ loadData }" ) Load More
+
   div#edit-user-form(class="modal")
     .modal-header
-      h3 Edit user {editingUser.name}
+      h3 Edit User {editingUser.name}
     .divider
     .modal-content
       h5 Role
@@ -79,7 +84,10 @@ setting-user
     let self = this;
     let $editUserModal, $createModal, $roleSelector, $departmentSelector;
 
+    self.users = [];
+    self.hasMore = true;
     self.availableRoles = opts.availableRoles || [];
+
     $(document).ready(() => {
       $editUserModal  = $('#edit-user-form').modal();
       $createModal = $('#create-user-form').modal();
@@ -92,25 +100,30 @@ setting-user
       });
     });
 
-    self.users = [];
-
+    self.on('mount', () => {
+      api.getDepartments().then( (res) => {
+        self.departments = res.data;
+        self.departments = [{
+          _id: '',
+          name: 'No Department',
+          organization: ''
+        }].concat(self.departments);
+        self.loadData();
+      });
+    });
 
     self.loadData = () => {
-      api.getUsers().then( (res) => {
-        self.users = res.data;
+      const opts = { $skip: self.users.length };
+      api.getUsers( opts ).then( result => {
+        self.users = self.users.concat(result.data)
+        self.updateHasMoreButton(result);
         self.update();
       });
     };
 
-    api.getDepartments().then( (res) => {
-      self.departments = res.data;
-      self.departments = [{
-        _id: '',
-        name: 'No Department',
-        organization: ''
-      }].concat(self.departments);
-      self.loadData();
-    });
+    self.updateHasMoreButton = (result) => {
+      self.hasMore = ( result.total - ( result.skip + result.data.length ) ) > 0;
+    }
 
     self.editUser = ( userObj ) => {
       return () => {

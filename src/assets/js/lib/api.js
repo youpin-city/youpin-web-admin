@@ -66,10 +66,13 @@ api.getRecentActivities = (cb) => {
   return fetch(url).then(response => response.json()).then(cb);
 };
 
-api.getDepartments = () => {
-  const opts = {
-    $limit: 100
+api.getDepartments = (opts = {}) => {
+  const default_opts = {
+    $limit: 50
   };
+  if (typeof opts === 'object') {
+    opts = _.extend(default_opts, opts);
+  }
 
   const url = api._buildEndpoint('departments', opts);
   return fetch(url).then(response => response.json());
@@ -99,11 +102,12 @@ api.postPhoto = (formData) => {
   return fetch(url, { method: 'POST', body: formData });
 };
 
-api.getUsers = (opts) => {
-  if (opts === undefined) {
-    opts = {
-      $limit: 100
-    };
+api.getUsers = (opts = {}) => {
+  const default_opts = {
+    $limit: 50
+  };
+  if (typeof opts === 'object') {
+    opts = _.extend(default_opts, opts);
   }
 
   const url = api._buildEndpoint('users', opts);

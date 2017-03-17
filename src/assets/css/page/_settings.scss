@@ -1,7 +1,26 @@
-#page-setting-user {
-    #edit-user-form .padding {
-        height: 200px;
-        position: relative;
-        display: block;
+#page-setting-user,
+#page-setting-department {
+
+  #edit-user-form .padding {
+    height: 200px;
+    position: relative;
+    display: block;
+  }
+
+  .load-more-wrapper {
+    text-align: center;
+    a.load-more {
+        display: none;
+        padding: $ps-xs $ps-default;
+        border: 1px solid;
+        cursor: pointer;
+        border-radius: $ps-xxs;
+        color: $cl-white;
+        background: $cl-primary;
+
+        &.active {
+          display: inline-block;
+        }
     }
+  }
 }

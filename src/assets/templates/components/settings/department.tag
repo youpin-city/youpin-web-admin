@@ -1,25 +1,29 @@
 setting-department
   h1.page-title
-    | Department Settings
+    | Department List
 
   .row
     .col.s12.right-align
       a.btn(onclick="{createDepartment}")
         | Create Department
 
-  .opaque-bg.content-padding
-    table
+  .opaque-bg.content-padding.is-overflow-auto
+    table.table.is-striped
       thead
         tr
           th Department
           th(style='width: 120px;')
       tbody
         tr(each="{dept in departments}" ).department
-          td
-            b {dept.name}
+          td {dept.name}
           td
             a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id, dept.name) }")
               | Edit
+
+  .spacing
+  div.load-more-wrapper
+    a.load-more(class="{active: hasMore}", onclick="{ loadData }" ) Load More
+
 
   #edit-department-form.modal
     .modal-header
@@ -56,21 +60,30 @@ setting-department
     let self = this;
     let $editModal, $createModal;
 
+    self.departments  = [];
+    self.hasMore = true;
+
     $(document).ready( () => {
-        $editModal  = $('#edit-department-form').modal();
-        $createModal = $('#create-department-form').modal();
+      $editModal  = $('#edit-department-form').modal();
+      $createModal = $('#create-department-form').modal();
     })
 
-    this.departments  = []
+    self.on('mount', () => {
+      self.loadData();
+    });
 
     self.loadData = () => {
-      api.getDepartments().then( (res) => {
-        self.departments = res.data;
+      const opts = { $skip: self.departments.length };
+      api.getDepartments( opts ).then( result => {
+        self.departments = self.departments.concat(result.data)
+        self.updateHasMoreButton(result);
         self.update();
       });
-    }
+    };
 
-    self.loadData();
+    self.updateHasMoreButton = (result) => {
+      self.hasMore = ( result.total - ( result.skip + result.data.length ) ) > 0;
+    }
 
     self.editDepartment = (deptId, deptName) => {
         return () => {

@@ -21,7 +21,7 @@ issue-list
       .spacing-large
 
     div.load-more-wrapper
-      a.load-more(class="{active: hasMore}", onclick="{loadMore()}" ) Load More
+      a.load-more(class="{active: hasMore}", onclick="{loadMore}" ) Load More
 
   div(class="{ hide: !isShowingMap, 'map-view': true }")
     div(id="issue-map")
@@ -42,22 +42,22 @@ issue-list
 
 
     this.load = (opts) => {
-        self.currentQueryOpts = opts;
+      self.currentQueryOpts = opts;
 
-        api.getPins(opts).then( res => {
-          self.pins = _.map(res.data, pin => {
-            pin.assigned_user_names = _.get(pin, 'assigned_users.length', 0) > 0
-              ? _.map(pin.assigned_users, u => u.name).join(', ')
-              : '';
-            return pin;
-          });
-          self.updateHasMoreButton(res);
-          self.isShowingMap = false;
-
-          self.removeMapMarkers();
-
-          self.update();
+      api.getPins(opts).then( res => {
+        self.pins = _.map(res.data, pin => {
+          pin.assigned_user_names = _.get(pin, 'assigned_users.length', 0) > 0
+            ? _.map(pin.assigned_users, u => u.name).join(', ')
+            : '';
+          return pin;
         });
+        self.updateHasMoreButton(res);
+        self.isShowingMap = false;
+
+        self.removeMapMarkers();
+
+        self.update();
+      });
     }
 
     this.loadMore = () => {
