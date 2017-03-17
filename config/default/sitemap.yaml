@@ -19,25 +19,39 @@ sitemap:
   - name: sitenav.archive
     href: "/archive"
     children: []
-  # - name: sitenav.report
-  #   href: "/report"
-  #   children: []
+  - name: sitenav.report
+    href: "/report"
+    children:
+      - name: sitenav.report_performance
+        href: "/report/performance"
+        children: []
+        authorized_roles:
+          - super_admin
+          - organization_admin
+          - department_head
+      - name: sitenav.report_department
+        href: "/report/department"
+        children: []
+        authorized_roles:
+          - super_admin
+          - organization_admin
+          - department_head
   - name: sitenav.settings
     href: "/settings"
     authorized_roles:
-        - super_admin
-        - organization_admin
+      - super_admin
+      - organization_admin
     children:
-        - name: sitenav.settings_department
-          href: '/settings/department'
-          authorized_roles:
-            - super_admin
-            - organization_admin
-        - name: sitenav.settings_user
-          href: '/settings/user'
-          authorized_roles:
-            - super_admin
-            - organization_admin
+      - name: sitenav.settings_department
+        href: '/settings/department'
+        authorized_roles:
+          - super_admin
+          - organization_admin
+      - name: sitenav.settings_user
+        href: '/settings/user'
+        authorized_roles:
+          - super_admin
+          - organization_admin
 
 footer_link: []
   # - name: sitenav.privacy

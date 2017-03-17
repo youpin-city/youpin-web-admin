@@ -30,9 +30,9 @@ setting-department
         h3 Edit Department
     .divider
     .modal-content
-      h5 Department Name
-      .input-field
-        input(type="text", name="departmentName", value="{editingDepartment.name}")
+      h5 Department name
+      .input-field.control
+        input.input(type="text", name="departmentName", value="{editingDepartment.name}")
 
     .modal-footer
       .row
@@ -45,9 +45,9 @@ setting-department
     .modal-header
       h3 Create Department
     .modal-content
-      h5 Department Name
-      .input-field
-        input(type="text",name="name")
+      h5 Department name
+      .input-field.control
+        input.input(type="text",name="name")
 
     .modal-footer
       .row

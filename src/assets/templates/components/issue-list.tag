@@ -34,8 +34,8 @@ issue-list
     this.isShowingMap = false;
     this.mapOptions = {};
     this.mapMarkerIcon = L.icon({
-      iconUrl: util.site_url('/public/img/marker-m-3d.png'),
-      iconSize: [36, 54],
+      iconUrl: util.site_url('/public/img/marker-m-3d@2x.png'),
+      iconSize: [56, 56],
       iconAnchor: [16, 51],
       popupAnchor: [0, -51]
     });

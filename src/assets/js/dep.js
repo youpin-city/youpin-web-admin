@@ -36,6 +36,9 @@ else root = {};
   // Leaflet
   require('leaflet');
 
+  // pikaday
+  window.Pikaday = require('pikaday');
+
   // cookie
   window.Cookie = require('js-cookie');
 }(root));

@@ -32,7 +32,8 @@ module.exports = (req, res, next) => {
     service: {
       map: conf.get('service.map'),
       here: conf.get('service.here')
-    }
+    },
+    issue: conf.get('issue')
   };
 
   next();

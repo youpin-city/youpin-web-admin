@@ -58,6 +58,18 @@ router.get('/archive', auth(), (req, res, next) => {
   res.render('archive');
 });
 
+router.get('/report', auth(), (req, res, next) => {
+  res.redirect('report/performance');
+});
+
+router.get('/report/performance', auth(), (req, res, next) => {
+  res.render('report');
+});
+
+router.get('/report/department', auth(), (req, res, next) => {
+  res.render('report_department');
+});
+
 router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => {
   res.locals.q = req.query.q;
   res.render('search');

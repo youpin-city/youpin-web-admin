@@ -12,8 +12,8 @@ mixin reporter
 mixin details
   #details
     h5 Description
-    .input-field
-      textarea.materialize-textarea(disabled=user.is_superuser ? undefined : true)
+    .input-field.control
+      textarea.input(disabled=user.is_superuser ? undefined : true)
     h5 Category
     .chips.chips-initial
     h5 Location
@@ -24,7 +24,7 @@ mixin details
 mixin priority
   h5 Priority
   .input-field
-    select
+    select.browser-default
       option(value='urgent') Urgent
       option(value='normal') Normal
       option(value='trivial') Trivial
@@ -95,16 +95,16 @@ mixin merged_children
             if user.is_superuser
               h5 Department
               .input-field
-                select
+                select.browser-default
               h5 Annotation
-              .input-field
-                textarea.materialize-textarea
+              .input-field.control
+                textarea.input
               +merged_parent
               +merged_children
               +merge_tool
             else
               h5 Assigned to
               .input-field
-                select
+                select.browser-default
       .col.s6
         +progress

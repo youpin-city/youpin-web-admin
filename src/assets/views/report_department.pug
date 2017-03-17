@@ -1,0 +1,9 @@
+extends components/layout
+
+append content
+  #page-report.page.content-padding
+    report-department-page
+
+append app_script
+  script.
+    riot.mount('report-department-page');
