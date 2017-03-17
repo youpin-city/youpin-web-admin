@@ -14,7 +14,7 @@ issue-item.issue.clearfix(class='{className}')
       div.meta.issue-location
         i.icon.material-icons.tiny location_on
         span
-          a.bubble(if='{ item.location && item.location.coordinates }', href='#')
+          a.bubble(if='{ item.location && item.location.coordinates }', href='#!issue-map:{ item._id }')
             | See map
           span.bubble(if='{ item.location_name }') { item.location_name }
       div.meta.issue-category(if='{ item.categories && item.categories.length > 0 }')

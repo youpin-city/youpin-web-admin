@@ -30,32 +30,32 @@ issue-page
                 .file-field.input-field
                   input(type='file', accept="image/*")
                   .file-path-wrapper
-                    input.file-path.validate(type="text", placeholder="Upload photo")
+                    input.file-path.validate(type="text", placeholder="Click to upload photo")
             .col.s12.l6
               #details
                 h5 Description
-                .input-field
-                  textarea.materialize-textarea
+                .input-field.control
+                  textarea.input
                 h5 Category
                 .chips.chips-initial
-                h5 Location
-                .chips.chips-initial
+                //- h5 Location
+                //- .chips.chips-initial
                 h5 Tag
                 .chips.chips-initial
         .col.s6.l3#status
           h5 Priority
           .input-field
-            select
+            select.browser-default
               option(value='urgent') Urgent
               option(value='normal') Normal
               option(value='trivial') Trivial
           #select-department
             h5 Department
             .input-field
-              select
+              select.browser-default
           h5 Annotation
-          .input-field
-            textarea.materialize-textarea
+          .input-field.control
+            textarea.input
 
   script.
     let self = this;

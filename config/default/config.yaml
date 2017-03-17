@@ -21,6 +21,19 @@ service:
     app_password: 'web_mafueng'
   map:
     initial_location: [13.7365673, 100.5326298]
+  leaflet:
+    url: 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/{scheme}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}&style={style}&ppi={ppi}'
+    options:
+      attribution: 'Map &copy; 1987-2014 <a href="https://developer.here.com">HERE</a>'
+      subdomains: '1234'
+      mapID: 'newest'
+      base: 'base'
+      maxZoom: 20
+      type: 'maptile'
+      language: 'tha'
+      style: 'default'
+      format: 'png8'
+      size: '256'
   ga:
     id:
   facebook:
