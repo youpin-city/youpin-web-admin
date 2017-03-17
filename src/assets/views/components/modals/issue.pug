@@ -15,11 +15,13 @@ mixin details
     .input-field.control
       textarea.input(disabled=user.is_superuser ? undefined : true)
     h5 Category
-    .chips.chips-initial
+    .category-field.chips.chips-initial
     h5 Location
-    .chips.chips-initial
+    .location-field.content
+      a See Location
+    //- .chips.chips-initial
     h5 Tag
-    .chips.chips-initial
+    .tag-field.chips.chips-initial
 
 mixin priority
   h5 Priority
@@ -108,3 +110,12 @@ mixin merged_children
                 select.browser-default
       .col.s6
         +progress
+
+
+.modal#map-issue-modal.issue-map-modal
+  .modal-header
+    .title Map
+  .modal-content
+    .map-view
+      #map-issue-box
+  a.modal-close(href='#')

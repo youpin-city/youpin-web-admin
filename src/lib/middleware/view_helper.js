@@ -31,6 +31,7 @@ module.exports = (req, res, next) => {
     dict: i18n.locales,
     service: {
       map: conf.get('service.map'),
+      leaflet: conf.get('service.leaflet'),
       here: conf.get('service.here')
     },
     issue: conf.get('issue')

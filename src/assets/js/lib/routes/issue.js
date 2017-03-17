@@ -10,7 +10,7 @@ const issueRouter = module.exports = {
   },
   setup: () => {
     function prependProgressCard(d) {
-      $('#cards').prepend('<div class="card"><div class="card-image">' +
+      $(modalId).find('#cards').prepend('<div class="card"><div class="card-image">' +
         (d.url ? '<img class="materialboxed" src=' + d.url + '></div>' : '') +
         '<div class="card-content"><p>' + d.description + '</p>' +
         'on ' + new Date(d.date).toLocaleDateString() + '</p></div></div>');
@@ -18,17 +18,17 @@ const issueRouter = module.exports = {
     }
 
     function modalClose(modal, trigger) {
-      const $modal = $('#manage-issue-modal');
+      const $modal = $(modalId);
       location.hash = '';
       $modal.find('.slider .slides').empty();
       $modal.find('#cards').empty();
-      $('.btn-flat, .btn').unbind('click');
+      $modal.find('.btn-flat, .btn').unbind('click');
     }
 
     function ready(modal, trigger) {
-      const $modal = $('#manage-issue-modal');
+      const $modal = $(modalId);
       const id = modal[0].baseURI.split('#!issue-id:')[1]; // trigger.attr('data-id');
-      $('#id').text(id);
+      $modal.find('#id').text(id);
       api.getPin(id)
       .then(data => {
         const owner = _.get(data, 'owner');
@@ -37,7 +37,7 @@ const issueRouter = module.exports = {
             .append('<li><img class="materialboxed" src=' + d + '></li>')
         );
 
-        const $reporter = $('#reporter');
+        const $reporter = $modal.find('#reporter');
         const $span = $reporter.find('span');
         $span.eq(0).text(owner.name);
         $span.eq(1).text((new Date(data.created_time)).toLocaleDateString());
@@ -49,23 +49,27 @@ const issueRouter = module.exports = {
           contactButton.hide();
         }
 
-        const $details = $('#details');
+        const $details = $modal.find('#details');
         $details.find('textarea')
           .val(data.detail)
           .trigger('autoresize');
 
-        $('.chips').material_chip({
+        $modal.find('.chips').material_chip({
           placeholder: 'Enter a tag',
           secondaryPlaceholder: 'Enter a tag'
         });
 
         const $chips = $details.find('.chips-initial');
-        $chips.eq(0).material_chip({ data: data.categories.map(d => ({ tag: d })) });
-        $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => ({ tag: d })) });
-        $chips.eq(2).material_chip({ data: data.tags.map(d => ({ tag: d })) });
+        $chips.filter('.category-field').material_chip({ data: data.categories.map(d => ({ tag: d })) });
+        // $chips.eq(1).material_chip({ data: data.location.coordinates.map(d => ({ tag: d })) });
+        $chips.filter('.tag-field').material_chip({ data: data.tags.map(d => ({ tag: d })) });
+
+        // Location
+        const $location_link = $details.find('.location-field a');
+        $location_link.attr('href', '#!issue-map:' + data._id)
 
         // Dropdown lists
-        const $status = $('#status');
+        const $status = $modal.find('#status');
         const $select = $status.find('select');
         const $select_department = $select.eq(1); // Department OR department officer
         $select_department.empty();
@@ -121,25 +125,25 @@ const issueRouter = module.exports = {
         );
 
         // Init Materialize
-        $('.slider').slider({ height: $('.slider img').width() });
-        $('.slider').slider('pause');
-        $('.materialboxed').materialbox();
-        $('select').material_select();
+        $modal.find('.slider').slider({ height: $modal.find('.slider img').width() });
+        $modal.find('.slider').slider('pause');
+        $modal.find('.materialboxed').materialbox();
+        $modal.find('select').material_select();
 
         // Buttons
-        $('#cancel').click(() => {
-          $('#manage-issue-modal').modal('close');
+        $modal.find('#cancel').click(() => {
+          $modal.modal('close');
         });
-        $('#confirm').click(() => {
+        $modal.find('#confirm').click(() => {
           const body = {
             owner: user._id,
             detail: $details.find('textarea').val(),
-            categories: $chips.eq(0).material_chip('data').map(d => d.tag),
-            location: {
-              coordinates: $chips.eq(1).material_chip('data').map(d => d.tag),
-              type: 'Point'
-            },
-            tags: $chips.eq(2).material_chip('data').map(d => d.tag),
+            categories: $chips.filter('.category-field').material_chip('data').map(d => d.tag),
+            // location: {
+            //   coordinates: $chips.eq(1).material_chip('data').map(d => d.tag),
+            //   type: 'Point'
+            // },
+            tags: $chips.filter('.tag-field').material_chip('data').map(d => d.tag),
             assigned_department: $select_department.val()
           };
           /* $select.eq(0).val(data.status.priority);
@@ -148,7 +152,7 @@ const issueRouter = module.exports = {
           // Edit pin info (partially)
           api.patchPin(id, body)
           .then(response => response.json())
-          .then(() => $('#manage-issue-modal').modal('close'))
+          .then(() => $modal.modal('close'))
           .catch(err =>
             Materialize.toast(err.message, 8000, 'dialog-error large')
           );
@@ -166,13 +170,13 @@ const issueRouter = module.exports = {
             is_archived: true
           })
           .then(response => response.json())
-          .then(() => $('#manage-issue-modal').modal('close'))
+          .then(() => $(modalId).modal('close'))
           .catch(err =>
             Materialize.toast(err.message, 8000, 'dialog-error large')
           );
         });
 
-        const $reject = $('#reject');
+        const $reject = $modal.find('#reject');
         if ((user.is_superuser && (data.status === 'pending')) ||
             (!user.is_superuser && data.status === 'assigned')) {
           $reject.show();
@@ -184,26 +188,26 @@ const issueRouter = module.exports = {
             state: 'rejected'
           })
           .then(response => response.json())
-          .then(() => $('#manage-issue-modal').modal('close'))
+          .then(() => $(modalId).modal('close'))
           .catch(err =>
             Materialize.toast(err.message, 8000, 'dialog-error large')
           );
         });
         // Merge Issues Button
         if (data.is_merged) {
-          $('#merge-issue-btn')
+          $modal.find('#merge-issue-btn')
           .hide();
         } else {
-          $('#merge-issue-btn')
+          $modal.find('#merge-issue-btn')
           .attr('href', util.site_url('merge/') + data._id)
           .show();
         }
 
         if (data.is_merged) {
-          $('#merged-parent').show();
-          $('#merged-parent ul.list').empty();
+          $modal.find('#merged-parent').show();
+          $modal.find('#merged-parent ul.list').empty();
           if (data.merged_parent_pin) {
-            $('#merged-parent ul.list').append(
+            $modal.find('#merged-parent ul.list').append(
               $('<li/>').append(
                 $('<a/>')
                 .attr('href', '#!issue-id:' + data.merged_parent_pin)
@@ -213,14 +217,14 @@ const issueRouter = module.exports = {
             );
           }
         } else {
-          $('#merged-parent').hide();
-          $('#merged-parent ul.list').empty();
+          $modal.find('#merged-parent').hide();
+          $modal.find('#merged-parent ul.list').empty();
         }
         if ((data.merged_children_pins || []).length > 0) {
-          $('#merged-children').show();
-          $('#merged-children ul.list').empty();
+          $modal.find('#merged-children').show();
+          $modal.find('#merged-children ul.list').empty();
           _.forEach(data.merged_children_pins || [], pin_id => {
-            $('#merged-children ul.list').append(
+            $modal.find('#merged-children ul.list').append(
               $('<li/>').append(
                 $('<a/>')
                 .attr('href', '#!issue-id:' + pin_id)
@@ -230,12 +234,12 @@ const issueRouter = module.exports = {
             );
           });
         } else {
-          $('#merged-children').hide();
-          $('#merged-children ul.list').empty();
+          $modal.find('#merged-children').hide();
+          $modal.find('#merged-children ul.list').empty();
         }
 
         // Next State Button
-        $('#goToNextState')
+        $modal.find('#goToNextState')
           .text(() => {
             switch (data.status) {
               case 'pending':
@@ -282,7 +286,7 @@ const issueRouter = module.exports = {
             } else {
               api.postTransition(id, body)
               .then(response => response.json())
-              .then(() => $('#manage-issue-modal').modal('close'))
+              .then(() => $modal.modal('close'))
               .catch(err => {
                 Materialize.toast(err.message, 8000, 'dialog-error large');
               });
@@ -290,13 +294,13 @@ const issueRouter = module.exports = {
           });
 
         // Area to update issue progress
-        const $progress = $('#progress');
+        const $progress = $modal.find('#progress');
         // Disable progress if the issue is not accepted
         const isAssigned = (data.status === 'assigned');
         $progress.find('textarea, input').prop('disabled', isAssigned);
         $progress.find('a').toggleClass('disabled', isAssigned);
         // Set Post button event
-        $('#post').click(() => {
+        $modal.find('#post').click(() => {
           const files = $progress.find('input[type="file"]')[0].files;
           const progress_text = $progress.find('textarea').val();
           if (files.length === 0 && !progress_text) {
@@ -315,7 +319,7 @@ const issueRouter = module.exports = {
             description: progressData.detail,
             url: progressData.photos[0]
           });
-          $('.materialboxed').materialbox();
+          $modal.find('.materialboxed').materialbox();
 
           // Edit pin info (partially)
           if (files.length > 0) {
@@ -365,7 +369,8 @@ const issueRouter = module.exports = {
         annotation: ''
       }
     }).then(data => {
-      const $status = $('#status');
+      const $modal = $(modalId);
+      const $status = $modal.find('#status');
       const $select = $status.find('select');
       $select.eq(0).val(data.status.priority);
       $status.find('textarea')
@@ -373,11 +378,11 @@ const issueRouter = module.exports = {
         .trigger('autoresize');
 
       // Init Materialize
-      $('.modal').modal({
+      $modal.modal({
         ready: ready,
         complete: modalClose
       });
-      $('select').material_select();
+      $modal.find('select').material_select();
     });
   }
 };
