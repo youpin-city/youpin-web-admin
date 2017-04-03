@@ -43,8 +43,8 @@ report-department-page
 
           tr.row(each="{ data }", class="{ hide: shouldHideRow(department._id) }")
             td.name
-              .is-pulled-right
-                //- a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
+              //- .is-pulled-right
+              //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
               profile-image.is-round.is-small(name='{ name }')
             //- td.team { name }
             //- td.numeric-col { summary.pending || 0}

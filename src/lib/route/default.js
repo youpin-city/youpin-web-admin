@@ -103,7 +103,7 @@ router.get('/settings/user', auth({ admin: true }), (req, res, next) => {
   //   { id: 'public_relations', name: 'ประชาสัมพันธ์' },
   //   { id: 'department_officer', name: 'เจ้าหน้าที่' },
   //   { id: 'department_head', name: 'หัวหน้าฝ่าย' },
-  //   { id: 'organization_admin', name: 'สารบัญ' }
+  //   { id: 'organization_admin', name: 'สารบรรณ' }
   // ];
   // if (['super_admin'].indexOf(req.user.role) >= 0) {
   //   availableRoles.push({ id: 'super_admin', name: 'Super Admin' });

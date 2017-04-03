@@ -43,9 +43,9 @@
     "pagenotfound": "ไม่พบหน้าที่ต้องการ",
     "pagenotfound_description": "ลองตรวจสอบใหม่อีกครั้ง",
     "unauthorized": "ไม่มีสิทธิ์ดูหน้านี้",
-    "unauthorized_description": "ลองตรวจสอบกับทางสารบัญ",
+    "unauthorized_description": "ลองตรวจสอบกับทางสารบรรณ",
     "forbidden": "ไม่สามารถดูหน้านี้ได้",
-    "forbidden_description": "ลองตรวจสอบกับทางสารบัญ"
+    "forbidden_description": "ลองตรวจสอบกับทางสารบรรณ"
   },
   "word": {
     "language": "ภาษา",
