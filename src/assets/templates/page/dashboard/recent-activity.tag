@@ -13,9 +13,10 @@ dashboard-recent-activity
       //-   profile-image.is-round(show='{ comment.type === "comment" }', name='{ comment.user }')
       //-   profile-image.is-round.is-small(show='{ comment.type === "meta" }', name='{ comment.user }')
       .media-content
-        .content.pre(style='margin: 0;')
-          strong { comment.user }
-          | { comment.text }
+        .content.pre.is-marginless
+          a(href='{ comment.url }')
+            strong { comment.user }
+            | &nbsp;{ comment.text }
         div(show='{ comment.annotation }')
           small { comment.annotation }
         .datetime
@@ -87,6 +88,7 @@ dashboard-recent-activity
         type: 'meta',
         text: parse_acitivity_text(item.actionType, item.action, item),
         photos: [],
+        url: util.site_url('/issue/' + item.pin_id),
         //- annotation: item.actionType + ' :: ' + item.action,
         //- user: null,
         //- timestamp: item.updated_time

@@ -7,11 +7,11 @@ role:
   - id: department_head
     name: 'หัวหน้าฝ่าย'
   - id: organization_admin
-    name: 'สารบัญ'
+    name: 'สารบรรณ'
   - id: public_relations
     name: 'ประชาสัมพันธ์'
   - id: super_admin
-    name: 'สารบัญ'
+    name: 'ผู้ดูแลระบบ'
 
 permission:
   create_issue:

@@ -9,6 +9,7 @@
 .toast {
   display: block;
   width: 500px;
+  max-width: initial;
   float: none;
   margin: 0 auto 1rem;
   font-size: $fs-md;

@@ -143,7 +143,15 @@ $activity-width: 320px;
   .recent-activity {
     padding: $ps-xs;
 
-    li.activity {
+    .progress-item {
+      a {
+        &,
+        strong {
+          @include text-hover($cl-darkgray, $cl-link);
+        }
+      }
+    }
+    .activity {
       border-bottom: 1px solid $cl-verylightgray;
       padding: $ps-xs 0;
 

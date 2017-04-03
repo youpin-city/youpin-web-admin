@@ -1,0 +1,9 @@
+extends components/layout
+
+append content
+  #page-issue-view.page
+    issue-create-page
+
+append app_script
+  script.
+    riot.mount('issue-create-page');

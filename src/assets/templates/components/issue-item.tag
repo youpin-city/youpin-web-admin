@@ -8,7 +8,7 @@ issue-item(class='{ classes }')
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
         .field.is-inline(show='{ item.status === "rejected" }')
-          i.icon.material-icons.is-danger error_outline
+          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
         .field.is-inline(show='{ item.status === "resolved" }')
           i.icon.material-icons.is-success check
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
@@ -36,7 +36,7 @@ issue-item(class='{ classes }')
         i.icon.material-icons chat_bubble
         span { item.progresses.length }
 
-    div(show='{ item.updated_time }') อัพเดทล่าสุด { moment(item.updated_time).fromNow() }
+    div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
 
   .issue-compact
     div.issue-desc
