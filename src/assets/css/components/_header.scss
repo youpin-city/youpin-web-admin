@@ -186,6 +186,7 @@ header#header {
         display: block;
         float: none;
         > a {
+          font-size: $fs-md;
           height: $nav-left-menu-height;
           line-height: $nav-left-menu-height;
           transition: color .2s ease-out;
@@ -198,12 +199,23 @@ header#header {
         &.active {
           // background-color: transparent;
           > a {
+            font-weight: $fw-bold;
             color: $cl-primary;
           }
         }
 
         &.sub-menu {
             margin-left: $ps-default;
+        }
+
+        &.department-info {
+          color: $cl-white;
+          background: $cl-primary;
+          padding: 2rem 1rem;
+          .title {
+            color: $cl-white;
+            font-size: $fs-4;
+          }
         }
       }
     }

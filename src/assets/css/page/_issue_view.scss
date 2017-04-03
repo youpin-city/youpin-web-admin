@@ -1,0 +1,48 @@
+issue-view-page {
+  display: block;
+  background-color: $cl-white;
+
+  nav.level {
+    height: 50px;
+  }
+
+  #select_priority {
+    + .selectize-control {
+      min-width: 120px;
+    }
+  }
+
+  #edit-issue-panel {
+    @include mobile {
+      .level-right {
+        position: fixed;
+        width: 100%;
+        right: -50%;
+        top: 64px;
+        bottom: 0;
+        margin: 0;
+        background-color: $cl-white;
+        z-index: 20;
+      }
+    }
+  }
+
+  #progress-section {
+    .progress-editor {
+      background-color: $cl-verylightgray;
+    }
+
+    .progress-item {
+      padding: $ps-small;
+      margin: 0;
+      > .media-left { flex-basis: 200px; }
+      > .media-right { flex-basis: 140px; }
+    }
+  }
+
+  .issue-view-info {
+    .issue-detail {
+      white-space: pre-wrap;
+    }
+  }
+}

@@ -17,14 +17,14 @@
     "privacy": "ความเป็นส่วนตัว",
     "terms": "เงื่อนไข",
     "contact": "ติดต่อ",
-    "issue": "Issue",
-    "archive": "Archive",
-    "report": "Report",
+    "issue": "เรื่องร้องเรียน",
+    "archive": "เรื่องที่ถูกจัดเก็บ",
+    "report": "รายงาน",
     "report_performance": "Performance",
-    "report_department": "Department",
-    "settings": "Settings",
-    "settings_user": "User",
-    "settings_department": "Department"
+    "report_department": "แยกตามหน่วย",
+    "settings": "ตั้งค่า",
+    "settings_user": "เจ้าหน้าที่",
+    "settings_department": "หน่วยงาน"
   },
   "action": {
     "read": "อ่านต่อ",

@@ -1,0 +1,71 @@
+@import '../../../../node_modules/selectize/dist/css/selectize.default';
+
+.selectize-input {
+  box-shadow: none;
+  background-color: $cl-white;
+  border: 1px solid $cl-border;
+
+  &.focus {
+    box-shadow: none;
+    border: 1px solid $cl-accent;
+    // box-shadow: 0 1px 0 0 $cl-secondary;
+  }
+}
+
+.selectize-control.single {
+  // .selectize-dropdown,
+  .selectize-input,
+  .selectize-input input {
+    background-image: none;
+    background-color: $cl-white;
+    border: 1px solid $cl-border;
+    box-shadow: none;
+  }
+}
+.selectize-input,
+.selectize-control.single {
+  .selectize-input.input-active {
+    // background-color: $cl-white;
+    border: 1px solid $cl-accent;
+  }
+}
+
+.selectize-control.single {
+  .selectize-dropdown {
+    border: 1px solid $cl-gray-400;
+  }
+}
+.selectize-control.multi {
+  .selectize-input [data-value] {
+    color: $cl-white;
+    background-image: none;
+    background-color: $cl-accent;
+    border: none;
+    text-shadow: none;
+    box-shadow: none;
+
+    &.active {
+      color: $cl-white;
+      background-image: none;
+      background-color: $cl-accent-active;
+      border: none;
+      text-shadow: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.selectize-dropdown {
+  [data-selectable] {
+
+  }
+  .media + .media { margin: 0; }
+}
+
+.selectize-control.multi {
+  .selectize-input {
+    [data-value] {
+      display: block;
+    }
+  }
+}

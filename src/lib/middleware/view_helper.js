@@ -29,11 +29,19 @@ module.exports = (req, res, next) => {
     baseurl: conf.get('site.host'),
     api_url: conf.get('service.api.url'),
     dict: i18n.locales,
+    format: {
+      date: 'DD/MM/YYYY',
+      date_full: 'DD MMMM YYYY',
+      datetime_full: 'DD MMMM YYYY, HH:mm'
+    },
     service: {
       map: conf.get('service.map'),
       leaflet: conf.get('service.leaflet'),
       here: conf.get('service.here')
     },
+    role: _.fromPairs(_.map(conf.get('role'), item => [item.id, item])),
+    roles: conf.get('role'),
+    permission: conf.get('permission'),
     issue: conf.get('issue')
   };
 

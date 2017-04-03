@@ -4,7 +4,7 @@ setting-department
 
   .row
     .col.s12.right-align
-      a.btn(onclick="{createDepartment}")
+      a.button.is-accent(onclick="{createDepartment}")
         | Create Department
 
   .opaque-bg.content-padding.is-overflow-auto
@@ -15,46 +15,52 @@ setting-department
           th(style='width: 120px;')
       tbody
         tr(each="{dept in departments}" ).department
-          td {dept.name}
           td
-            a.btn.btn-small.btn-block(onclick="{ editDepartment(dept._id, dept.name) }")
+            profile-image.is-round-box(name='{ dept.name }')
+          td
+            a.button.is-block(onclick="{ editDepartment(dept._id, dept.name) }")
               | Edit
 
   .spacing
-  div.load-more-wrapper
-    a.load-more(class="{active: hasMore}", onclick="{ loadData }" ) Load More
-
+  .load-more-wrapper.has-text-centered(show='{ hasMore }')
+    a.button.load-more(class='{ "is-loading": !loaded }', onclick='{ loadData }' ) Load More
 
   #edit-department-form.modal
     .modal-header
         h3 Edit Department
     .divider
     .modal-content
-      h5 Department name
-      .input-field.control
-        input.input(type="text", name="departmentName", value="{editingDepartment.name}")
+      .field
+        label.label Department Name
+        .control
+          input.input(type="text", name="departmentName", value="{editingDepartment.name}")
 
     .modal-footer
       .row
-        .col.s12.right-align
-          a(onclick="{closeEditDepartmentModal}").btn-flat Cancel
-          | &nbsp;
-          a(onclick="{confirmEditDepartment}").btn Save
+        .col.s12
+          .field.is-grouped.is-pulled-right
+            .control
+              a.button.is-outlined(onclick="{closeEditDepartmentModal}") Cancel
+            .control
+              a.button.is-outlined.is-accent(onclick="{confirmEditDepartment}") Save
 
-  div(class="modal")#create-department-form
+  #create-department-form(class="modal")
     .modal-header
       h3 Create Department
     .modal-content
-      h5 Department name
-      .input-field.control
-        input.input(type="text",name="name")
+      .field
+        label.label Department Name
+        .control
+          input.input(type="text",name="name")
 
     .modal-footer
       .row
-        .col.s12.right-align
-          a(onclick="{closeCreateModal}").btn-flat Cancel
-          | &nbsp;
-          a(onclick="{confirmCreate}").btn Create
+        .col.s12
+          .field.is-grouped.is-pulled-right
+            .control
+              a.button.is-outlined(onclick="{closeCreateModal}") Cancel
+            .control
+              a.button.is-outlined.is-accent(onclick="{confirmCreate}") Create
 
   script.
     let self = this;
@@ -62,6 +68,7 @@ setting-department
 
     self.departments  = [];
     self.hasMore = true;
+    self.loaded = true;
 
     $(document).ready( () => {
       $editModal  = $('#edit-department-form').modal();
@@ -74,7 +81,9 @@ setting-department
 
     self.loadData = () => {
       const opts = { $skip: self.departments.length };
+      self.loaded = false;
       api.getDepartments( opts ).then( result => {
+        self.loaded = true;
         self.departments = self.departments.concat(result.data)
         self.updateHasMoreButton(result);
         self.update();

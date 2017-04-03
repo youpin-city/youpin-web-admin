@@ -19,9 +19,9 @@ $cl-veryverylightgray: #f5f5f5;
 $cl-red: #e9233b;
 $cl-pink: #e91e63;
 $cl-darkred: #c72421;
-$cl-blue: #1890b9;
+$cl-blue: #0d92e0;
 $cl-lightblue: #34cee7;
-$cl-darkblue: #003865;
+$cl-darkblue: #013d61;
 $cl-purple: #9c27b0;
 $cl-deep-purple: #673ab7;
 $cl-taro: #ebeef7;
@@ -36,19 +36,33 @@ $cl-orange: #ffbb00;
 $cl-deep-orange: #ff5722;
 $cl-lime: #cddc39;
 
+$cl-gray: #9e9e9e;
+$cl-gray-50: #fafafa;
+$cl-gray-100: #f5f5f5;
+$cl-gray-200: #eeeeee;
+$cl-gray-300: #e0e0e0;
+$cl-gray-400: #bdbdbd;
+$cl-gray-500: #9e9e9e;
+$cl-gray-600: #757575;
+$cl-gray-700: #616161;
+$cl-gray-800: #424242;
+$cl-gray-900: #212121;
+
 // theme color
-$cl-primary: #013d61;
+$cl-primary: $cl-darkblue;
 $cl-primary-active: lighten($cl-primary, 15%);
 $cl-secondary: #941014;
 $cl-secondary-active: darken($cl-secondary, 15%);
 $cl-tertiary: #e91e63;
 $cl-tertiary-active: darken($cl-tertiary, 15%);
+$cl-accent: $cl-blue;
+$cl-accent-active: darken($cl-blue, 15%);
 
 // component color
 $cl-default: $cl-darkgray;
 $cl-header: #666;
-$cl-link: $cl-primary;
-$cl-link-active: $cl-primary-active;
+$cl-link: $cl-blue;
+$cl-link-active: lighten($cl-link, 15%);
 $cl-error: $cl-red;
 $cl-border: $cl-verylightgray;
 $cl-darkborder: $cl-gray;

@@ -225,14 +225,14 @@ report-page
           {
             '$limit': 1,
             //- is_archived: false,
-            categories: cat.value
+            categories: cat.id
           }
         );
 
         return api.getPins(opts).then( res => {
           return {
-            id: cat.value,
-            name: cat.text,
+            id: cat.id,
+            name: cat.name,
             total: res.total,
             resolved: 0,
             rejected: 0

@@ -1,3 +1,15 @@
+// general
+.field.is-inline {
+  display: inline-block;
+  margin: 0;
+  margin-right: 0.4rem;
+  margin-bottom: 0.2rem;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+// materialize
 .input-field.col {
   label {
     color: $cl-gray;

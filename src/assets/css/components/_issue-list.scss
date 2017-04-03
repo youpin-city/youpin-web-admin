@@ -10,9 +10,16 @@
   border-radius: $ps-xxs;
   padding: $ps-small;
 
-  background: white;
-  border: 1px solid #eeeeee;
-  margin: 1rem 0;
+  background: $cl-white;
+  border: 1px solid $cl-border;
+  margin: 0.5rem 0;
+
+  &.is-resolved {
+    background: $cl-gray-100;
+  }
+  &.is-rejected {
+    background: $cl-gray-100;
+  }
 
   label {
     font-size: 1.2rem;
@@ -27,12 +34,18 @@
     }
   }
 
+  .issue-title {
+    .title {
+      @include text-hover($cl-black, $cl-link);
+    }
+  }
+
   .issue-select {
     @include flex(0, 0, 50px);
   }
 
   .issue-img {
-    @include flex(0, 1, 150px);
+    @include flex(0, 1, 80px);
     img,
     .img {
       display: block;
@@ -65,6 +78,7 @@
       max-height: 60px;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: $ps-small;
       margin-bottom: $ps-small;
     }
 
@@ -100,7 +114,7 @@
 
   .issue-info {
     @include flex(1, 1, 200px);
-     border-left: solid 1px $cl-lightgray;
+    //  border-left: solid 1px $cl-lightgray;
      padding: 0 $ps-xs;
      width: 25%;
      display: inline-block;
@@ -315,25 +329,6 @@ merge-issue-list {
   //      text-align: center;
   //   }
   // }
-
-  .load-more-wrapper {
-    text-align: center;
-    a.load-more {
-      display: none;
-      padding: $ps-xs $ps-default;
-      border: 1px solid;
-      cursor: pointer;
-      border-radius: $ps-xxs;
-      color: $cl-white;
-      background: $cl-primary;
-
-      &.active {
-        display: inline-block;
-      }
-    }
-  }
-
-
 
   .map-view {
       margin: $ps-xs 0;

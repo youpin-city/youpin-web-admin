@@ -60,30 +60,30 @@ service:
 
 issue:
   categories:
-    - value: repair
-      text: แจ้งซ่อม
+    - id: repair
+      name: แจ้งซ่อม
       selected: false
-    - value: service
-      text: บริการ
+    - id: service
+      name: บริการ
       selected: false
-    - value: it
-      text: IT
+    - id: it
+      name: IT
       selected: false
-    - value: suggestion
-      text: เสนอแนะ
+    - id: suggestion
+      name: เสนอแนะ
       selected: false
-    - value: classroom
-      text: ห้องเรียน
+    - id: classroom
+      name: ห้องเรียน
       selected: false
-    - value: safety
-      text: ปลอดภัย
+    - id: safety
+      name: ปลอดภัย
       selected: false
-    - value: sanitary
-      text: ความสะอาด
+    - id: sanitary
+      name: ความสะอาด
       selected: false
-    - value: traffic
-      text: จราจร
+    - id: traffic
+      name: จราจร
       selected: false
-    - value: others
-      text: อื่น ๆ
+    - id: others
+      name: อื่น ๆ
       selected: false

@@ -53,8 +53,9 @@ ol {
 
 // Link
 a {
+  &.is-plain,
   &.plain {
-    @include text-hover($cl-default, $cl-primary);
+    @include text-hover($cl-default, $cl-link);
   }
 }
 

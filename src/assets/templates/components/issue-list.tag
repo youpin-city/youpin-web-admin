@@ -1,10 +1,15 @@
 issue-list
-  div.menu-bar
+  .lavel.menu-bar
+    .level-left
+      .level-item
+        span พบทั้งหมด { total } รายการ
     //- div.sorting ▾
-    div.list-or-map
-        span(onclick="{showMapView(false)}", class="{ active: !isShowingMap }") List
-        span.separator /
-        span(onclick="{showMapView(true)}", class="{ active: isShowingMap }") Map
+    .level-right
+      .level-item
+        .list-or-map
+          span(onclick="{showMapView(false)}", class="{ active: !isShowingMap }") List
+          span.separator /
+          span(onclick="{showMapView(true)}", class="{ active: isShowingMap }") Map
     div.clearfix
 
   div(class="{ hide: isShowingMap, 'list-view': true }")
@@ -20,31 +25,33 @@ issue-list
 
       .spacing-large
 
-    div.load-more-wrapper
-      a.load-more(class="{active: hasMore}", onclick="{loadMore}" ) Load More
+    .load-more-wrapper.has-text-centered(show='{ hasMore }')
+      a.button.load-more(class='{ "is-loading": !loaded }', onclick='{ loadMore }' ) Load More
 
   div(class="{ hide: !isShowingMap, 'map-view': true }")
     div(id="issue-map")
 
   script.
-    let self = this;
+    const self = this;
 
-    this.pins = [];
-    this.hasMore = true;
-    this.isShowingMap = false;
-    this.mapOptions = {};
-    this.mapMarkerIcon = L.icon({
+    self.pins = [];
+    self.total = 0;
+    self.hasMore = true;
+    self.loaded = true;
+    self.isShowingMap = false;
+    self.mapOptions = {};
+    self.mapMarkerIcon = L.icon({
       iconUrl: util.site_url('/public/img/marker-m-3d@2x.png'),
       iconSize: [56, 56],
       iconAnchor: [16, 51],
       popupAnchor: [0, -51]
     });
 
-
-    this.load = (opts) => {
+    self.load = (opts) => {
       self.currentQueryOpts = opts;
-
+      self.loaded = false;
       api.getPins(opts).then( res => {
+        self.loaded = true;
         self.pins = _.map(res.data, pin => {
           pin.assigned_user_names = _.get(pin, 'assigned_users.length', 0) > 0
             ? _.map(pin.assigned_users, u => u.name).join(', ')
@@ -61,18 +68,19 @@ issue-list
     }
 
     this.loadMore = () => {
-      return () => {
-        let opts = _.extend( {}, self.currentQueryOpts, { '$skip': self.pins.length });
-        api.getPins( self.selectedStatus, opts ).then( res => {
-          self.pins = self.pins.concat(res.data)
-          self.updateHasMoreButton(res);
-          self.update();
-        });
-      };
+      let opts = _.extend( {}, self.currentQueryOpts, { '$skip': self.pins.length });
+      self.loaded = false;
+      api.getPins( self.selectedStatus, opts ).then( res => {
+        self.loaded = true;
+        self.pins = self.pins.concat(res.data)
+        self.updateHasMoreButton(res);
+        self.update();
+      });
     }
 
     this.updateHasMoreButton = (res) => {
-        self.hasMore = ( res.total - ( res.skip + res.data.length ) ) > 0
+      self.total = res.total || 0;
+      self.hasMore = ( res.total - ( res.skip + res.data.length ) ) > 0
     }
 
     this.showMapView = (showMap) => {

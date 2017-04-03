@@ -4,6 +4,7 @@
 
 @import 'util/bulma';
 @import 'util/materialize';
+@import 'util/reset-materialize-for-bulma';
 
 /*!
  * Stylesheet
@@ -16,6 +17,7 @@
 /* Third-party */
 @import 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css';
 @import 'dep/pikaday';
+@import 'dep/selectize';
 
 /* Components */
 @import 'components/helper';
@@ -24,8 +26,10 @@
 @import 'components/typography';
 @import 'components/button';
 @import 'components/image';
+@import 'components/media';
 @import 'components/list';
 @import 'components/form';
+@import 'components/table';
 @import 'components/collection';
 @import 'components/pagination';
 @import 'components/breadcrumb';
@@ -35,9 +39,12 @@
 @import 'components/modal';
 @import 'components/card';
 @import 'components/image-slider';
+@import 'components/image-slider-lightbox';
 @import 'components/toast';
 @import 'components/collapsible';
 @import 'components/collapsible-content';
+@import 'components/dropdown';
+@import 'components/issue-map-modal';
 
 @import 'components/header';
 @import 'components/footer';
@@ -50,6 +57,7 @@
 @import 'page/dashboard';
 @import 'page/report';
 @import 'page/issue';
+@import 'page/issue_view';
 @import 'page/archive';
 @import 'page/settings';
 @import 'page/search';

@@ -29,7 +29,7 @@ header#header
           .wrapper.hide-on-global-search
             .content.has-text-left
               strong.text= user.name.split(' ')[0]
-              span.text &nbsp;(#{user.dept && user.dept.name})
+              //- span.text &nbsp;(#{user.dept && user.dept.name})
             //- .content.has-text-left.is-small
               strong.text user.dept && user.dept.name
       else
@@ -80,6 +80,10 @@ header#header
       #team-name= _.startCase(__('team.' + user.team))
 
     ul#site-nav-left-menu.nav-list.hide-on-small-and-down
+      li.department-info
+        .title
+          i.icon.material-icons contacts
+          | #{user.dept && user.dept.name}
       for nav in sitemap
         - nav_route = nav.name.replace(/^sitenav\./, '');ref;
         - is_active = site_nav_active == nav_route || page.logical_path === nav.href;

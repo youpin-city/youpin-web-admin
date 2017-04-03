@@ -1,0 +1,123 @@
+ul.dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &.fixed-height {
+    max-height: 29rem;
+    overflow: auto;
+  }
+
+  > li {
+    margin: 0;
+    border-color: $cl-border;
+    border-style: solid;
+    border-width: 0 1px;
+    font-size: $fs-md;
+
+    a {
+      display: block;
+      padding: $ps-small;
+      @include text-hover($cl-default, $cl-primary);
+      @include background-hover($cl-white, $cl-veryverylightgray);
+
+      .icon {
+        display: inline-block;
+        width: 2rem;
+        text-align: center;
+        font-size: $fs-icon-h5;
+        line-height: 1;
+      }
+    }
+
+    &:first-child {
+      border-top-width: 1px;
+      &,
+      a {
+        border-top-left-radius: $br-default;
+        border-top-right-radius: $br-default;
+      }
+    }
+
+    &:last-child {
+      border-bottom-width: 1px;
+      &,
+      a {
+        border-bottom-left-radius: $br-default;
+        border-bottom-right-radius: $br-default;
+      }
+    }
+
+    .divider {
+      border-top: 1px solid $cl-verylightgray;
+    }
+
+    .header {
+      padding: 0.5rem 1rem 0.2rem;
+      margin: 0;
+      font-family: $ff-header;
+      font-size: $fs-xs;
+      font-weight: bold;
+    }
+  }
+}
+
+.dropdown-btn {
+  text-align: left;
+  .icon {
+    float: right;
+    line-height: 5rem;
+  }
+}
+
+.bb-dropdown.drop-target {
+  &.drop-enabled {
+    &.drop-element-attached-top.drop-element-attached-left {
+      &.drop-target-attached-bottom.drop-target-attached-left {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}
+
+
+.bb-dropdown.drop-element {
+  // set initial state for animation
+  & {
+    opacity: 0;
+  }
+  // when the drop is opened and removed when it should be hidden.
+  // Use drop-open if you don't need animation
+  &.drop-open {
+    z-index: 100;
+  }
+  // added in the next event loop tick after the drop is opened.
+  // Start your CSS transitions when drop-after-open appears.
+  &.drop-after-open {
+    @include transition(opacity 0.2s ease-out);
+    opacity: 1;
+  }
+  // added immediately, but not removed until the transitionend event fires on the drop.
+  // Use drop-open-transitionend to control the showing and hiding of your element when using an animation.
+  &.drop-open-transitioned {
+    display: block;
+  }
+
+  .drop-content {
+    // background-color: $cl-white;
+    // border: 1px solid $cl-gray-400;
+    // border-radius: $br-default;
+    // box-shadow: 0 1px 4px 1px rgba(0,0,0,0.1);
+  }
+
+  .popover-container {
+    .popover-header {
+      padding: 1rem;
+      border-bottom: 1px solid $cl-verylightgray;
+      h1, h2, h3, h4, h5, h6 {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

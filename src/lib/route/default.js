@@ -54,6 +54,11 @@ router.get('/issue', auth({ deny: ['public_relations'] }), (req, res, next) => {
   });
 });
 
+router.get('/issue/:id', auth({ deny: ['public_relations'] }), (req, res, next) => {
+  res.locals.id = req.params.id;
+  res.render('issue_view');
+});
+
 router.get('/archive', auth(), (req, res, next) => {
   res.render('archive');
 });
