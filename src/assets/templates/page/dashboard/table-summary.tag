@@ -19,17 +19,22 @@ dashboard-table-summary
       tr
         th.team Team
         //- th.pending.has-text-right Pending
-        th.assigned.has-text-right Assigned
-        th.processing.has-text-right Processing
-        th.resolved.has-text-right Resolved
-        th.rejected.has-text-right Rejected
-        th.performance.has-text-right Performance Index
+        //- th.assigned.has-text-right Assigned
+        //- th.processing.has-text-right Processing
+        //- th.resolved.has-text-right Resolved
+        //- th.rejected.has-text-right Rejected
+        //- th.performance.has-text-right Performance Index
+        th.assigned.has-text-right(style='width: 120px;') เปิด
+        th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
+        th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
+        th.performance.has-text-right(style='width: 120px;') Performance Index
 
       tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
         //- td.numeric-col { summary.pending || 0}
-        td.numeric-col { summary.assigned || 0}
-        td.numeric-col { summary.processing || 0}
+        //- td.numeric-col { summary.assigned || 0}
+        //- td.numeric-col { summary.processing || 0}
+        td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
         td.numeric-col { summary.resolved || 0}
         td.numeric-col { summary.rejected || 0}
         td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }

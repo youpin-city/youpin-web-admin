@@ -34,17 +34,22 @@ report-page
           tr
             th.team Team
             //- th.pending.has-text-right Pending
-            th.assigned.has-text-right Assigned
-            th.processing.has-text-right Processing
-            th.resolved.has-text-right Resolved
-            th.rejected.has-text-right Rejected
-            th.performance.has-text-right Performance Index
+            //- th.assigned.has-text-right Assigned
+            //- th.processing.has-text-right Processing
+            //- th.resolved.has-text-right Resolved
+            //- th.rejected.has-text-right Rejected
+            //- th.performance.has-text-right Performance Index
+            th.assigned.has-text-right(style='width: 120px;') เปิด
+            th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
+            th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
+            th.performance.has-text-right(style='width: 120px;') Performance Index
 
           tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
             td.team { name }
             //- td.numeric-col { summary.pending || 0}
-            td.numeric-col { summary.assigned || 0}
-            td.numeric-col { summary.processing || 0}
+            //- td.numeric-col { summary.assigned || 0}
+            //- td.numeric-col { summary.processing || 0}
+            td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
             td.numeric-col { summary.resolved || 0}
             td.numeric-col { summary.rejected || 0}
             td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
@@ -58,15 +63,16 @@ report-page
         .column.is-3.has-text-centered(each='{ c in row }')
           div
             .container.clearfix
-              p.heading { c.name }
+              p.heading
+                strong { c.name }
             .container.clearfix
-              p.subtitle.left Total
+              p.subtitle.left ทั้งหมด
               p.title.has-text-right { c.total }
             .container.clearfix
-              p.subtitle.left Resolved
+              p.subtitle.left แก้ไขสำเร็จ
               p.title.has-text-right.success-number { c.resolved }
             .container.clearfix
-              p.subtitle.left Rejected
+              p.subtitle.left ปิดกรณีอื่น
               p.title.has-text-right.error-number { c.rejected }
 
   script.

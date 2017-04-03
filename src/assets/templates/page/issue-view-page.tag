@@ -663,6 +663,7 @@ issue-view-page
       location: 'ตำแหน่งพิน',
       detail: 'ข้อความในรายงาน',
     };
+
     self.calculateComments = () => {
       function _t(field) {
         return _field_term[field] || field || 'ข้อมูล';

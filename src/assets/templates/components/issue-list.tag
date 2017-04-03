@@ -7,9 +7,13 @@ issue-list
     .level-right
       .level-item
         .list-or-map
-          span(onclick="{showMapView(false)}", class="{ active: !isShowingMap }") List
-          span.separator /
-          span(onclick="{showMapView(true)}", class="{ active: isShowingMap }") Map
+          span(onclick="{showMapView(false)}", class="{ active: !isShowingMap }")
+            i.icon.material-icons view_list
+            //- | รายการ
+          //- span.separator /
+          span(onclick="{showMapView(true)}", class="{ active: isShowingMap }")
+            i.icon.material-icons map
+            //- | แผนที่
     div.clearfix
 
   div(class="{ hide: isShowingMap, 'list-view': true }")

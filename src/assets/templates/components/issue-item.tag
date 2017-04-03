@@ -4,25 +4,26 @@ issue-item(class='{ classes }')
 
   div.issue-body
     div.issue-title
+      .is-pulled-right
+        .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
+          .tag.is-small.is-danger ปิดเรื่อง
+        .field.is-inline(show='{ item.status === "rejected" }')
+          i.icon.material-icons.is-danger error_outline
+        .field.is-inline(show='{ item.status === "resolved" }')
+          i.icon.material-icons.is-success check
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
-      .field.is-inline(show='{ item.status === "rejected" }')
-        i.icon.material-icons.is-danger error_outline
-      .field.is-inline(show='{ item.status === "resolved" }')
-        i.icon.material-icons.is-success check
+
+    div.issue-desc
+      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
+    div
+      ul.tag-list(show='{ item.categories && item.categories.length }')
+        li(each='{ cat, i in item.categories }')
+          a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
       .field.is-inline(show='{ Number(item.level) > 0 }')
         .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
         .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
         .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
-
-    div.issue-desc
-      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
-    div(show='{ item.categories && item.categories.length }')
-      //- span ประเภท
-      .field.is-inline(show='{ item.categories && !pin.categories.length }') -
-      ul.tag-list
-        li(each='{ cat, i in item.categories }')
-          a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
   .issue-info
     div(show='{ item.assigned_department }') หน่วยงาน { item.assigned_department.name }
@@ -40,22 +41,36 @@ issue-item(class='{ classes }')
   .issue-compact
     div.issue-desc
       //- collapsible-content(interactive='false', height='3.6rem', default='collapsed')
-      a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
-    ul.meta-list
-      li.meta(title="created at")
-        i.icon.material-icons.tiny access_time
-        | { moment(item.created_time).fromNow() }
+      //- a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
+      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
+    div.issue-desc
+      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
+    div
+      ul.tag-list(show='{ item.categories && item.categories.length }')
+        li(each='{ cat, i in item.categories }')
+          a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
-      li.meta
-        span.big-text(if='{ item.is_merged }') Merged
-        span.big-text(if='{ !item.is_merged }') { _.startCase(item.status) }
+      .field.is-inline(show='{ Number(item.level) > 0 }')
+        .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
+        .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
+        .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
+    div(show='{ item.updated_time }') { moment(item.updated_time).fromNow() }
 
-      li.meta
-        span.text { item.assigned_department ? item.assigned_department.name : '-' }
+    //- ul.meta-list
+    //-   li.meta(title="created at")
+    //-     i.icon.material-icons.tiny access_time
+    //-     | { moment(item.created_time).fromNow() }
 
-      li.meta(if='{item.assigned_user_names}', title="assigned to")
-        i.icon.material-icons.tiny face
-        | { item.assigned_user_names }
+    //-   li.meta
+    //-     span.big-text(if='{ item.is_merged }') Merged
+    //-     span.big-text(if='{ !item.is_merged }') { _.startCase(item.status) }
+
+    //-   li.meta
+    //-     span.text { item.assigned_department ? item.assigned_department.name : '-' }
+
+    //-   li.meta(if='{item.assigned_user_names}', title="assigned to")
+    //-     i.icon.material-icons.tiny face
+    //-     | { item.assigned_user_names }
 
   script.
     const self = this;
