@@ -1,0 +1,168 @@
+---
+role:
+  - id: user
+    name: 'ผู้รายงาน'
+  - id: department_officer
+    name: 'เจ้าหน้าที่'
+  - id: department_head
+    name: 'หัวหน้าฝ่าย'
+  - id: organization_admin
+    name: 'สารบัญ'
+  - id: public_relations
+    name: 'ประชาสัมพันธ์'
+  - id: super_admin
+    name: 'สารบัญ'
+
+permission:
+  create_issue:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_my_issue:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_assigned_issue:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_department_issue:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_all_issue:
+    allow:
+      # - user
+      # - department_officer
+      # - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_department_staff:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_all_staff:
+    allow:
+      # - user
+      # - department_officer
+      # - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  view_user:
+    allow:
+      # - user
+      # - department_officer
+      # - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  post_comment:
+    allow:
+      # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  edit_issue:
+    allow:
+      # - user
+      # - department_officer
+      - department_head
+      - organization_admin
+      # - public_relations
+      - super_admin
+  edit_issue_department:
+    allow:
+      # - user
+      # - department_officer
+      - department_head
+      - organization_admin
+      # - public_relations
+      - super_admin
+  edit_issue_staff:
+    allow:
+      # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      # - public_relations
+      - super_admin
+  close_issue:
+    allow:
+      # - user
+      # - department_officer
+      - department_head
+      - organization_admin
+      # - public_relations
+      - super_admin
+  merge_issue:
+    allow:
+      # - user
+      # - department_officer
+      - department_head
+      - organization_admin
+      # - public_relations
+      - super_admin
+  filter_issue_by_department:
+    allow:
+      # - user
+      # - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  filter_issue_by_staff:
+    allow:
+      # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  filter_issue_by_priority:
+    allow:
+      # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  filter_issue_by_category:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  filter_issue_by_status:
+    allow:
+      - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin

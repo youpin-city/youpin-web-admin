@@ -1,3 +1,11 @@
+// bulma
+.tag {
+  &.is-small {
+    font-size: $fs-9;
+  }
+}
+
+// customize
 .tag-item {
   display: inline;
   margin: 0 0.3rem;

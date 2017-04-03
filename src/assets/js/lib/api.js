@@ -2,6 +2,7 @@
 
 import querystring from 'qs';
 import fetch from 'isomorphic-fetch'; // for now
+import _ from 'lodash';
 
 const api = module.exports = {};
 
@@ -11,6 +12,19 @@ const headers = {
 
 if (user && user.token) {
   headers.Authorization = 'Bearer ' + user.token;
+}
+
+function normalize_pin(pin) {
+  return _.merge({
+    photos: [],
+    assigned_department: null,
+    assigned_users: [],
+    categories: [],
+    tags: [],
+    comments: [],
+    progresses: [],
+    merge_children_pins: []
+  }, pin);
 }
 
 api._buildEndpoint = function(path, queryParams) {
@@ -129,9 +143,9 @@ api.createPin = (pinObj) => {
   return fetch(url, { mode: 'cors', method: 'POST', body: JSON.stringify(pinObj), headers: headers });
 };
 
-api.getPin = (pinId) => {
-  const url = api._buildEndpoint('pins/' + pinId);
-  return fetch(url, { mode: 'cors' }).then(response => response.json());
+api.getPin = (pin_id) => {
+  const url = api._buildEndpoint('pins/' + pin_id);
+  return fetch(url, { mode: 'cors' }).then(response => response.json()).then(item => normalize_pin(item));
 };
 
 api.getPins = (status, opts) => {
@@ -150,8 +164,8 @@ api.getPins = (status, opts) => {
   return fetch(url, { mode: 'cors' }).then(response => response.json());
 };
 
-api.patchPin = (pinId, body) => {
-  const url = api._buildEndpoint('pins/' + pinId);
+api.patchPin = (pin_id, body) => {
+  const url = api._buildEndpoint('pins/' + pin_id);
   return fetch(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
 };
 
@@ -162,6 +176,17 @@ api.mergePins = (child_id, parent_id) => {
 
   const url = api._buildEndpoint('pins/' + child_id + '/merging');
   return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+};
+
+api.getPinActivities = (pin_id) => {
+  const opts = {
+    pin_id: pin_id,
+    $sort: '-timestamp',
+    $limit: 50
+  };
+
+  const url = api._buildEndpoint('activity_logs', opts);
+  return fetch(url, { mode: 'cors' }).then(response => response.json());
 };
 
 // 1. {{host}}/pins?updated_time[$gte]=2017-01-09&updated_time[$lte]=2017-01-15&status=resolved

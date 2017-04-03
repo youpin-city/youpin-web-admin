@@ -144,16 +144,27 @@ merge-page
     self.parent_pin_id = null;
     self.parent_pin = null;
 
-    self.issueList = self.tags[self.issue_list_tag];
-    self.issueList.on('select-issue', (selected_pin_id) => {
-      self.parent_pin_id = selected_pin_id;
+    self.on('mount', () => {
+      self.issueList = self.tags[self.issue_list_tag];
+      self.issueList.on('select-issue', (selected_pin_id) => {
+        self.parent_pin_id = selected_pin_id;
 
-      api.getPin(self.parent_pin_id)
-      .then(data => {
-        self.parent_pin = data;
+        api.getPin(self.parent_pin_id)
+        .then(data => {
+          self.parent_pin = data;
+          self.update();
+        });
+        // self.update();
+      });
+      self.issueList.on('update', () => {
+        self.count = self.issueList.pins.length;
+        self.isNoIssue = self.count === 0;
         self.update();
       });
-      // self.update();
+
+      loadPin();
+      nextResult();
+      // search(self.query);
     });
 
     self.on('updated', () => {
@@ -203,18 +214,6 @@ merge-page
         search(self.query);
       }
     }
-
-    self.on('mount', () => {
-      loadPin();
-      nextResult();
-      // search(self.query);
-    });
-
-    self.issueList.on('update', () => {
-      self.count = self.issueList.pins.length;
-      self.isNoIssue = self.count === 0;
-      self.update();
-    });
 
     self.doSearch = function(e) {
       e.preventDefault();

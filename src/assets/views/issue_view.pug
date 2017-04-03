@@ -1,0 +1,9 @@
+extends components/layout
+
+append content
+  #page-issue-view.page
+    issue-view-page
+
+append app_script
+  script.
+    riot.mount('issue-view-page', { 'dataId': !{JSON.stringify(id)} });

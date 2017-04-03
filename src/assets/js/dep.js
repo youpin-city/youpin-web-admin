@@ -24,11 +24,19 @@ else root = {};
 
   // riot
   window.riot = require('riot');
+  window.riot.route = require('riot-route');
   // window.redux = require('redux');
 
   // slick
   require('slick-carousel');
   require('slick-lightbox');
+
+  // selectize
+  require('selectize');
+
+  // tether
+  window.Tether = require('tether');
+  window.Drop = require('tether-drop');
 
   // scrollmagic
   window.ScrollMagic = require('scrollmagic');

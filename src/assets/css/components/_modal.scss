@@ -1,3 +1,4 @@
+// materialize
 .lean-overlay {
   background-color: $cl-white;
 }
@@ -281,4 +282,36 @@
     }
   }
 
+}
+
+
+// bulma
+.is-clipped {
+  overflow: hidden !important;
+}
+
+.modal.bulma-modal {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  background: none !important;
+
+  .modal-card {
+    max-height: calc(100vh - 40px);
+    .modal-card-header,
+    .modal-card-footer {
+      padding: $ps-small;
+      background: $cl-white;
+    }
+    .modal-card-header {
+      border-top-left-radius: $br-default;
+      border-top-right-radius: $br-default;
+    }
+    .modal-card-footer {
+      border-bottom-left-radius: $br-default;
+      border-bottom-right-radius: $br-default;
+    }
+  }
 }

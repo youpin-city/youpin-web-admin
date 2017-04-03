@@ -243,6 +243,21 @@ function parse_tags(str) {
   return str.replace(hash_regex, '<a href="#tags/$1">#$1</a>');
 }
 
+function check_permission(perm_name, role) {
+  if (!perm_name || !role) return false;
+  const perm = app.config.permission[perm_name];
+  if (!perm) return false;
+  return perm.allow && perm.allow.indexOf(role) >= 0;
+}
+
+function t(type, id, prop = null) {
+  const get_path = prop ? prop : '';
+  if (['cat', 'category', 'categories'].indexOf(type) >= 0) {
+    return _.get(_.find(app.config.issue.categories, ['id', id]), get_path);
+  }
+  return id;
+}
+
 // // Convert class object to string to be used in "class" attributes
 // function makeClass(obj) {
 //   return _.map(_.filter(_.toPairs(obj), val => val[1]), a => a[0]).join(' ');
@@ -267,6 +282,8 @@ extend(utility, {
   uniqueId,
   extract_tags,
   parse_tags,
+  check_permission,
   sanitize_html,
-  strip_tags: html => sanitize_html(html, { allowedTags: [] })
+  strip_tags: html => sanitize_html(html, { allowedTags: [] }),
+  t
 });

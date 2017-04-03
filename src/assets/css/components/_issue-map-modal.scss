@@ -1,0 +1,38 @@
+issue-map-modal {
+  display: block;
+}
+
+.drop.issue-map-modal {
+  .modal-content {
+    display: block;
+    width: 50vw;
+    height: 50vh;
+    border: 1px solid $cl-border !important;
+    border-radius: $br-default;
+    background: $cl-white !important;
+    max-height: none !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .map-section {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      header {
+        height: 10%;
+        margin: 0;
+        padding: $ps-small;
+      }
+      .map-view {
+        height: 90%;
+      }
+    }
+
+    @include mobile {
+      width: 80vw;
+      height: 50vh;
+    }
+  }
+}

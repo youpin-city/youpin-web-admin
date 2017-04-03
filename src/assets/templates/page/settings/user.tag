@@ -4,7 +4,7 @@ setting-user
 
   .row
     .col.s12.right-align
-      a.btn(onclick="{createUser}")
+      a.button.is-accent(onclick="{createUser}")
         | Create User
 
   .opaque-bg.content-padding.is-overflow-auto
@@ -17,68 +17,81 @@ setting-user
 
       tr(each="{user in users}" ).user
           td
-            div {user.name}
-            .content.is-small
-              div {user.email}
-          td {user.department.name}
-          td {_.find(availableRoles, ['id', user.role]).name}
+            profile-image.is-round(name='{ user.name }', subtitle='{ user.email }')
+          td { _.get(user, 'department.name', '-') }
+          td { app.config.role[user.role].name }
           td
-            a.btn.btn-small.btn-block(onclick="{ editUser(user) }")
+            a.button.is-block(onclick="{ editUser(user) }")
               | Edit
 
   .spacing
-  div.load-more-wrapper
-    a.load-more(class="{active: hasMore}", onclick="{ loadData }" ) Load More
+  .load-more-wrapper.has-text-centered(show='{ hasMore }')
+    a.button.load-more(class='{ "is-loading": !loaded }', onclick='{ loadData }' ) Load More
 
-  div#edit-user-form(class="modal")
+  #edit-user-form(class="modal")
     .modal-header
       h3 Edit User {editingUser.name}
     .divider
     .modal-content
-      h5 Role
-      .input-field.col.s12
-        select.browser-default(name="role")
-          option(each="{ role in availableRoles }", value="{role.id}", selected="{ role.id === editingUser.role }") {role.name}
-      div.department-selector-wrapper
-        h5 Department
-        .input-field.col.s12
-          select.browser-default(name="department")
-            option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id === editingUser.department._id }" ) {dept.name}
-      h5 Email
-      .input-field.control
-        input.input(type="text", name="email", value="{editingUser.email}")
+      .field
+        label.label Role
+        .control
+          .select.is-fullwidth
+            select.browser-default(name="role")
+              option(each="{ role in app.config.role }", value="{role.id}", selected="{ role.id === editingUser.role }") {role.name}
+
+      .field.department-selector-wrapper
+        label.label Department
+        .control
+          .select.is-fullwidth
+            select.browser-default(name="department")
+              option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id === editingUser.department._id }" ) {dept.name}
+
+      .field
+        label.label Email
+        .control
+          input.input(type="text", name="email", value="{editingUser.email}")
+
       div.padding
 
     .modal-footer
       .row
-        .col.s12.right-align
-          a(onclick="{closeEditUserModal}").btn-flat Cancel
-          | &nbsp;
-          a(onclick="{confirmEditUser}").btn Save
+        .col.s12
+          .field.is-grouped.is-pulled-right
+            .control
+              a.button.is-outlined(onclick="{closeEditUserModal}") Cancel
+            .control
+              a.button.is-outlined.is-accent(onclick="{confirmEditUser}") Save
 
-  div(class="modal")#create-user-form
+  #create-user-form(class="modal")
     .modal-header
       h3 Create User
     .modal-content
-      h5 Name
-      .input-field.control
-        input.input(type="text",name="name")
-      h5 Email
-      .input-field.control
-        input.input(type="text",name="email")
-      h5 Password
-      .input-field.control
-        input.input(type="password",name="password")
-      h5 Confirm Password
-      .input-field.control
-        input.input(type="password",name="confirm-password")
+      .field
+        label.label Name
+        .control
+          input.input(type="text", name="name")
+      .field
+        label.label Email
+        .control
+          input.input(type="text", name="email")
+      .field
+        label.label Password
+        .control
+          input.input(type="password", name="password")
+      .field
+        label.label Confirm Password
+        .control
+          input.input(type="password", name="confirm-password")
 
     .modal-footer
       .row
-        .col.s12.right-align
-          a(onclick="{closeCreateModal}").btn-flat Cancel
-          | &nbsp;
-          a(onclick="{confirmCreate}").btn Create
+        .col.s12
+          .field.is-grouped.is-pulled-right
+            .control
+              a.button.is-outlined(onclick="{closeCreateModal}") Cancel
+            .control
+              a.button.is-outlined.is-accent(onclick="{confirmCreate}") Create
 
   script.
     let self = this;
@@ -86,7 +99,7 @@ setting-user
 
     self.users = [];
     self.hasMore = true;
-    self.availableRoles = opts.availableRoles || [];
+    self.loaded = true;
 
     $(document).ready(() => {
       $editUserModal  = $('#edit-user-form').modal();
@@ -114,7 +127,9 @@ setting-user
 
     self.loadData = () => {
       const opts = { $skip: self.users.length };
+      self.loaded = false;
       api.getUsers( opts ).then( result => {
+        self.loaded = true;
         self.users = self.users.concat(result.data)
         self.updateHasMoreButton(result);
         self.update();

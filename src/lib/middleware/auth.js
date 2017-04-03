@@ -71,20 +71,18 @@ export default function auth(check_auth = true) {
     }
 
     return get_user
-    .then(data => {
-      console.log("Auth:", jwt, user_id, data);
-      if (data) {
-        const user = data;
-        user.token = jwt;
-        return req.api('/departments/' + user.department)
-        .then(data => {
-          // assign to user
-          user.dept = data;
-          req.user = res.locals.user = parse_user(user);
-          req.cookies[cookie_user_info] = user;
-          res.cookie(cookie_user_info, user, conf.get('service.cookie'));
-        });
-      }
+    .then(user => {
+      if (!user) return false;
+      user.token = jwt;
+      return req.api('/departments/' + user.department)
+      .then(data => {
+        // assign to user
+        user.dept = data;
+        req.user = res.locals.user = parse_user(user);
+        req.cookies[cookie_user_info] = user;
+        res.cookie(cookie_user_info, user, conf.get('service.cookie'));
+        return true;
+      });
     })
     .catch(err => {
       log.error(err);

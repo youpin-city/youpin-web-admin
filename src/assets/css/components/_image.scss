@@ -1,3 +1,10 @@
+
+.icon {
+  &.is-danger { color: $cl-danger; }
+  &.is-warning { color: $cl-warning; }
+  &.is-success { color: $cl-success; }
+}
+
 .bg {
   background-repeat: no-repeat;
   background-size: cover;
@@ -5,8 +12,8 @@
 }
 
 .image {
-  display: block;
-  padding-top: 100%;
+  // display: block;
+  // padding-top: 100%;
   @extend .bg;
 
   &.align-bottom {
@@ -56,4 +63,59 @@
   height: $size;
   border-radius: $size;
   background-color: $cl-verylightgray;
+}
+
+profile-image {
+  display: block;
+  .media {
+    padding: 0 !important;
+    .media-left {
+      padding: 0 !important;
+      margin: 0;
+    }
+    .media-content {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+    }
+  }
+  .image {
+    $size: 48px;
+    abbr {
+      display: block;
+      font-size: $size * 0.7;
+      line-height: $size;
+      font-weight: $fw-bold;
+      color: $cl-white;
+      background-color: $cl-primary;
+      border: none;
+      width: 100%;
+      height: inherit;
+      text-align: center;
+    }
+  }
+
+  &.is-small {
+    .image {
+      $size: 24px;
+      abbr {
+        font-size: $size * 0.7;
+        line-height: $size;
+      }
+    }
+  }
+
+  &.is-round {
+    .image {
+      border-radius: 100%;
+      overflow: hidden;
+    }
+  }
+
+  &.is-round-box {
+    .image {
+      border-radius: $br-large;
+      overflow: hidden;
+    }
+  }
 }

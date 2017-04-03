@@ -1,0 +1,15 @@
+// bulma
+.table {
+  &.is-borderless {
+    td,
+    th {
+      border-width: 0 0 0;
+    }
+  }
+
+  &.is-static {
+    tr:hover {
+      background: none;
+    }
+  }
+}

@@ -1,54 +1,46 @@
-issue-item.issue.clearfix(class='{className}')
+issue-item(class='{ classes }')
   .issue-img
-    a.img.responsive-img(href='#!issue-id:{ item._id }', style='background-image: url("{ _.get(item.photos, "0") }");')
-
-    div.issue-id
-      label ID
-      span(href='#manage-issue-modal' data-id='{ item._id }') { item._id.slice(-10) }
+    a.img.responsive-img(href='{ util.site_url("/issue/" + item._id) }', style='background-image: url("{ _.get(item.photos, "0") }");')
 
   div.issue-body
+    div.issue-title
+      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
+      .field.is-inline(show='{ item.status === "rejected" }')
+        i.icon.material-icons.is-danger error_outline
+      .field.is-inline(show='{ item.status === "resolved" }')
+        i.icon.material-icons.is-success check
+
+      .field.is-inline(show='{ Number(item.level) > 0 }')
+        .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
+        .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
+        .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
+
     div.issue-desc
-      div { item.detail }
+      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
+    div(show='{ item.categories && item.categories.length }')
+      //- span ประเภท
+      .field.is-inline(show='{ item.categories && !pin.categories.length }') -
+      ul.tag-list
+        li(each='{ cat, i in item.categories }')
+          a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
-    footer
-      div.meta.issue-location
-        i.icon.material-icons.tiny location_on
-        span
-          a.bubble(if='{ item.location && item.location.coordinates }', href='#!issue-map:{ item._id }')
-            | See map
-          span.bubble(if='{ item.location_name }') { item.location_name }
-      div.meta.issue-category(if='{ item.categories && item.categories.length > 0 }')
-        i.icon.material-icons.tiny turned_in_not
-        span
-          span.bubble(each="{ cat in item.categories }") { cat }
-      div.meta.issue-tags(if='{ item.tags && item.tags.length > 0 }')
-        i.icon.material-icons.tiny label
-        span
-          span.bubble(each="{ tag in item.tags }") { tag }
   .issue-info
-    div
-      label Status
-      span.big-text(if='{ item.is_merged }') Merged
-      span.big-text(if='{ !item.is_merged }') { item.status }
+    div(show='{ item.assigned_department }') หน่วยงาน { item.assigned_department.name }
 
-    div
-      label Dept.
-      span.big-text { item.assigned_department ? item.assigned_department.name : '-' }
+    div(show='{ item.assigned_users && item.assigned_users.length }')
+      | เจ้าหน้าที่
+      .field.is-inline(each='{ staff in item.assigned_users }')
+        profile-image.is-round.is-small(title='{ staff.name }', initial='{ staff.name[0].toUpperCase() }')
+      .field.is-inline.is-pulled-right(show='{ item.progresses && item.progresses.length }')
+        i.icon.material-icons chat_bubble
+        span { item.progresses.length }
 
-    div.meta(if='{item.assigned_user_names}', title="assigned to")
-      i.icon.material-icons.tiny face
-      | { item.assigned_user_names }
-
-    div.meta(title="created at")
-      i.icon.material-icons.tiny access_time
-      | { moment(item.created_time).fromNow() }
-    div
-      a.bt-manage-issue.btn.btn-block(href='#!issue-id:{ item._id }') Issue
+    div(show='{ item.updated_time }') อัพเดทล่าสุด { moment(item.updated_time).fromNow() }
 
   .issue-compact
     div.issue-desc
-      collapsible-content(interactive='false', height='3.6rem', default='collapsed')
-        a(href='#!issue-id:{ item._id }') { item.detail }
+      //- collapsible-content(interactive='false', height='3.6rem', default='collapsed')
+      a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
     ul.meta-list
       li.meta(title="created at")
         i.icon.material-icons.tiny access_time
@@ -65,8 +57,14 @@ issue-item.issue.clearfix(class='{className}')
         i.icon.material-icons.tiny face
         | { item.assigned_user_names }
 
-
   script.
     const self = this;
     self.item = opts.item || {};
-    self.className = opts.type ? `is-${opts.type}` : '';
+    self.classes = {
+      issue: true,
+      clearfix: true
+    };
+    self.classes['is-' + self.item.status] = true;
+    if (self.opts.type) {
+      self.classes['is-' + self.opts.type] = true;
+    }

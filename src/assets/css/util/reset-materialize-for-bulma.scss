@@ -1,0 +1,23 @@
+figure {
+  margin: 0;
+}
+
+nav.level {
+  box-shadow: none;
+  line-height: inherit;
+  height: initial;
+}
+
+nav {
+  i.material-icons {
+    display: inline-block;
+    height: inherit;
+    line-height: 1.5;
+  }
+}
+
+.selectize-dropdown,
+.selectize-input,
+.selectize-input input {
+  height: inherit;
+}
