@@ -3,6 +3,7 @@
 import querystring from 'qs';
 import fetch from 'isomorphic-fetch'; // for now
 import _ from 'lodash';
+import createError from 'http-errors';
 
 const api = module.exports = {};
 
@@ -27,7 +28,7 @@ function normalize_pin(pin) {
   }, pin);
 }
 
-api._buildEndpoint = function(path, queryParams) {
+api._buildEndpoint = function (path, queryParams) {
   return app.config.api_url + '/' + path + '?' + querystring.stringify(queryParams);
 };
 
@@ -98,22 +99,38 @@ api.createDepartment = (deptName) => {
   };
 
   const url = api._buildEndpoint('departments');
-  return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: headers
+  });
 };
 
 api.updateDepartment = (deptId, patchObj) => {
   const url = api._buildEndpoint('departments/' + deptId);
-  return fetch(url, { method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
+  return fetch(url, {
+    method: 'PATCH',
+    body: JSON.stringify(patchObj),
+    headers: headers
+  });
 };
 
 api.postTransition = (pinId, body) => {
   const url = api._buildEndpoint('pins/' + pinId + '/state_transition');
-  return fetch(url, { mode: 'cors', method: 'POST', body: JSON.stringify(body), headers: headers });
+  return fetch(url, {
+    mode: 'cors',
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: headers
+  });
 };
 
 api.postPhoto = (formData) => {
   const url = api._buildEndpoint('photos');
-  return fetch(url, { method: 'POST', body: formData });
+  return fetch(url, {
+    method: 'POST',
+    body: formData
+  });
 };
 
 api.getUsers = (opts = {}) => {
@@ -125,27 +142,51 @@ api.getUsers = (opts = {}) => {
   }
 
   const url = api._buildEndpoint('users', opts);
-  return fetch(url, { mode: 'cors', headers: headers }).then(response => response.json());
+  return fetch(url, { mode: 'cors', headers: headers })
+  .then(response => response.json());
 };
 
 api.createUser = (userObj) => {
   const url = api._buildEndpoint('users');
-  return fetch(url, { mode: 'cors', method: 'POST', body: JSON.stringify(userObj), headers: headers });
+  return fetch(url, {
+    mode: 'cors',
+    method: 'POST',
+    body: JSON.stringify(userObj), headers: headers
+  });
 };
 
 api.updateUser = (userId, patchObj) => {
   const url = api._buildEndpoint('users/' + userId);
-  return fetch(url, { mode: 'cors', method: 'PATCH', body: JSON.stringify(patchObj), headers: headers });
+  return fetch(url, {
+    mode: 'cors',
+    method: 'PATCH',
+    body: JSON.stringify(patchObj), headers: headers
+  });
 };
 
 api.createPin = (pinObj) => {
   const url = api._buildEndpoint('pins');
-  return fetch(url, { mode: 'cors', method: 'POST', body: JSON.stringify(pinObj), headers: headers });
+  return fetch(url, {
+    mode: 'cors',
+    method: 'POST',
+    body: JSON.stringify(pinObj), headers: headers
+  })
+  .catch(err => console.log('create pin err:', err))
+  .then(response => response.json())
+  .then(data => {
+    if (data.code >= 400) {
+      data.message = data.message + ' ' + _.map(data.errors, 'message').join('\n');
+      throw createError(data.code, data);
+    }
+    return data;
+  });
 };
 
 api.getPin = (pin_id) => {
   const url = api._buildEndpoint('pins/' + pin_id);
-  return fetch(url, { mode: 'cors' }).then(response => response.json()).then(item => normalize_pin(item));
+  return fetch(url, { mode: 'cors' })
+  .then(response => response.json())
+  .then(item => normalize_pin(item));
 };
 
 api.getPins = (status, opts) => {
@@ -161,12 +202,17 @@ api.getPins = (status, opts) => {
   if (status) opts.status = status;
 
   const url = api._buildEndpoint('pins', opts);
-  return fetch(url, { mode: 'cors' }).then(response => response.json());
+  return fetch(url, { mode: 'cors' })
+  .then(response => response.json());
 };
 
 api.patchPin = (pin_id, body) => {
   const url = api._buildEndpoint('pins/' + pin_id);
-  return fetch(url, { method: 'PATCH', body: JSON.stringify(body), headers: headers });
+  return fetch(url, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+    headers: headers
+  });
 };
 
 api.mergePins = (child_id, parent_id) => {
@@ -175,7 +221,11 @@ api.mergePins = (child_id, parent_id) => {
   };
 
   const url = api._buildEndpoint('pins/' + child_id + '/merging');
-  return fetch(url, { method: 'POST', body: JSON.stringify(body), headers: headers });
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: headers
+  });
 };
 
 api.getPinActivities = (pin_id) => {
@@ -186,7 +236,8 @@ api.getPinActivities = (pin_id) => {
   };
 
   const url = api._buildEndpoint('activity_logs', opts);
-  return fetch(url, { mode: 'cors' }).then(response => response.json());
+  return fetch(url, { mode: 'cors' })
+  .then(response => response.json());
 };
 
 // 1. {{host}}/pins?updated_time[$gte]=2017-01-09&updated_time[$lte]=2017-01-15&status=resolved
@@ -208,18 +259,6 @@ api.getPerformance = (start_date, end_date, department) => {
     };
   }
 
-  return Promise.resolve({})
-    .then(() => get_current_resolved_pin(start_date, end_date, queryOpts))
-    .then(() => get_prev_active_pins(start_date, queryOpts))
-    .then(() => get_current_new_pins(start_date, end_date, queryOpts))
-    .then(() => {
-      return {
-        current_resolved_pin,
-        prev_active_pins,
-        current_new_pins
-      };
-    });
-
   // 1. current_resolved_pin
   function get_current_resolved_pin(start_date, end_date, queryOpts) {
     const opts = _.extend(queryOpts, {
@@ -231,10 +270,10 @@ api.getPerformance = (start_date, end_date, department) => {
     });
     const url = api._buildEndpoint('pins', opts);
     return fetch(url).then(response => response.json())
-      .then(result => {
-        current_resolved_pin = _.get(result, 'total', 0);
-        return result;
-      });
+    .then(result => {
+      current_resolved_pin = _.get(result, 'total', 0);
+      return result;
+    });
   }
   // 2. prev_active_pins
   function get_prev_active_pins(start_date, queryOpts) {
@@ -248,10 +287,10 @@ api.getPerformance = (start_date, end_date, department) => {
     });
     const url = api._buildEndpoint('pins', opts);
     return fetch(url).then(response => response.json())
-      .then(result => {
-        prev_active_pins = _.get(result, 'total', 0);
-        return result;
-      });
+    .then(result => {
+      prev_active_pins = _.get(result, 'total', 0);
+      return result;
+    });
   }
   // 3. current_new_pins
   function get_current_new_pins(start_date, end_date, queryOpts) {
@@ -266,9 +305,21 @@ api.getPerformance = (start_date, end_date, department) => {
     });
     const url = api._buildEndpoint('pins', opts);
     return fetch(url).then(response => response.json())
-      .then(result => {
-        current_new_pins = _.get(result, 'total', 0);
-        return result;
-      });
+    .then(result => {
+      current_new_pins = _.get(result, 'total', 0);
+      return result;
+    });
   }
-}
+
+  return Promise.resolve({})
+  .then(() => get_current_resolved_pin(start_date, end_date, queryOpts))
+  .then(() => get_prev_active_pins(start_date, queryOpts))
+  .then(() => get_current_new_pins(start_date, end_date, queryOpts))
+  .then(() => {
+    return {
+      current_resolved_pin,
+      prev_active_pins,
+      current_new_pins
+    };
+  });
+};

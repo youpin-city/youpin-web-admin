@@ -39,6 +39,7 @@ module.exports = (req, res, next) => {
       leaflet: conf.get('service.leaflet'),
       here: conf.get('service.here')
     },
+    organization: conf.get('organization'),
     role: _.fromPairs(_.map(conf.get('role'), item => [item.id, item])),
     roles: conf.get('role'),
     permission: conf.get('permission'),

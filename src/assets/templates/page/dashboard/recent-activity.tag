@@ -13,7 +13,7 @@ dashboard-recent-activity
       //-   profile-image.is-round(show='{ comment.type === "comment" }', name='{ comment.user }')
       //-   profile-image.is-round.is-small(show='{ comment.type === "meta" }', name='{ comment.user }')
       .media-content
-        .content.pre(style='margin: 0;')
+        .content.pre.is-marginless
           a(href='{ comment.url }')
             strong { comment.user }
             | &nbsp;{ comment.text }

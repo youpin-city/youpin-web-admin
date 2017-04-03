@@ -6,4 +6,4 @@ append content
 
 append app_script
   script.
-    riot.mount('issue-view-page', { 'dataId': !{JSON.stringify(id)} });
+    riot.mount('issue-view-page', { dataId: !{JSON.stringify(id || null)} });

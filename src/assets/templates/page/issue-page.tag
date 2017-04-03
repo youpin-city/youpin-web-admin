@@ -32,7 +32,7 @@ issue-page
       .level-item
         .control
           .bt-new-issue.right
-            a.button.is-accent(href='#create-issue-modal') Create New Issue
+            a.button.is-accent(href='{ util.site_url("/issue/new") }') สร้างเรื่องร้องเรียน
 
   issue-list
 
@@ -238,7 +238,9 @@ issue-page
 
     });
 
-    self.current_filter = {};
+    self.current_filter = {
+      status: { $in: ['pending', 'assigned', 'processing'] }
+    };
     self.current_sort = '-updated_time';
 
     self.on('before-mount', () => {
@@ -279,7 +281,7 @@ issue-page
         labelField: 'name',
         //- searchField: 'name',
         options: _.compact(status), // all choices
-        items: ['all'], // selected choices
+        items: ['open'], // selected choices
         create: false,
         allowEmptyOption: false,
         //- hideSelected: true,

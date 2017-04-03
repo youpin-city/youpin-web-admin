@@ -33,7 +33,7 @@ search-box(class='{ open: open }')
           padding-right: 0;
         }
         .search-box-wrapper {
-          width: 200px;
+          width: 280px;
           opacity: 1;
           padding-left: 1rem;
           padding-right: 1rem;

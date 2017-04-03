@@ -8,10 +8,10 @@ issue-view-page
           .tag.is-large.is-danger ปิดเรื่อง
         .level-item(show='{ isClosed() }')
           span(show='{ pin.status === "rejected" }')
-            i.icon.material-icons.is-danger error_outline
+            i.icon.material-icons.is-danger { pin.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
           span(show='{ pin.status === "resolved" }')
             i.icon.material-icons.is-success check
-          span { _.startCase(pin.closed_reason) }
+          //- span { _.startCase(pin.closed_reason) }
       .level-right.content-padding
         .level-item
           .control
@@ -136,7 +136,7 @@ issue-view-page
               button.button.is-outlined.is-accent.is-block(show='{ !isClosed() }', onclick='{ toggleCloseIssueModal }')
                 span.text ปิดเรื่อง
               button.button.is-outlined.is-block(show='{ isClosed() }', onclick='{ toggleReopenIssueModal }')
-                span.text เปิดเรื่อง
+                span.text เปิดเรื่องอีกครั้ง
 
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
@@ -209,7 +209,7 @@ issue-view-page
             profile-image.is-round(show='{ comment.type === "comment" }', name='{ comment.user }')
             profile-image.is-round.is-small(show='{ comment.type === "meta" }', name='{ comment.user }')
           .media-content
-            .content.pre { comment.text }
+            .content.pre.is-marginless { comment.text }
             div(show='{ comment.annotation }')
               small { comment.annotation }
             .datetime
@@ -236,7 +236,7 @@ issue-view-page
         table.table.is-borderless.is-narrow.is-static
           tbody
             tr
-              td
+              td(style='width: 200px;')
                 p ปิดเรื่องร้องเรียน โดยที่
               td
                 ul.menu-list
@@ -244,12 +244,13 @@ issue-view-page
                     a(href='#', data-id='{ item.id }', class='{ "is-active": item.selected }', onclick='{ selectCloseIssueType }')
                       i.icon.material-icons { item.icon }
                       span { item.name }
-                    //- แก้ไขเรื่องร้องเรียนเสร็จแล้ว
-                  //- li
-                  //-   a(href='#') ไม่สามารถแก้ไขเรื่องร้องเรียนนี้
-                  //- li
-                  //-   a(href='#') เป็นสแปมหรือแจ้งเหตุไม่เหมาะสม
-
+            tr
+              td
+                p เหตุผลที่ปิด (ถ้ามี)
+              td
+                .field
+                  .control
+                    textarea.textarea(ref='closed_reason_input', placeholder='เช่น เนื่องจากไม่สามารถจัดงบประมาณได้ภายในปีนี้')
       footer.modal-card-footer
         .field.is-grouped.is-pulled-right
           .control
@@ -273,7 +274,6 @@ issue-view-page
             a.button.is-outlined(class='{ "is-disabled": saving_info }', onclick='{ toggleReopenIssueModal }') ยกเลิก
           .control
             a.button.is-outlined.is-accent(class='{ "is-loading": saving_info }', onclick='{ commitReopenIssue }') ยืนยันเปิดเรื่องใหม่
-
 
   script.
     const self = this;
@@ -668,13 +668,27 @@ issue-view-page
       function _t(field) {
         return _field_term[field] || field || 'ข้อมูล';
       }
-      function parse_acitivity_text(type, action, log) {
+      function parse_acitivity_text(type, action, log, pin) {
         switch (type) {
           case 'ACTION_TYPE/STATE_TRANSITION':
             const state = action.split('/')[1].toLowerCase();
-            if (['resolved', 'rejected'].indexOf(state) >= 0) {
-              return 'ปิดเรื่องร้องเรียน';
+            if (['resolved', 'resolve'].indexOf(state) >= 0) {
+              let msg = 'ปิดเรื่องร้องเรียน :)'
+                //- + '<i class="icon material-icons is-success">check</i>';
+              if (pin.closed_reason) {
+                msg += '\n' + pin.closed_reason;
+              }
+              return msg;
             }
+            if (['rejected', 'reject'].indexOf(state) >= 0) {
+              let msg = 'ปิดเรื่องร้องเรียน :('
+                //- + '<i class="icon material-icons is-danger">error_outline</i>';
+              if (pin.closed_reason) {
+                msg += '\n' + pin.closed_reason;
+              }
+              return msg;
+            }
+            //- span { _.startCase(pin.closed_reason) }
             return 'เปิดเรื่องร้องเรียนใหม่อีกครั้ง';
 
           case 'ACTION_TYPE/METADATA':
@@ -685,7 +699,11 @@ issue-view-page
               log.updated_values.splice(prog_index, 1);
             }
             if (log.changed_fields.length === 0) {
-              return '';
+              return ''; // empty string = skip
+            }
+            if (log.changed_fields.length === 1
+            && ['closed_reason'].indexOf(log.changed_fields[0]) >= 0) {
+              return ''; // empty string = skip
             }
             //- if (log.changed_fields.length === 1 && log.changed_fields[0] === 'progresses)
             return 'แก้ไข ' + _.map(log.changed_fields, field => _t(field)).join(', ');
@@ -693,17 +711,27 @@ issue-view-page
             return 'ไม่มีข้อมูล';
         }
       }
+
+      // creation log
+      self.comments = [{
+        type: 'meta',
+        text: 'รายงานเรื่องร้องเรียน',
+        photos: [],
+        user: _.get(self.pin, 'owner.name', '')
+      }];
+      // activity logs
       const normalized_activities = self.activities.map(item => _.merge(_.clone(item), {
         type: 'meta',
-        text: parse_acitivity_text(item.actionType, item.action, item),
+        text: parse_acitivity_text(item.actionType, item.action, item, self.pin),
         photos: [],
         //- annotation: item.actionType + ' :: ' + item.action,
         //- user: null,
         //- timestamp: item.updated_time
       }));
-      self.comments = [].concat(normalized_activities);
+      self.comments = self.comments.concat(normalized_activities);
+      // pin's comments
       if (self.pin) {
-        const normalized_comments = _.get(self, 'pin.progresses', []).map(item =>
+        const normalized_progresses = _.get(self, 'pin.progresses', []).map(item =>
           _.merge(_.clone(item), {
             type: 'comment',
             text: item.detail,
@@ -713,7 +741,7 @@ issue-view-page
             timestamp: item.updated_time
           })
         );
-        self.comments = self.comments.concat(normalized_comments);
+        self.comments = self.comments.concat(normalized_progresses);
       }
       self.comments = _.filter(self.comments, comment => comment.text)
       self.comments = _.sortBy(self.comments, c => - new Date(c.timestamp));
@@ -737,7 +765,9 @@ issue-view-page
     self.commitCloseIssue = (e) => {
       const selected_item = _.find(self.close_issue_form.type, ['selected', true]);
       const next_status = selected_item.value;
-      const reason = next_status === 'rejected' ? selected_item.id : '';
+      const closed_reason = self.refs.closed_reason_input.value;
+      const reason = closed_reason ? closed_reason
+        : next_status === 'rejected' ? selected_item.id : '';
       if (!next_status) {
         Materialize.toast('ข้อมูลเพื่อปิดเรื่องร้องเรียนไม่สมบูรณ์ โปรดลองอีกครั้ง', 8000, 'dialog-error large')
         return;

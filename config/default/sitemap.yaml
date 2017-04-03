@@ -2,6 +2,7 @@
 sitemap:
   - name: sitenav.dashboard
     href: "/"
+    icon: dashboard
     children: []
     authorized_roles:
       - super_admin
@@ -10,6 +11,7 @@ sitemap:
       - department_officer
   - name: sitenav.issue
     href: "/issue"
+    icon: announcement
     children: []
     authorized_roles:
       - super_admin
@@ -18,12 +20,15 @@ sitemap:
       - department_officer
   # - name: sitenav.archive
   #   href: "/archive"
+  #   icon: archive
   #   children: []
   - name: sitenav.report
     href: "/report"
+    icon: pie_chart
     children:
       - name: sitenav.report_performance
         href: "/report/performance"
+        icon: show_chart
         children: []
         authorized_roles:
           - super_admin
@@ -31,6 +36,7 @@ sitemap:
           - department_head
       - name: sitenav.report_department
         href: "/report/department"
+        icon: insert_emoticon
         children: []
         authorized_roles:
           - super_admin
@@ -38,17 +44,20 @@ sitemap:
           - department_head
   - name: sitenav.settings
     href: "/settings"
+    icon: settings
     authorized_roles:
       - super_admin
       - organization_admin
     children:
       - name: sitenav.settings_department
         href: '/settings/department'
+        icon: domain
         authorized_roles:
           - super_admin
           - organization_admin
       - name: sitenav.settings_user
         href: '/settings/user'
+        icon: person
         authorized_roles:
           - super_admin
           - organization_admin

@@ -90,6 +90,7 @@ header#header
         - if( nav.authorized_roles && user && !nav.authorized_roles.find( r => r == user.role ) ) { continue; }
         li(class={ active: is_active })
           a(href=site_url(nav.href))
+            i.icon.material-icons #{ nav.icon }
             | #{__(nav.name)}
 
         for child in nav.children
@@ -98,6 +99,7 @@ header#header
           - if( user && !child.authorized_roles.find( r => r == user.role ) ) { continue; }
           li(class={ active: is_active, 'sub-menu': true })
             a(href=site_url(child.href))
+              i.icon.material-icons #{ child.icon }
               | #{__(child.name)}
 
 

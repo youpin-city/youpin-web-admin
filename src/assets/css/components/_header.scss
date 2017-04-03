@@ -120,6 +120,11 @@ header#header {
           line-height: 3;
           height: auto;
           border: none;
+          &:focus {
+            background: $cl-gray-100;
+            border-radius: 40px;
+            padding: 0 1.5rem;
+          }
         }
 
       }
@@ -190,6 +195,10 @@ header#header {
           height: $nav-left-menu-height;
           line-height: $nav-left-menu-height;
           transition: color .2s ease-out;
+          .icon {
+            margin-right: 0.5rem;
+            line-height: $nav-left-menu-height;
+          }
         }
 
         &:hover {
