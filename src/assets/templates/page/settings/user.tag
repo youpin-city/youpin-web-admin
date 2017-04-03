@@ -1,18 +1,28 @@
 setting-user
-  h1.page-title
-    | User List
+  nav.level.is-mobile
+    .level-left
+      .level-item
+        .title เจ้าหน้าที่
+      .level-item
+        .control(style='width: 140px;')
+          input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
 
-  .row
-    .col.s12.right-align
-      a.button.is-accent(onclick="{createUser}")
-        | Create User
+    .level-right
+      //- .level-item
+      //-   .control(style='width: 140px;')
+      //-     input(type='text', id='select_sort', ref='select_sort', placeholder='เรียง')
+
+      .level-item
+        .control
+          a.button.is-accent(onclick="{createUser}")
+            | สร้างบัญชีเจ้าหน้าที่
 
   .opaque-bg.content-padding.is-overflow-auto
     table.table.is-striped
       thead
-          th Name / Email
-          th Department
-          th Role
+          th ชื่อ / อีเมล
+          th หน่วยงาน
+          th ตำแหน่ง
           th(style='min-width: 100px;')
 
       tr(each="{user in users}" ).user
@@ -22,35 +32,35 @@ setting-user
           td { app.config.role[user.role].name }
           td
             a.button.is-block(onclick="{ editUser(user) }")
-              | Edit
+              | แก้ไข
 
   .spacing
   .load-more-wrapper.has-text-centered(show='{ hasMore }')
-    a.button.load-more(class='{ "is-loading": !loaded }', onclick='{ loadData }' ) Load More
+    a.button.load-more(class='{ "is-loading": !loaded }', onclick='{ loadMore }' ) Load More
 
   #edit-user-form(class="modal")
     .modal-header
-      h3 Edit User {editingUser.name}
+      h3 แก้ไข้ข้อมูลเจ้าหน้าที่ { editingUser && editingUser.name }
     .divider
     .modal-content
       .field
-        label.label Role
+        label.label ตำแหน่ง
         .control
           .select.is-fullwidth
             select.browser-default(name="role")
-              option(each="{ role in app.config.role }", value="{role.id}", selected="{ role.id === editingUser.role }") {role.name}
+              option(each="{ role in app.config.role }", value="{role.id}", selected="{ editingUser && role.id === editingUser.role }") {role.name}
 
       .field.department-selector-wrapper
-        label.label Department
+        label.label หน่วยงาน
         .control
           .select.is-fullwidth
             select.browser-default(name="department")
-              option(each="{ dept in departments }", value="{dept._id}", selected="{ dept._id === editingUser.department._id }" ) {dept.name}
+              option(each="{ dept in departments }", value="{dept._id}", selected="{ editingUser && dept._id === editingUser.department._id }" ) {dept.name}
 
       .field
-        label.label Email
+        label.label อีเมล
         .control
-          input.input(type="text", name="email", value="{editingUser.email}")
+          input.input(type="text", name="email", placeholder="name@email.com", value="{ editingUser && editingUser.email }")
 
       div.padding
 
@@ -59,28 +69,28 @@ setting-user
         .col.s12
           .field.is-grouped.is-pulled-right
             .control
-              a.button.is-outlined(onclick="{closeEditUserModal}") Cancel
+              a.button.is-outlined(onclick="{closeEditUserModal}") ยกเลิก
             .control
-              a.button.is-outlined.is-accent(onclick="{confirmEditUser}") Save
+              a.button.is-outlined.is-accent(onclick="{confirmEditUser}") บันทึก
 
   #create-user-form(class="modal")
     .modal-header
-      h3 Create User
+      h3 สร้างบัญชีเจ้าหน้าที่
     .modal-content
       .field
-        label.label Name
+        label.label ชื่อ
         .control
           input.input(type="text", name="name")
       .field
-        label.label Email
+        label.label อีเมล
         .control
-          input.input(type="text", name="email")
+          input.input(type="text", name="email", placeholder="name@email.com")
       .field
-        label.label Password
+        label.label รหัสผ่าน
         .control
           input.input(type="password", name="password")
       .field
-        label.label Confirm Password
+        label.label ยืนยันรหัสผ่าน
         .control
           input.input(type="password", name="confirm-password")
 
@@ -89,9 +99,9 @@ setting-user
         .col.s12
           .field.is-grouped.is-pulled-right
             .control
-              a.button.is-outlined(onclick="{closeCreateModal}") Cancel
+              a.button.is-outlined(onclick="{closeCreateModal}") ยกเลิก
             .control
-              a.button.is-outlined.is-accent(onclick="{confirmCreate}") Create
+              a.button.is-outlined.is-accent(onclick="{confirmCreate}") สร้างบัญชีเจ้าหน้าที่
 
   script.
     let self = this;
@@ -100,6 +110,8 @@ setting-user
     self.users = [];
     self.hasMore = true;
     self.loaded = true;
+    self.current_filter = {};
+    self.query = {};
 
     $(document).ready(() => {
       $editUserModal  = $('#edit-user-form').modal();
@@ -113,20 +125,30 @@ setting-user
       });
     });
 
+    self.on('before-mount', () => {
+      if (self.opts.department) {
+        const depts = self.opts.department.split(':');
+        self.query.department = { _id: depts[0], name: depts[1] };
+        self.current_filter.department = depts[0]; // self.opts.department;
+      }
+    });
+
     self.on('mount', () => {
+      self.initSelectDepartment();
       api.getDepartments().then( (res) => {
         self.departments = res.data;
-        self.departments = [{
-          _id: '',
-          name: 'No Department',
-          organization: ''
-        }].concat(self.departments);
+        //- self.departments = [{
+        //-   _id: '',
+        //-   name: 'No Department',
+        //-   organization: ''
+        //- }].concat(self.departments);
         self.loadData();
       });
     });
 
-    self.loadData = () => {
-      const opts = { $skip: self.users.length };
+    self.loadData = (reset = true) => {
+      if (reset) self.users = [];
+      const opts = _.merge(self.current_filter, { $skip: self.users.length });
       self.loaded = false;
       api.getUsers( opts ).then( result => {
         self.loaded = true;
@@ -135,6 +157,10 @@ setting-user
         self.update();
       });
     };
+
+    self.loadMore = (e) => {
+      return self.loadData(false);
+    }
 
     self.updateHasMoreButton = (result) => {
       self.hasMore = ( result.total - ( result.skip + result.data.length ) ) > 0;
@@ -167,14 +193,12 @@ setting-user
       }
 
       api.updateUser(self.editingUser._id, patch).then( (res) => {
-        if( res.status != "200" ) {
-          alert("something wrong : check console");
-          console.log(res);
-          return;
-        }
         self.closeEditUserModal();
         self.loadData();
-      });
+      })
+      .catch(err =>
+        Materialize.toast(err.message, 8000, 'dialog-error large')
+      );
     };
 
     self.closeEditUserModal = () => {
@@ -215,13 +239,44 @@ setting-user
 
       api.createUser(userObj)
       .then( (res) => {
-        if( res.status != "201" ) {
-         alert("something wrong : check console");
-         console.log(res);
-         return;
-        }
-
         self.closeCreateModal();
         self.loadData();
-      });
+        location.reload();
+      })
+      .catch(err =>
+        Materialize.toast(err.message, 8000, 'dialog-error large')
+      );
     };
+
+    self.initSelectDepartment = () => {
+      const departments = _.compact([
+        { _id: 'all', name: 'หน่วยงานทั้งหมด' }
+      ].concat(self.query.department));
+      $(self.refs.select_department).selectize({
+        maxItems: 1,
+        valueField: '_id',
+        labelField: 'name',
+        //- searchField: 'name',
+        options: _.compact(departments), // all choices
+        items: [self.current_filter.department || 'all'], // selected choices
+        create: false,
+        allowEmptyOption: false,
+        //- hideSelected: true,
+        preload: true,
+        load: function(query, callback) {
+          //- if (!query.length) return callback();
+          api.getDepartments({ })
+          .then(result => {
+            callback(result.data);
+          });
+        },
+        onChange: function(value) {
+          delete self.current_filter.department;
+          if (value && value !== 'all') {
+            self.current_filter.department = value;
+          }
+          console.log(self.current_filter, 'filter dept');
+          self.loadData();
+        }
+      });
+    }

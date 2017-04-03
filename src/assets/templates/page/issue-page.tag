@@ -269,9 +269,9 @@ issue-page
         { id: 'all', name: 'สถานะทั้งหมด' },
         { id: 'open', name: 'เปิด' },
         { id: 'closed', name: 'ปิด' },
-        { id: 'resolved', name: 'ปิดและแก้ไขสำเร็จ' },
-        { id: 'rejected', name: 'ปิดและไม่แก้ไข' },
-        { id: 'spam', name: 'ปิดและสเปม' }
+        //- { id: 'resolved', name: 'ปิดและแก้ไขสำเร็จ' },
+        //- { id: 'rejected', name: 'ปิดและไม่แก้ไข' },
+        //- { id: 'spam', name: 'ปิดและสเปม' }
       ];
       $(self.refs.select_status).selectize({
         maxItems: 1,
@@ -366,7 +366,7 @@ issue-page
         preload: true,
         load: function(query, callback) {
           //- if (!query.length) return callback();
-          api.getUsers({ })
+          api.getUsers({})
           .then(result => {
             callback(result.data);
           });

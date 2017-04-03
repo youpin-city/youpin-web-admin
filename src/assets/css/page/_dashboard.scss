@@ -31,9 +31,9 @@ $activity-width: 320px;
     }
   }
 
-  a {
-    color: $cl-darkgray;
-  }
+  // a {
+  //   color: $cl-darkgray;
+  // }
 
   #big-number-table {
     padding: 2rem 0;
@@ -75,7 +75,7 @@ $activity-width: 320px;
       vertical-align: top;
 
       &.team {
-        boder-left-color: $cl-darkgreen;
+        // border-left-color: $cl-darkgreen;
       }
 
       &.assigned {

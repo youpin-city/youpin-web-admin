@@ -16,9 +16,9 @@ sitemap:
       - organization_admin
       - department_head
       - department_officer
-  - name: sitenav.archive
-    href: "/archive"
-    children: []
+  # - name: sitenav.archive
+  #   href: "/archive"
+  #   children: []
   - name: sitenav.report
     href: "/report"
     children:

@@ -15,10 +15,10 @@
   margin: 0.5rem 0;
 
   &.is-resolved {
-    background: $cl-gray-100;
+    background: $cl-gray-50;
   }
   &.is-rejected {
-    background: $cl-gray-100;
+    background: $cl-gray-50;
   }
 
   label {
