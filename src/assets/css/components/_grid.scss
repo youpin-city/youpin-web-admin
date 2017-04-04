@@ -1,4 +1,11 @@
+// bulma
+.columns {
+  &.is-wrap {
+    flex-wrap: wrap;
+  }
+}
 
+// materialize
 // Full height
 .full-height {
   @include flexbox;

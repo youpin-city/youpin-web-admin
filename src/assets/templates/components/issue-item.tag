@@ -1,6 +1,6 @@
 issue-item(class='{ classes }')
   .issue-img
-    a.img.responsive-img(href='{ util.site_url("/issue/" + item._id) }', style='background-image: url("{ _.get(item.photos, "0") }");')
+    a.img.responsive-image(href='{ util.site_url("/issue/" + item._id) }', riot-style='{ thumbnail_classes }')
 
   div.issue-body
     div.issue-title
@@ -26,7 +26,7 @@ issue-item(class='{ classes }')
         .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
 
   .issue-info
-    div(show='{ item.assigned_department }') หน่วยงาน { item.assigned_department.name }
+    div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
 
     div(show='{ item.assigned_users && item.assigned_users.length }')
       | เจ้าหน้าที่
@@ -79,6 +79,14 @@ issue-item(class='{ classes }')
       issue: true,
       clearfix: true
     };
+    // thumbnail class
+    self.thumbnail_classes = {};
+    if (self.item && self.item.photos && self.item.photos.length > 0) {
+      self.thumbnail_classes['background-image'] = `url("${self.item.photos[0]}")`;
+    } else {
+      self.thumbnail_classes['background-image'] = `url("${util.site_url('/public/img/issue_dummy.png')}")`;
+    }
+    // status and type classes
     self.classes['is-' + self.item.status] = true;
     if (self.opts.type) {
       self.classes['is-' + self.opts.type] = true;
