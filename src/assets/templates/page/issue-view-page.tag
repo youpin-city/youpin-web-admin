@@ -91,7 +91,7 @@ issue-view-page
                     small ปิด
               .control(hide='{ isEditing("department") }')
                 div(show='{ !!pin.assigned_department }')
-                  profile-image.is-round-box(each='{ dept, i in [pin.assigned_department] }', name='{ _.get(dept, "name") }')
+                  profile-image.is-round-box.is-block(each='{ dept, i in [pin.assigned_department] }', name='{ _.get(dept, "name") }')
                 div(hide='{ !!pin.assigned_department }')
                   div ยังไม่มีหน่วยงาน
               .control(show='{ isEditing("department") }')
@@ -110,7 +110,7 @@ issue-view-page
                 div(show='{ !!pin.assigned_users.length }')
                   ul.selected-list
                     li(each='{ staff, i in pin.assigned_users }')
-                      profile-image.is-round-box(name='{ _.get(staff, "name") }', subtitle='{ _.get(staff, "department.name") }')
+                      profile-image.is-round-box.is-block(name='{ _.get(staff, "name") }', subtitle='{ _.get(staff, "department.name") }')
                 div(hide='{ !!pin.assigned_users.length }')
                   div ยังไม่มีเจ้าหน้าที่
               .control(show='{ isEditing("staff") }')
@@ -204,7 +204,7 @@ issue-view-page
         // offer new post comment editor
         article.media.progress-item.progress-editor.is-block-mobile
           .media-left
-            profile-image.is-round(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
+            profile-image.is-round.is-block(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
           .media-content
             .field
               .control
@@ -231,7 +231,7 @@ issue-view-page
         // previous posts
         article.media.progress-item.is-block-mobile(show='{ comments && comments.length > 0 }', each='{ comment, i in comments }')
           .media-left
-            profile-image.is-round(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
+            profile-image.is-round.is-block(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
           .media-content
             .content.pre.is-marginless
               profile-image.is-round.is-small(show='{ comment.type === "meta" }', initial='{ comment.user }')
@@ -438,7 +438,7 @@ issue-view-page
         render: {
           option: function(item, escape) {
             var name = item.name || '';
-            return '<profile-image class="is-round-box is-small" name="' + escape(name) + '"></profile-image>';
+            return '<profile-image class="is-round-box is-small is-block" name="' + escape(name) + '"></profile-image>';
           }
         },
         load: function(query, callback) {
@@ -481,7 +481,7 @@ issue-view-page
           option: function(item, escape) {
             var name = item.name || item.email;
             var department = item.department ? item.department.name : 'ไม่มีหน่วยงาน';
-            return '<profile-image class="is-round is-small" name="' + escape(name) + '" subtitle="' + escape(department) + '"></profile-image>';
+            return '<profile-image class="is-round is-small is-block" name="' + escape(name) + '" subtitle="' + escape(department) + '"></profile-image>';
           }
         },
         load: function(query, callback) {
