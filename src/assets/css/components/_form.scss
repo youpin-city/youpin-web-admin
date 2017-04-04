@@ -1,4 +1,8 @@
 // general
+form {
+  &.is-fullwidth { width: 100%; }
+}
+
 .field {
   &.is-inline {
     display: inline-block;

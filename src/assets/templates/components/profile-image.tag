@@ -4,7 +4,7 @@ profile-image
       figure(class='{ classes }')
         img(if='{ src }', src='{ src }')
         abbr(if='{ !src }', title='{ name }') { initial }
-    .media-content
+    .media-content(show='{ name || subtitle }')
       .title.is-6 { name }
       .subtitle.is-6(if='{ subtitle }')
         small { subtitle }
@@ -12,6 +12,7 @@ profile-image
   script.
     const self = this;
     self.src = '';
+    self.initial = '';
     self.name = '';
     self.subtitle = '';
     self.default_classes = {
@@ -23,7 +24,7 @@ profile-image
     self.on('before-mount', () => {
       if (self.opts.src) self.src = self.opts.src;
       if (self.opts.name) self.name = self.opts.name;
-      if (self.opts.initial) self.initial = self.opts.initial;
+      if (self.opts.initial) self.initial = _.get(self, 'opts.initial.0', '').toUpperCase();
       else self.initial = _.get(self, 'name.0', '').toUpperCase();
       if (self.opts.subtitle) self.subtitle = self.opts.subtitle;
       //- if (self.opts.size === 'small') {

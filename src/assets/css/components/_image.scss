@@ -66,18 +66,26 @@
 }
 
 profile-image {
-  display: block;
+  display: inline-block;
+  &.is-block {
+    display: block;
+  }
   .media {
     padding: 0 !important;
     .media-left {
+      display: inline-flex;
       padding: 0 !important;
       margin: 0;
     }
     .media-content {
-      display: flex;
+      // display: flex;
+      display: inline-flex;
       flex-direction: column;
       align-self: center;
       padding: 0 1rem;
+    }
+    .media-right {
+      display: inline-flex;
     }
   }
   .image {
@@ -120,3 +128,16 @@ profile-image {
     }
   }
 }
+
+
+figure
+  .img-tool {
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: 0;
+    &.top-left { top: 0; left: 0; right: auto; }
+    &.top-right { top: 0; left: auto; right: 0; }
+    &.bottom-left { top: auto; bottom: 0; left: 0; right: auto; }
+    &.bottom-right { top: auto; bottom: 0; left: auto; right: 0; }
+  }

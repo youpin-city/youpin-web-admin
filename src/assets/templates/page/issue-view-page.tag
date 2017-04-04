@@ -7,9 +7,9 @@ issue-view-page
         .level-item(show='{ isClosed() }')
           .tag.is-large.is-danger ปิดเรื่อง
         .level-item(show='{ isClosed() }')
-          span(show='{ pin.status === "rejected" }')
-            i.icon.material-icons.is-danger { pin.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
-          span(show='{ pin.status === "resolved" }')
+          span(show='{ _.get(pin, "status") === "rejected" }')
+            i.icon.material-icons.is-danger { _.get(pin, 'closed_reason') === 'spam' ? 'bug_report' : 'error_outline' }
+          span(show='{ _.get(pin, "status") === "resolved" }')
             i.icon.material-icons.is-success check
           //- span { _.startCase(pin.closed_reason) }
       .level-right.content-padding
@@ -26,13 +26,12 @@ issue-view-page
       .title Loading..
     .section(if='{ loaded }')
       .columns(each='{ pin in [pin] }')
-        .column.is-3
+        .column.is-3(hide='{ isEditing("info") }')
           .issue-photos
             div(if='{ !(pin.photos && pin.photos.length) }')
-              div No photo
+              figure.image.is-square
+                img(src='{ default_thumbnail }')
             div(if='{ pin.photos && pin.photos.length }')
-              //- figure.image.is-square
-              //-   img(src='{ util.site_url(pin.photos[0]) }')
               image-slider-lightbox(data='{ pin.photos }', highlight='{ true }')
 
         .column.is-5(hide='{ isEditing("info") }')
@@ -138,6 +137,23 @@ issue-view-page
               button.button.is-outlined.is-block(show='{ isClosed() }', onclick='{ toggleReopenIssueModal }')
                 span.text เปิดเรื่องอีกครั้ง
 
+
+        .column.is-3(show='{ isEditing("info") }')
+          .issue-photos
+            .field(show='{ issue_form_data.images.length > 0 }')
+              .columns.is-wrap
+                .column.is-12.is-mobile(each='{ img, i in issue_form_data.images }')
+                  figure.image
+                    .img-tool
+                      button.delete(onclick='{ removeFormPhoto("issue_form_data")(i) }')
+                    img(src='{ img }')
+            .field
+              .control
+                form.is-fullwidth(ref='issue_form_photo')
+                  label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
+                    i.icon.material-icons add_a_photo
+                  input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_form_data", "issue_form_photo", "saving_info_photo") }')
+
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
             .field
@@ -178,9 +194,9 @@ issue-view-page
           hr
           .field.is-grouped.is-pulled-right
             .control
-              a.button.is-outlined(class='{ "is-disabled": saving_info }', onclick='{ toggleEdit("info") }') Cancel
+              a.button.is-outlined(class='{ "is-disabled": saving_info }', onclick='{ toggleEdit("info") }') ยกเลิก
             .control
-              a.button.is-outlined.is-accent(class='{ "is-loading": saving_info }', onclick='{ updateIssueInfo }') Save
+              a.button.is-outlined.is-accent(class='{ "is-loading": saving_info }', onclick='{ updateIssueInfo }') บันทึก
 
     #progress-section.section(if='{ loaded }')
       .title ความคืบหน้า
@@ -190,26 +206,36 @@ issue-view-page
           .media-left
             profile-image.is-round(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
           .media-content
-            form(ref='comment_form')
-              .field
-                .control
-                  textarea.textarea(ref='comment_input')
-              .field
-                .control
-                  .level
-                    .level-left
-                      label.button.is-accent(for='comment-photo-input')
-                        i.icon.material-icons add_a_photo
-                      input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept="image/*")
-                    .level-right
-                      button.button.is-accent(onclick='{ submitComment }') ส่งความคืบหน้า
+            .field
+              .control
+                form(ref='comment_form_detail')
+                  textarea.textarea(ref='comment_input', placeholder='แจ้งความคืบหน้า ระบุรายละเอียดงาน')
+            .field(show='{ progress_data.images.length > 0 }')
+              .columns
+                .column.is-3.is-mobile(each='{ img, i in progress_data.images }')
+                  figure.image
+                    .img-tool
+                      button.delete(onclick='{ removeFormPhoto("progress_data")(i) }')
+                    img(src='{ img }')
+            .field
+              .control
+                .level
+                  .level-left
+                    .level-item
+                      form.is-fullwidth(ref='comment_form_photo')
+                        label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_progress_photo, "is-disabled": saving_progress }')
+                          i.icon.material-icons add_a_photo
+                        input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("progress_data", "comment_form_photo", "saving_progress_photo") }')
+                  .level-right
+                    button.button.is-accent.is-block(class='{ "is-loading": saving_progress, "is-disabled": saving_progress_photo }', onclick='{ submitComment }') ส่งความคืบหน้า
         // previous posts
         article.media.progress-item.is-block-mobile(show='{ comments && comments.length > 0 }', each='{ comment, i in comments }')
           .media-left
-            profile-image.is-round(show='{ comment.type === "comment" }', name='{ comment.user }')
-            profile-image.is-round.is-small(show='{ comment.type === "meta" }', name='{ comment.user }')
+            profile-image.is-round(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
           .media-content
-            .content.pre.is-marginless { comment.text }
+            .content.pre.is-marginless
+              profile-image.is-round.is-small(show='{ comment.type === "meta" }', initial='{ comment.user }')
+              span(style='padding-left: 0.5rem;') { comment.text }
             div(show='{ comment.annotation }')
               small { comment.annotation }
             .datetime
@@ -217,19 +243,12 @@ issue-view-page
 
           .media-right(show='{ comment.photos.length }')
             image-slider-lightbox(data='{ comment.photos }', column='6', highlight='{ false }')
-            //- .columns
-            //-   .column.is-6(each='{ photo, i in comment.photos }')
-            //-     figure.image.is-full-width
-            //-       img(src='{ util.site_url(photo) }')
-            //- span.datetime { moment(comment.timestamp).format(app.config.format.datetime_full) }
 
   // Close Issue Modal
   #close-issue-modal.modal.bulma-modal(ref='close_issue_modal', class='{ "is-active": open_modal.close_issue }')
     .modal-background(onclick='{ toggleCloseIssueModal }')
     .modal-card
       header.modal-card-header
-        //- .is-pulled-right
-        //-   button.delete.close-btn(onclick='{ toggleCloseIssueModal }')
         .title ปิดเรื่อง
 
       section.modal-card-body
@@ -263,9 +282,8 @@ issue-view-page
     .modal-background(onclick='{ toggleReopenIssueModal }')
     .modal-card
       header.modal-card-header
-        //- .is-pulled-right
-        //-   button.delete.close-btn(onclick='{ toggleReopenIssueModal }')
         .title เปิดเรื่องใหม่
+
       section.modal-card-body
         p คุณสามารถเปิดเรื่องที่ปิดไปแล้วได้อีกครั้ง เพื่อดำเนินการแก้ไขปัญหาให้สำเร็จ
       footer.modal-card-footer
@@ -277,14 +295,24 @@ issue-view-page
 
   script.
     const self = this;
+    self.default_thumbnail = util.site_url('/public/img/issue_dummy.png');
     self.loaded = false;
     self.pin = null;
-    self.activities = [];
-    self.comments = [];
+    // pin info
+    self.issue_form_data = { photos: [], images: [] };
     self.editing_info = false;
     self.saving_info = false;
+    self.saving_info_photo = false;
     self.editing_department = false;
     self.editing_staff = false;
+    // comment
+    self.activities = [];
+    self.comments = [];
+    self.saving_progress = false;
+    self.saving_progress_photo = false;
+    self.progress_data = { photos: [], images: [], detail: '' };
+
+
     self.open_modal = {
       close_issue: false,
       reopen_issue: false
@@ -350,6 +378,8 @@ issue-view-page
       .then(data => {
         self.loaded = true;
         self.pin = data;
+        self.issue_form_data.photos = _.clone(self.pin.photos);
+        self.issue_form_data.images = _.clone(self.pin.photos);
         self.update();
 
         self.initSelectDepartment();
@@ -550,70 +580,87 @@ issue-view-page
       });
     }
 
-    self.choosePhoto = (e) => {
-      if (e && e.preventDefault) e.preventDefault();
-    };
-
-    self.submitComment = (e) => {
-      if (e && e.preventDefault) e.preventDefault();
-      const files = self.refs.comment_photo_input.files;
-      const progress_data = {
-        photos: files.length > 0
-          ? [window.URL.createObjectURL(files[0])]
-          : [],
-        detail: self.refs.comment_input.value
-      };
-      console.log('process update:', progress_data);
-      if (!progress_data.detail && progress_data.photos.length === 0) {
-        Materialize.toast('พิมพ์ข้อความหรือเลือกรูป อธิบายความคืบหน้า', 8000, 'large')
-        return;
+    self.chooseFormPhoto = (data_name = '', form_ref = '', uploading_flag = '') => (e) => {
+      if (!data_name) return;
+      const file_input = e.currentTarget;
+      if (!(window.FileList && file_input && file_input.files instanceof window.FileList)) {
+        return Promise.resolve([]);
       }
-
-      // upload photo first, if any
-
-      return Promise.resolve({})
-      // upload photo if need
-      .then(() => {
-        if (progress_data.photos.length === 0) return null;
-
-        const form = new FormData();
-        return fetch(progress_data.photos[0])
+      if (uploading_flag) self[uploading_flag] = true;
+      //- self.saving_progress_photo = true;
+      return Promise.resolve(file_input.files)
+      .map(file => window.URL.createObjectURL(file))
+      .map((photo_blob_url, index) => fetch(photo_blob_url)
         .then(response => response.blob())
         .then(blob => {
-          console.log('1', progress_data);
+          const form = new FormData();
           form.append('image', blob);
           return api.postPhoto(form);
         })
         .then(response => response.json())
         .then(photo_data => {
-          progress_data.photos[0] = photo_data.url;
-          //- console.log('2', progress_data, photo_data);
-          //- return api.patchPin(id, {
-          //-   //- owner: user._id,
-          //-   $push: { progresses: progress_data }
-          //- });
-        })
-        //- .then(response => {
-        //-   console.log('3', response);
-        //-   //- $progress.find('textarea').val('');
-        //-   //- $progress.find('input[type="file"]').val('');
-        //- })
-        .catch(err =>
-          Materialize.toast(err.message, 8000, 'dialog-error large')
-        );
-      })
-      // create progress request (text + photo)
-      .then(() => {
-        return api.patchPin(self.id, {
-          $push: { progresses: progress_data }
-        })
-        .then(response => {
-          self.refs.comment_form.reset();
+          self[data_name].photos.push(photo_data.url);
+          self[data_name].images.push(photo_blob_url);
+          //- self.progress_data.photos.push(photo_data.url);
+          //- self.progress_data.images.push(photo_blob_url);
+          return photo_data.url;
         })
         .catch(err =>
           Materialize.toast(err.message, 8000, 'dialog-error large')
         )
-        .then(() => self.loadPin());
+      )
+      .then(() => {
+        if (form_ref && self.refs[form_ref]) self.refs[form_ref].reset();
+        if (uploading_flag) self[uploading_flag] = false;
+        //- self.refs.comment_form_photo.reset();
+        //- self.saving_progress_photo = false;
+        self.update();
+      });
+    };
+
+    self.removeFormPhoto = (data_name ='') => (index) => (e) => {
+      if (!data_name) return;
+      self[data_name].photos.splice(index, 1);
+      self[data_name].images.splice(index, 1);
+      self.update();
+    };
+
+    self.submitComment = (e) => {
+      if (e && e.preventDefault) e.preventDefault();
+      const files = self.refs.comment_photo_input.files;
+      //- self.progress_data.photos = _.map(files || [], file => window.URL.createObjectURL(file));
+      self.progress_data.detail = self.refs.comment_input.value;
+      console.log('process update:', self.progress_data);
+      if (!self.progress_data.detail && self.progress_data.photos.length === 0) {
+        Materialize.toast('พิมพ์ข้อความหรือเลือกรูป อธิบายความคืบหน้า', 8000, 'large')
+        return;
+      }
+
+      // upload photo first, if any
+      self.saving_progress = true;
+      return api.patchPin(self.id, {
+        $push: {
+          progresses: {
+            detail: self.progress_data.detail,
+            photos: self.progress_data.photos,
+            owner: user._id
+          }
+        }
+      })
+      .then(response => {
+        self.refs.comment_form_detail.reset();
+        self.refs.comment_form_photo.reset();
+        self.progress_data.photos = [];
+        self.progress_data.images = [];
+        self.progress_data.detail = '';
+      })
+      .catch(err =>
+        Materialize.toast(err.message, 8000, 'dialog-error large')
+      )
+      .then(() => {
+        self.saving_progress = false;
+        self.update();
+        self.loadPin()
       });
     }
 
@@ -621,6 +668,7 @@ issue-view-page
       const update = {
         //- $set: {
           detail: self.refs.description_input.value,
+          photos: self.issue_form_data.photos,
           neighborhood: _.compact([self.refs.neighborhood_input.value]),
           //- 'location.coordinates': [
           //-   self.refs.location_lat_input.value,
@@ -688,25 +736,26 @@ issue-view-page
               }
               return msg;
             }
-            //- span { _.startCase(pin.closed_reason) }
             return 'เปิดเรื่องร้องเรียนใหม่อีกครั้ง';
 
           case 'ACTION_TYPE/METADATA':
-            const prog_index = log.changed_fields.indexOf('progresses');
-            if (prog_index >= 0) {
-              log.changed_fields.splice(prog_index, 1);
-              log.previous_values.splice(prog_index, 1);
-              log.updated_values.splice(prog_index, 1);
-            }
-            if (log.changed_fields.length === 0) {
+            const changed_fields = _.filter(_.map(log.changed_fields, (name, i) => {
+              // return null to skip this labelField
+              if (name === 'progresses') return null;
+              if (name === 'closed_reason') return null;
+              const field = {
+                name: name,
+                previous: log.previous_values[i],
+                value: log.updated_values[i]
+              };
+              if (field.previous === field.value) return null;
+              return field;
+            }), field => field !== null);
+
+            if (changed_fields.length === 0) {
               return ''; // empty string = skip
             }
-            if (log.changed_fields.length === 1
-            && ['closed_reason'].indexOf(log.changed_fields[0]) >= 0) {
-              return ''; // empty string = skip
-            }
-            //- if (log.changed_fields.length === 1 && log.changed_fields[0] === 'progresses)
-            return 'แก้ไข ' + _.map(log.changed_fields, field => _t(field)).join(', ');
+            return log.user + ' แก้ไข ' + _.map(changed_fields, field => _t(field.name)).join(', ');
           default:
             return 'ไม่มีข้อมูล';
         }
@@ -731,19 +780,23 @@ issue-view-page
       self.comments = self.comments.concat(normalized_activities);
       // pin's comments
       if (self.pin) {
-        const normalized_progresses = _.get(self, 'pin.progresses', []).map(item =>
-          _.merge(_.clone(item), {
+        const normalized_progresses = _.get(self, 'pin.progresses', []).map(item => {
+          const c = _.merge(_.clone(item), {
             type: 'comment',
             text: item.detail,
             photos: [],
-            user: null,
+            user: _.get(item, 'owner.name', ''),
             //- annotation: '',
             timestamp: item.updated_time
-          })
-        );
+          });
+          if (!c.text && c.photos.length > 0) {
+            c.text = 'อัพโหลดรูป';
+          }
+          return c;
+        });
         self.comments = self.comments.concat(normalized_progresses);
       }
-      self.comments = _.filter(self.comments, comment => comment.text)
+      self.comments = _.filter(self.comments, comment => comment.text || _.get(comment, 'photos.length', 0) > 0)
       self.comments = _.sortBy(self.comments, c => - new Date(c.timestamp));
       //- console.log(self.comments, 'comments');
     }
