@@ -1,26 +1,27 @@
-#page-setting-user,
-#page-setting-department {
-
-  #edit-user-form .padding {
-    height: 200px;
-    position: relative;
-    display: block;
+#page-setting-user {
+  .media.user-media {
+    > .media-left {
+      flex: 0 1 200px;
+    }
+    > .media-content {
+      flex: 1 1 80px;
+    }
+    > .media-right {
+      flex: 0 1 40px;
+    }
   }
+}
 
-  // .load-more-wrapper {
-  //   text-align: center;
-  //   // a.load-more {
-  //   //     display: none;
-  //   //     padding: $ps-xs $ps-default;
-  //   //     border: 1px solid;
-  //   //     cursor: pointer;
-  //   //     border-radius: $ps-xxs;
-  //   //     color: $cl-white;
-  //   //     background: $cl-primary;
-
-  //   //     &.active {
-  //   //       display: inline-block;
-  //   //     }
-  //   // }
-  // }
+#page-setting-department {
+  .media.department-media {
+    > .media-left {
+      flex: 1 1 200px;
+    }
+    > .media-content {
+      flex: 1 1 80px;
+    }
+    > .media-right {
+      flex: 0 1 40px;
+    }
+  }
 }

@@ -1,29 +1,33 @@
 setting-department
-  h1.page-title
-    | หน่วยงาน
+  nav.level.is-mobile.is-wrap
+    .level-left
+      .level-item
+        .title หน่วยงาน
+      //- .level-item
+      //-   .control(style='width: 140px;')
+      //-     input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
 
-  .row
-    .col.s12.right-align
-      a.button.is-accent(onclick="{createDepartment}")
-        | สร้างหน่วยงาน
+    .level-right
+      .level-item
+        .control
+          a.button.is-accent(onclick="{ createDepartment }")
+            | สร้างหน่วยงาน
 
   .opaque-bg.content-padding.is-overflow-auto
     table.table.is-striped
       thead
         tr
           th หน่วยงาน
-          th(style='width: 200px;')
       tbody
         tr(each="{dept in departments}" ).department
           td
-            profile-image.is-round-box(name='{ dept.name }')
-          td
-            .field.is-inline
-              a.button.is-block(href='{ util.site_url("/settings/user?dept=" + dept._id + ":" + escape(dept.name)) }')
-                | รายชื่อเจ้าหน้าที่
-            .field.is-inline
-              a.button.is-block(onclick="{ editDepartment(dept._id, dept.name) }")
-                | แก้ไข
+            .department-media.media
+              .media-left
+                profile-image.is-round-box(name='{ dept.name }')
+              .media-right
+                a.is-plain(id='row-menu-btn-{ dept._id }', href='#')
+                  i.icon.material-icons more_horiz
+                dropdown-menu(target='#row-menu-btn-{ dept._id }', position='bottom right', menu='{ row_menu_list(dept) }')
 
   .spacing
   .load-more-wrapper.has-text-centered(show='{ hasMore }')
@@ -67,19 +71,34 @@ setting-department
               a.button.is-outlined.is-accent(onclick="{confirmCreate}") สร้างหน่วยงาน
 
   script.
-    let self = this;
-    let $editModal, $createModal;
+    const self = this;
 
     self.departments  = [];
     self.hasMore = true;
     self.loaded = true;
 
+    self.row_menu_list = (dept) => () => [
+      {
+        id: 'list-dept-user-btn-' + dept._id,
+        name: 'รายชื่อเจ้าหน้าที่',
+        url: util.site_url("/settings/user?dept=" + dept._id + ":" + escape(dept.name)),
+        target: '',
+      },
+      {
+        id: 'edit-dept-btn-' + dept._id,
+        name: 'แก้ไข',
+        url: '#',
+        target: '',
+        onclick: (e) => { self.editDepartment(dept._id, dept.name)(); }
+      }
+    ];
+
     $(document).ready( () => {
-      $editModal  = $('#edit-department-form').modal();
-      $createModal = $('#create-department-form').modal();
     })
 
     self.on('mount', () => {
+      self.$editModal  = $('#edit-department-form').modal();
+      self.$createModal = $('#create-department-form').modal();
       self.loadData();
     });
 
@@ -100,18 +119,18 @@ setting-department
 
     self.editDepartment = (deptId, deptName) => {
       return () => {
-        let $modal = $editModal;
+        let $modal = self.$editModal;
         self.editingDepartment = {
           id: deptId,
           name: deptName,
         }
-
+        self.update();
         $modal.trigger('openModal');
       }
     }
 
     self.createDepartment = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
 
       let $input = $modal.find('input[name="name"]');
       $input.val('');
@@ -120,12 +139,12 @@ setting-department
     }
 
     self.closeCreateModal = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
       $modal.trigger('closeModal');
     }
 
     self.confirmCreate = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
       let $input = $modal.find('input[name="name"]');
 
       api.createDepartment( $input.val() )
@@ -139,13 +158,13 @@ setting-department
     }
 
     self.closeEditDepartmentModal = () => {
-      let $modal = $editModal;
+      let $modal = self.$editModal;
       $modal.trigger('closeModal');
     };
 
     self.confirmEditDepartment = () => {
       const patch = {
-        name: $editModal.find('input[name="departmentName"]').val(),
+        name: self.$editModal.find('input[name="departmentName"]').val(),
       }
 
       api.updateDepartment(self.editingDepartment.id, patch)

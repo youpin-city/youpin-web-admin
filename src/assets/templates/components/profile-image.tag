@@ -1,5 +1,5 @@
 profile-image
-  .figure.media.user-media
+  .figure.media
     .media-left
       figure(class='{ classes }')
         img(if='{ src }', src='{ src }')

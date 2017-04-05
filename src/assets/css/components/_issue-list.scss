@@ -149,9 +149,9 @@
 }
 
 .issue.is-compact {
-  margin-top: 0;
-  margin-bottom: 0;
-  overflow: auto;
+  // margin-top: 0;
+  // margin-bottom: 0;
+  // overflow: auto;
   .issue-img {
     @include flex(0, 0, 80px);
     .issue-id { display: none; }
@@ -163,6 +163,13 @@
     @include flex(1, 1, 200px);
     // border-left: solid 1px $cl-lightgray;
     padding: 0 $ps-xs;
+    .issue-desc {
+      max-height: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: $ps-small;
+      margin-bottom: $ps-small;
+    }
   }
 }
 

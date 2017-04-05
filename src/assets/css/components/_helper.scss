@@ -26,9 +26,16 @@
 }
 
 .content-padding {
-  padding: 4rem 2rem;
+  padding: 2rem 2rem;
 }
 
+.is-overflow-auto {
+  overflow: auto;
+}
+
+.is-inline {
+  display: inline-block;
+}
 .inline {
   display: inline-block;
 }
@@ -133,10 +140,8 @@ $full-container-max-width: 1440px;
   }
 }
 
-.content-padding {
-  padding: 2rem 2rem;
-}
-
-.is-overflow-auto {
-  overflow: auto;
+.level {
+  &.is-wrap {
+    flex-wrap: wrap;
+  }
 }

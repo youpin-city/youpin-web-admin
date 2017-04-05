@@ -1,18 +1,8 @@
 dashboard-recent-activity
   div.recent-activity.opaque-bg.content-padding(show='{ comments && comments.length > 0 }')
-    b Recent Activity
-    //- ul
-    //-   li(each="{data}").activity
-    //-     .activity-item
-    //-       collapsible-content(interactive='false', height='4.5rem', default='collapsed')
-    //-         a(href="#!issue-id:{ pin_id }")
-    //-           .description { description }
-    //-       div.meta-time { timestamp }
+    h2.section-title Recent Activity
     article.media.progress-item.is-block-mobile(each='{ comment, i in comments }')
-      //- .media-left
-      //-   profile-image.is-round(show='{ comment.type === "comment" }', name='{ comment.user }')
-      //-   profile-image.is-round.is-small(show='{ comment.type === "meta" }', name='{ comment.user }')
-      .media-content
+      .media-content.is-overflow-auto
         .content.pre.is-marginless
           a(href='{ comment.url }')
             strong { comment.user }
@@ -22,23 +12,12 @@ dashboard-recent-activity
         .datetime
           small { moment(comment.timestamp).format(app.config.format.datetime_full) }
 
-        //- .comment-staff
-        //-   small { comment.user }
-
-      //- .media-right(show='{ comment.photos.length }')
-      //-   image-slider-lightbox(data='{ comment.photos }', column='6', highlight='{ false }')
-
-
   script.
     let self = this;
     self.data = [];
     self.comments = [];
 
     api.getRecentActivities( (data) => {
-      //- self.data = _.map( data, d => {
-      //-   d.timestamp = moment(d.timestamp).fromNow();
-      //-   return d;
-      //- });
       self.data = data;
       self.calculateComments();
       self.update();

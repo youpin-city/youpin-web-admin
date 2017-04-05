@@ -140,19 +140,19 @@ issue-view-page
 
         .column.is-3(show='{ isEditing("info") }')
           .issue-photos
-            .field(show='{ issue_form_data.images.length > 0 }')
+            .field(show='{ issue_data.images.length > 0 }')
               .columns.is-wrap
-                .column.is-12.is-mobile(each='{ img, i in issue_form_data.images }')
+                .column.is-12.is-mobile(each='{ img, i in issue_data.images }')
                   figure.image
                     .img-tool
-                      button.delete(onclick='{ removeFormPhoto("issue_form_data")(i) }')
+                      button.delete(onclick='{ removeFormPhoto("issue_data")(i) }')
                     img(src='{ img }')
             .field
               .control
-                form.is-fullwidth(ref='issue_form_photo')
+                form.is-fullwidth(ref='issue_photo_form')
                   label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
                     i.icon.material-icons add_a_photo
-                  input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_form_data", "issue_form_photo", "saving_info_photo") }')
+                  input(show='{ false }', id='issue-photo-input', ref='issue_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_data", "issue_photo_form", "saving_info_photo") }')
 
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
@@ -222,10 +222,10 @@ issue-view-page
                 .level
                   .level-left
                     .level-item
-                      form.is-fullwidth(ref='comment_form_photo')
+                      form.is-fullwidth(ref='comment_photo_form')
                         label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_progress_photo, "is-disabled": saving_progress }')
                           i.icon.material-icons add_a_photo
-                        input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("progress_data", "comment_form_photo", "saving_progress_photo") }')
+                        input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("progress_data", "comment_photo_form", "saving_progress_photo") }')
                   .level-right
                     button.button.is-accent.is-block(class='{ "is-loading": saving_progress, "is-disabled": saving_progress_photo }', onclick='{ submitComment }') ส่งความคืบหน้า
         // previous posts
@@ -299,7 +299,7 @@ issue-view-page
     self.loaded = false;
     self.pin = null;
     // pin info
-    self.issue_form_data = { photos: [], images: [] };
+    self.issue_data = { photos: [], images: [] };
     self.editing_info = false;
     self.saving_info = false;
     self.saving_info_photo = false;
@@ -378,8 +378,8 @@ issue-view-page
       .then(data => {
         self.loaded = true;
         self.pin = data;
-        self.issue_form_data.photos = _.clone(self.pin.photos);
-        self.issue_form_data.images = _.clone(self.pin.photos);
+        self.issue_data.photos = _.clone(self.pin.photos);
+        self.issue_data.images = _.clone(self.pin.photos);
         self.update();
 
         self.initSelectDepartment();
@@ -580,8 +580,8 @@ issue-view-page
       });
     }
 
-    self.chooseFormPhoto = (data_name = '', form_ref = '', uploading_flag = '') => (e) => {
-      if (!data_name) return;
+    self.chooseFormPhoto = (group_name = '', form_ref = '', uploading_flag = '') => (e) => {
+      if (!group_name) return;
       const file_input = e.currentTarget;
       if (!(window.FileList && file_input && file_input.files instanceof window.FileList)) {
         return Promise.resolve([]);
@@ -599,10 +599,8 @@ issue-view-page
         })
         .then(response => response.json())
         .then(photo_data => {
-          self[data_name].photos.push(photo_data.url);
-          self[data_name].images.push(photo_blob_url);
-          //- self.progress_data.photos.push(photo_data.url);
-          //- self.progress_data.images.push(photo_blob_url);
+          self[group_name].photos.push(photo_data.url);
+          self[group_name].images.push(photo_blob_url);
           return photo_data.url;
         })
         .catch(err =>
@@ -612,16 +610,14 @@ issue-view-page
       .then(() => {
         if (form_ref && self.refs[form_ref]) self.refs[form_ref].reset();
         if (uploading_flag) self[uploading_flag] = false;
-        //- self.refs.comment_form_photo.reset();
-        //- self.saving_progress_photo = false;
         self.update();
       });
     };
 
-    self.removeFormPhoto = (data_name ='') => (index) => (e) => {
-      if (!data_name) return;
-      self[data_name].photos.splice(index, 1);
-      self[data_name].images.splice(index, 1);
+    self.removeFormPhoto = (group_name ='') => (index) => (e) => {
+      if (!group_name) return;
+      self[group_name].photos.splice(index, 1);
+      self[group_name].images.splice(index, 1);
       self.update();
     };
 
@@ -649,7 +645,7 @@ issue-view-page
       })
       .then(response => {
         self.refs.comment_form_detail.reset();
-        self.refs.comment_form_photo.reset();
+        self.refs.comment_photo_form.reset();
         self.progress_data.photos = [];
         self.progress_data.images = [];
         self.progress_data.detail = '';
@@ -666,17 +662,15 @@ issue-view-page
 
     self.updateIssueInfo = (e) => {
       const update = {
-        //- $set: {
-          detail: self.refs.description_input.value,
-          photos: self.issue_form_data.photos,
-          neighborhood: _.compact([self.refs.neighborhood_input.value]),
-          //- 'location.coordinates': [
-          //-   self.refs.location_lat_input.value,
-          //-   self.refs.location_long_input.value
-          //- ],
-          categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
-          tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
-        //- }
+        detail: self.refs.description_input.value,
+        photos: self.issue_data.photos,
+        neighborhood: _.compact([self.refs.neighborhood_input.value]),
+        //- 'location.coordinates': [
+        //-   self.refs.location_lat_input.value,
+        //-   self.refs.location_long_input.value
+        //- ],
+        categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
+        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
       }
       console.log('update:', update);
       self.saving_info = true;

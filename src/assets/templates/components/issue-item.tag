@@ -4,6 +4,7 @@ issue-item(class='{ classes }')
 
   div.issue-body
     div.issue-title
+      // closed status
       .is-pulled-right
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
@@ -25,7 +26,7 @@ issue-item(class='{ classes }')
         .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
         .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
 
-  .issue-info
+  .issue-info.is-hidden-mobile
     div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
 
     div(show='{ item.assigned_users && item.assigned_users.length }')
@@ -39,7 +40,15 @@ issue-item(class='{ classes }')
     div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
 
   .issue-compact
-    div.issue-desc
+    div.issue-title
+      // closed status
+      .is-pulled-right
+        .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
+          .tag.is-small.is-danger ปิดเรื่อง
+        .field.is-inline(show='{ item.status === "rejected" }')
+          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
+        .field.is-inline(show='{ item.status === "resolved" }')
+          i.icon.material-icons.is-success check
       //- collapsible-content(interactive='false', height='3.6rem', default='collapsed')
       //- a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
@@ -50,11 +59,11 @@ issue-item(class='{ classes }')
         li(each='{ cat, i in item.categories }')
           a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
-      .field.is-inline(show='{ Number(item.level) > 0 }')
-        .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
-        .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
-        .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
-    div(show='{ item.updated_time }') { moment(item.updated_time).fromNow() }
+      //- .field.is-inline(show='{ Number(item.level) > 0 }')
+      //-   .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
+      //-   .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
+      //-   .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
+      .field.is-inline(show='{ item.updated_time }') { moment(item.updated_time).fromNow() }
 
     //- ul.meta-list
     //-   li.meta(title="created at")

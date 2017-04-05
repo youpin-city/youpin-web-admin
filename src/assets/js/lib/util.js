@@ -171,7 +171,7 @@ function parse_image_url(url) {
 }
 
 function site_url(pathname, basepath, query, hash) {
-  if (typeof basepath === 'object') {
+  if (basepath !== null && typeof basepath === 'object') {
     hash = query;
     query = basepath;
     basepath = null;
@@ -181,7 +181,7 @@ function site_url(pathname, basepath, query, hash) {
   query = format_querystring(make_querystring(query || {}));
   query = query ? '?' + query.replace(/^\?/i, '') : '';
   hash = hash ? '#' + hash.replace(/^#/i, '') : '';
-  if (/^https?:\/\//.test(pathname)) return pathname;
+  if (/^https?:\/\//.test(pathname)) return pathname + query + hash;
   return basepath.replace(/\/$/, '') + '/' + pathname.replace(/^\//, '')
     + query + hash;
 }

@@ -479,6 +479,22 @@ body.global-search-active {
         line-height: $lh-normal;
         padding: 1rem;
       }
+      .icon {
+        margin-right: 0.5rem;
+      }
+
+      &.sub-menu {
+        margin-left: 2rem;
+      }
+      &.department-info {
+        color: $cl-white;
+        background: $cl-primary;
+        padding: 2rem 1rem;
+        .title {
+          color: $cl-white;
+          font-size: $fs-4;
+        }
+      }
     }
   }
 
@@ -511,23 +527,28 @@ body.global-search-active {
     line-height: 1;
     position: relative;
 
-    .icon {
-      // position: absolute;
-      // top: 1rem;
-      // left: 1rem;
-    }
     form {
-      // margin-left: 4rem;
-      input[type="search"] {
-        margin: 0;
-        // padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        box-sizing: border-box;
-        border-radius: $br-default;
-        border: 1px solid $cl-border;
-        // line-height: 3;
-        // height: auto;
-        // border: none;
+      .control {
+        // margin-left: 4rem;
+        input[type="search"] {
+          margin: 0;
+          // padding-left: 0.75rem;
+          padding-right: 0.75rem;
+          box-sizing: border-box;
+          border-radius: $br-default;
+          border: 1px solid $cl-border;
+          // line-height: 3;
+          // height: auto;
+          // border: none;
+        }
+      }
+      .has-icon {
+        .icon {
+          padding: 1rem;
+          // position: absolute;
+          // top: 1rem;
+          // left: 1rem;
+        }
       }
     }
 
