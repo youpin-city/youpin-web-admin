@@ -5,21 +5,34 @@ issue-view-page
         .level-item
           .issue-title.title \#{ id.slice(-4) }
         .level-item(show='{ isClosed() }')
-          .tag.is-large.is-danger ปิดเรื่อง
+          .tag.is-large.is-danger(title='{  _.startCase(_.get(pin, "closed_reason", "")) }') ปิดเรื่อง
         .level-item(show='{ isClosed() }')
           span(show='{ _.get(pin, "status") === "rejected" }')
-            i.icon.material-icons.is-danger { _.get(pin, 'closed_reason') === 'spam' ? 'bug_report' : 'error_outline' }
+            i.icon.material-icons.is-danger { _.get(pin, 'closed_reason') === 'spam' ? 'delete_forever' : 'error_outline' }
           span(show='{ _.get(pin, "status") === "resolved" }')
             i.icon.material-icons.is-success check
+          span(show='{ _.get(pin, "is_merged") }')
+            i.icon.material-icons.is-success content_copy
           //- span { _.startCase(pin.closed_reason) }
       .level-right.content-padding
         .level-item
           .control
             input(type='text', id='select_priority', ref='select_priority', placeholder='เลือกระดับความสำคัญ')
-        .level-item
+        .level-item(if='{ pin }')
           a#issue-more-menu-btn(href='#')
             i.icon.material-icons settings
           dropdown-menu(target='#issue-more-menu-btn', position='bottom right', menu='{ create_issue_menu_list }')
+
+    article.message.is-warning(if='{ pin && pin.is_merged }')
+      .message-body
+        .level.is-mobile
+          .level-left
+            .level-item
+              .title.is-6 เรื่องนี้ถูกตั้งเป็นเรื่องซ้ำซ้อน และรวมอยู่กับเรื่องร้องเรียนหลักนี้
+          .level-right
+            .level-item
+              a(href='/issue/{ parent_pin && parent_pin._id }') ดูเรื่องหลัก
+        div(ref='parent_issue')
 
     .section(if='{ !loaded }')
       //- loading-bar
@@ -198,6 +211,10 @@ issue-view-page
             .control
               a.button.is-outlined.is-accent(class='{ "is-loading": saving_info }', onclick='{ updateIssueInfo }') บันทึก
 
+    .section(if='{ child_pins && child_pins.length > 0 }')
+      .title เรื่องร้องเรียนซ้ำซ้อน
+      issue-item.is-compact.is-small.is-plain(each='{ child in child_pins }', item='{ child }')
+
     #progress-section.section(if='{ loaded }')
       .title ความคืบหน้า
       .progress-list
@@ -298,6 +315,8 @@ issue-view-page
     self.default_thumbnail = util.site_url('/public/img/issue_dummy.png');
     self.loaded = false;
     self.pin = null;
+    self.parent_pin = null;
+    self.child_pins = [];
     // pin info
     self.issue_data = { photos: [], images: [] };
     self.editing_info = false;
@@ -318,22 +337,27 @@ issue-view-page
       reopen_issue: false
     };
 
-    self.create_issue_menu_list = () => [
-      {
-        id: 'edit-issue-btn',
-        name: 'แก้ไขข้อมูล',
-        url: '#',
-        target: '',
-        onclick: (e) => { self.toggleEdit('info')(); }
-      },
-      {
-        id: 'merge-issue-btn',
-        name: 'แจ้งรายงานซ้ำ',
-        url: util.site_url('merge/') + self.id,
-        target: '',
-        onclick: (e) => { console.log('Merge'); }
+    self.create_issue_menu_list = () => {
+      const menu = [
+        {
+          id: 'edit-issue-btn',
+          name: 'แก้ไขข้อมูล',
+          url: '#',
+          target: '',
+          onclick: (e) => { self.toggleEdit('info')(); }
+        }
+      ];
+      if (self.pin && !self.pin.is_merged) {
+        menu.push({
+          id: 'merge-issue-btn',
+          name: 'แจ้งเรื่องซ้ำซ้อน',
+          url: util.site_url('merge/') + self.id,
+          target: '',
+          onclick: (e) => { console.log('Merge'); }
+        });
       }
-    ];
+      return menu;
+    };
 
     self.close_issue_form = {
       type: [
@@ -388,6 +412,24 @@ issue-view-page
         self.initSelectTag();
         self.initSelectPriority();
         self.loadPinActivities();
+
+        // if this has parent pin (a.k.a. this pin is a duplicate)
+        if (self.pin.is_merged) {
+          api.getPin(self.pin.merged_parent_pin)
+          .then(data => {
+            self.parent_pin = data;
+            riot.mount(self.refs.parent_issue, 'issue-item', { item: self.parent_pin });
+            self.update();
+          });
+        }
+        // if this has child pins
+        if ((self.pin.merged_children_pins || []).length > 0) {
+          api.getPins({ merged_parent_pin: self.pin._id })
+          .then(data => {
+            self.child_pins = data.data;
+            self.update();
+          });
+        }
 
         // contact menu
         if (self.refs.owner_contact_menu && self.pin.owner) {

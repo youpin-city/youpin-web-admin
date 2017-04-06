@@ -1,4 +1,8 @@
 issue-item(class='{ classes }')
+  .issue-select(show='{ is_selectable }')
+    .input-field
+      input(type='radio', id='select-issue-{ item._id }', name='selected_issue', value='{ item._id }', onchange='{ toggleSelection }')
+      label(for='select-issue-{ item._id }')
   .issue-img
     a.img.responsive-image(href='{ util.site_url("/issue/" + item._id) }', riot-style='{ thumbnail_classes }')
 
@@ -6,17 +10,20 @@ issue-item(class='{ classes }')
     div.issue-title
       // closed status
       .is-pulled-right
+      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }')
+        | \#{ item._id.slice(-4) }
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
         .field.is-inline(show='{ item.status === "rejected" }')
-          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
+          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'delete_forever' : 'error_outline' }
         .field.is-inline(show='{ item.status === "resolved" }')
           i.icon.material-icons.is-success check
-      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
+        .field.is-inline(show='{ item.is_merged }')
+          i.icon.material-icons.is-success content_copy
 
     div.issue-desc
       a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
-    div
+    div.issue-meta
       ul.tag-list(show='{ item.categories && item.categories.length }')
         li(each='{ cat, i in item.categories }')
           a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
@@ -46,15 +53,17 @@ issue-item(class='{ classes }')
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
         .field.is-inline(show='{ item.status === "rejected" }')
-          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'bug_report' : 'error_outline' }
+          i.icon.material-icons.is-danger { item.closed_reason === 'spam' ? 'delete_forever' : 'error_outline' }
         .field.is-inline(show='{ item.status === "resolved" }')
           i.icon.material-icons.is-success check
       //- collapsible-content(interactive='false', height='3.6rem', default='collapsed')
       //- a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
     div.issue-desc
-      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') { item.detail }
-    div
+      a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }')
+        strong \#{ item._id.slice(-4) }&nbsp;
+        | { item.detail }
+    div.issue-meta
       ul.tag-list(show='{ item.categories && item.categories.length }')
         li(each='{ cat, i in item.categories }')
           a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
@@ -65,29 +74,20 @@ issue-item(class='{ classes }')
       //-   .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
       .field.is-inline(show='{ item.updated_time }') { moment(item.updated_time).fromNow() }
 
-    //- ul.meta-list
-    //-   li.meta(title="created at")
-    //-     i.icon.material-icons.tiny access_time
-    //-     | { moment(item.created_time).fromNow() }
-
-    //-   li.meta
-    //-     span.big-text(if='{ item.is_merged }') Merged
-    //-     span.big-text(if='{ !item.is_merged }') { _.startCase(item.status) }
-
-    //-   li.meta
-    //-     span.text { item.assigned_department ? item.assigned_department.name : '-' }
-
-    //-   li.meta(if='{item.assigned_user_names}', title="assigned to")
-    //-     i.icon.material-icons.tiny face
-    //-     | { item.assigned_user_names }
-
   script.
     const self = this;
     self.item = opts.item || {};
-    self.classes = {
+    self.classes = _.merge({
       issue: true,
       clearfix: true
-    };
+    }, _.fromPairs(self.root.className.split(' ').map(cls => [cls, true])));
+    self.is_selectable = self.opts.selectable === 'true';
+    if (typeof self.opts.selector === 'function') {
+      self.toggleSelection = self.opts.selector;
+    } else {
+      self.toggleSelection = _.noop;
+    }
+
     // thumbnail class
     self.thumbnail_classes = {};
     if (self.item && self.item.photos && self.item.photos.length > 0) {
@@ -97,6 +97,12 @@ issue-item(class='{ classes }')
     }
     // status and type classes
     self.classes['is-' + self.item.status] = true;
+    if (self.item.is_merged) {
+      self.classes['is-merged'] = true;
+    }
+    if (self.item.merged_children_pins && self.item.merged_children_pins.length > 0) {
+      self.classes['is-merged-parent'] = true;
+    }
     if (self.opts.type) {
       self.classes['is-' + self.opts.type] = true;
     }

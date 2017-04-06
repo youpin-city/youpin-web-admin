@@ -15,10 +15,14 @@
   margin: 0.5rem 0;
 
   &.is-resolved {
-    background: $cl-gray-50;
+    background: $cl-gray-200;
   }
   &.is-rejected {
-    background: $cl-gray-50;
+    background: $cl-gray-200;
+  }
+
+  a {
+    text-decoration: none;
   }
 
   label {
@@ -137,15 +141,16 @@
      }
   }
 
-  .bt-manage-issue {
-     border: 1px solid $cl-gray;
-     cursor: pointer;
-     display: inline-block;
-     width: 100%;
-     text-align: center;
-  }
+  // .bt-manage-issue {
+  //    border: 1px solid $cl-gray;
+  //    cursor: pointer;
+  //    display: inline-block;
+  //    width: 100%;
+  //    text-align: center;
+  // }
 
   .issue-compact { display: none; }
+
 }
 
 .issue.is-compact {
@@ -170,6 +175,38 @@
       margin-top: $ps-small;
       margin-bottom: $ps-small;
     }
+  }
+}
+
+.issue.is-small {
+  .issue-img {
+    flex: 0 0 30px;
+  }
+  .issue-body,
+  .issue-compact {
+    .issue-title {
+      .title {
+        display: none;
+        font-size: $fs-md;
+      }
+    }
+    .issue-desc {
+      margin: 0.5rem 0 0;
+    }
+    .issue-meta {
+      display: none;
+    }
+  }
+}
+
+
+.issue.is-plain {
+  margin: 0;
+  border-width: 0;
+  border-top-width: 1px;
+  border-radius: 0;
+  &:first-child {
+    border-top-width: 0;
   }
 }
 

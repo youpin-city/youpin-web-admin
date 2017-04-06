@@ -34,3 +34,26 @@
   /* Support for IE. */
   font-feature-settings: 'liga';
 }
+
+// bulma
+.material-icons {
+  font-size: $fs-icon-p;
+  width: $fs-icon-p;
+  height: $fs-icon-p;
+
+  &.is-small {
+    font-size: $fs-icon-sm;
+    width: $fs-icon-sm;
+    height: $fs-icon-sm;
+  }
+  &.is-medium {
+    font-size: $fs-icon-md;
+    width: $fs-icon-md;
+    height: $fs-icon-md;
+  }
+  &.is-large {
+    font-size: $fs-icon-lg;
+    width: $fs-icon-lg;
+    height: $fs-icon-lg;
+  }
+}
