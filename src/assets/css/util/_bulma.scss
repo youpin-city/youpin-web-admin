@@ -24,7 +24,7 @@ $white-bis:    hsl(0, 0%, 98%) !default;
 $white:        hsl(0, 0%, 100%) !default;
 
 $orange:       $cl-deep-orange; // hsl(14,  100%, 53%) !default;
-$yellow:       $cl-yellow; // hsl(48,  100%, 67%) !default;
+$yellow:       lighten($cl-yellow, 10%); // hsl(48,  100%, 67%) !default;
 $green:        $cl-green; // hsl(141, 71%,  48%) !default;
 $turquoise:    $cl-teal; // hsl(171, 100%, 41%) !default;
 $blue:         $cl-blue; // hsl(217, 71%,  53%) !default;
@@ -61,7 +61,7 @@ $speed: 86ms !default;
 $primary: $cl-primary; // $turquoise !default;
 $secondary: $cl-link;
 
-$info: $cl-indigo !default;
+$info: $cl-lightblue !default;
 $success: $green !default;
 $warning: $yellow !default;
 $danger: $red !default;

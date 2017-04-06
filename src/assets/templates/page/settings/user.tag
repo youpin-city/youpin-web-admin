@@ -1,5 +1,5 @@
 setting-user
-  nav.level.is-mobile
+  nav.level.is-mobile.is-wrap
     .level-left
       .level-item
         .title เจ้าหน้าที่
@@ -8,10 +8,6 @@ setting-user
           input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
 
     .level-right
-      //- .level-item
-      //-   .control(style='width: 140px;')
-      //-     input(type='text', id='select_sort', ref='select_sort', placeholder='เรียง')
-
       .level-item
         .control
           a.button.is-accent(onclick="{createUser}")
@@ -20,19 +16,20 @@ setting-user
   .opaque-bg.content-padding.is-overflow-auto
     table.table.is-striped
       thead
-          th ชื่อ / อีเมล
-          th หน่วยงาน
-          th ตำแหน่ง
-          th(style='min-width: 100px;')
-
+        tr
+          th ชื่อ
       tr(each="{user in users}" ).user
           td
-            profile-image.is-round(name='{ user.name }', subtitle='{ user.email }')
-          td { _.get(user, 'department.name', '-') }
-          td { app.config.role[user.role].name }
-          td
-            a.button.is-block(onclick="{ editUser(user) }")
-              | แก้ไข
+            .user-media.media
+              .media-left
+                profile-image.is-round(name='{ user.name }', subtitle='{ user.email }')
+              .media-content
+                div { _.get(user, 'department.name', '-') }
+                div { app.config.role[user.role].name }
+              .media-right
+                a.is-plain(id='row-menu-btn-{ user._id }', href='#')
+                  i.icon.material-icons more_horiz
+                dropdown-menu(target='#row-menu-btn-{ user._id }', position='bottom right', menu='{ row_menu_list(user) }')
 
   .spacing
   .load-more-wrapper.has-text-centered(show='{ hasMore }')
@@ -40,9 +37,13 @@ setting-user
 
   #edit-user-form(class="modal")
     .modal-header
-      h3 แก้ไข้ข้อมูลเจ้าหน้าที่ { editingUser && editingUser.name }
+      h3 แก้ไขข้อมูลเจ้าหน้าที่
     .divider
     .modal-content
+      .field
+        label.label ชื่อ
+        .control
+          input.input(type="text", name="name", value="{ editingUser && editingUser.name }")
       .field
         label.label ตำแหน่ง
         .control
@@ -104,8 +105,7 @@ setting-user
               a.button.is-outlined.is-accent(onclick="{confirmCreate}") สร้างบัญชีเจ้าหน้าที่
 
   script.
-    let self = this;
-    let $editUserModal, $createModal, $roleSelector, $departmentSelector;
+    const self = this;
 
     self.users = [];
     self.hasMore = true;
@@ -113,17 +113,15 @@ setting-user
     self.current_filter = {};
     self.query = {};
 
-    $(document).ready(() => {
-      $editUserModal  = $('#edit-user-form').modal();
-      $createModal = $('#create-user-form').modal();
-
-      $roleSelector = $editUserModal.find('select[name="role"]')
-      $departmentSelector = $editUserModal.find('select[name="department"]');
-
-      $roleSelector.on('change', () => {
-        let selectedRole = $roleSelector.val();
-      });
-    });
+    self.row_menu_list = (user) => () => [
+      {
+        id: 'edit-user-btn-' + user._id,
+        name: 'แก้ไข',
+        url: '#',
+        target: '',
+        onclick: (e) => { self.editUser(user)(); }
+      }
+    ];
 
     self.on('before-mount', () => {
       if (self.opts.department) {
@@ -134,14 +132,15 @@ setting-user
     });
 
     self.on('mount', () => {
+      self.$editUserModal  = $('#edit-user-form').modal();
+      self.$createModal = $('#create-user-form').modal();
+
+      self.$roleSelector = self.$editUserModal.find('select[name="role"]')
+      self.$departmentSelector = self.$editUserModal.find('select[name="department"]');
+
       self.initSelectDepartment();
       api.getDepartments().then( (res) => {
         self.departments = res.data;
-        //- self.departments = [{
-        //-   _id: '',
-        //-   name: 'No Department',
-        //-   organization: ''
-        //- }].concat(self.departments);
         self.loadData();
       });
     });
@@ -171,10 +170,10 @@ setting-user
         self.editingUser = userObj;
         self.update();
 
-        $roleSelector.material_select();
-        $departmentSelector.material_select();
+        self.$roleSelector.material_select();
+        self.$departmentSelector.material_select();
 
-        let $modal = $editUserModal;
+        let $modal = self.$editUserModal;
 
         $modal.trigger('openModal');
       }
@@ -182,9 +181,9 @@ setting-user
 
     self.confirmEditUser = () => {
       let patch = {
-        role: $roleSelector.val(),
-        department: _.compact([$departmentSelector.val()]),
-        email: $editUserModal.find('input[name="email"]').val(),
+        role: self.$roleSelector.val(),
+        department: _.compact([self.$departmentSelector.val()]),
+        email: self.$editUserModal.find('input[name="email"]').val(),
       }
 
       // Super Admin must has no department
@@ -202,12 +201,12 @@ setting-user
     };
 
     self.closeEditUserModal = () => {
-      let $modal = $editUserModal;
+      let $modal = self.$editUserModal;
       $modal.trigger('closeModal');
     };
 
     self.createUser = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
 
       let $input = $modal.find('input[name="name"]');
       $input.val('');
@@ -217,12 +216,12 @@ setting-user
     };
 
     self.closeCreateModal = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
       $modal.trigger('closeModal');
     };
 
     self.confirmCreate = () => {
-      let $modal = $createModal;
+      let $modal = self.$createModal;
 
       let fields = ['name', 'email', 'password', 'confirm-password'];
       let userObj = _.reduce( fields, (acc, f) => {

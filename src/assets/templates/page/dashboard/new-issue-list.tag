@@ -1,9 +1,12 @@
 dashboard-new-issue-list
-  div.new-issue-list.opaque-bg.content-padding
+  div.new-issue-list
     h1.page-title New issue this week
     ul
       li(each="{item in data}").item
         issue-item(item='{item}', type='compact')
+
+    .load-more-wrapper.has-text-centered
+      a.button.load-more(href='{ util.site_url(\'/issue\') }') Load More
 
   script.
     let self = this;

@@ -8,7 +8,7 @@ issue-page
   //-     | {name}
   //-     span.badge.new(data-badge-caption='') {totalIssues}
 
-  nav.level.is-mobile
+  nav.level.is-mobile.is-wrap
     .level-left
       .level-item
         .title เรื่องร้องเรียน

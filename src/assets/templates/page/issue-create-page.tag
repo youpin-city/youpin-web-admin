@@ -1,6 +1,6 @@
 issue-create-page
   .container
-    nav.level.is-mobile
+    nav.level.is-mobile.is-wrap
       .level-left.content-padding
         .level-item
           .issue-title.title

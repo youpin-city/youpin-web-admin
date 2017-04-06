@@ -32,6 +32,7 @@ $cl-lightgreen: #83db22;
 $cl-teal: #009688;
 $cl-palegreen: #82aa8e;
 $cl-yellow: #ffdd00;
+$cl-paleyellow: #fff9ea;
 $cl-orange: #ffbb00;
 $cl-deep-orange: #ff5722;
 $cl-lime: #cddc39;
@@ -162,7 +163,11 @@ $fs-icon-h3: 3.6rem;
 $fs-icon-h4: 2.4rem;
 $fs-icon-h5: 2.0rem;
 $fs-icon-h6: 1.6rem;
-$fs-icon-p : 1.6rem;
+
+$fs-icon-lg: 42px;
+$fs-icon-md: 28px;
+$fs-icon-p : 21px;
+$fs-icon-sm: 14px;
 
 // line height
 $lh-normal: 1.5; // 1.6;

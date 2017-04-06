@@ -5,21 +5,34 @@ issue-view-page
         .level-item
           .issue-title.title \#{ id.slice(-4) }
         .level-item(show='{ isClosed() }')
-          .tag.is-large.is-danger ปิดเรื่อง
+          .tag.is-large.is-danger(title='{  _.startCase(_.get(pin, "closed_reason", "")) }') ปิดเรื่อง
         .level-item(show='{ isClosed() }')
           span(show='{ _.get(pin, "status") === "rejected" }')
-            i.icon.material-icons.is-danger { _.get(pin, 'closed_reason') === 'spam' ? 'bug_report' : 'error_outline' }
+            i.icon.material-icons.is-danger { _.get(pin, 'closed_reason') === 'spam' ? 'delete_forever' : 'error_outline' }
           span(show='{ _.get(pin, "status") === "resolved" }')
             i.icon.material-icons.is-success check
+          span(show='{ _.get(pin, "is_merged") }')
+            i.icon.material-icons.is-success content_copy
           //- span { _.startCase(pin.closed_reason) }
       .level-right.content-padding
         .level-item
           .control
             input(type='text', id='select_priority', ref='select_priority', placeholder='เลือกระดับความสำคัญ')
-        .level-item
+        .level-item(if='{ pin }')
           a#issue-more-menu-btn(href='#')
             i.icon.material-icons settings
           dropdown-menu(target='#issue-more-menu-btn', position='bottom right', menu='{ create_issue_menu_list }')
+
+    article.message.is-warning(if='{ pin && pin.is_merged }')
+      .message-body
+        .level.is-mobile
+          .level-left
+            .level-item
+              .title.is-6 เรื่องนี้ถูกตั้งเป็นเรื่องซ้ำซ้อน และรวมอยู่กับเรื่องร้องเรียนหลักนี้
+          .level-right
+            .level-item
+              a(href='/issue/{ parent_pin && parent_pin._id }') ดูเรื่องหลัก
+        div(ref='parent_issue')
 
     .section(if='{ !loaded }')
       //- loading-bar
@@ -91,7 +104,7 @@ issue-view-page
                     small ปิด
               .control(hide='{ isEditing("department") }')
                 div(show='{ !!pin.assigned_department }')
-                  profile-image.is-round-box(each='{ dept, i in [pin.assigned_department] }', name='{ _.get(dept, "name") }')
+                  profile-image.is-round-box.is-block(each='{ dept, i in [pin.assigned_department] }', name='{ _.get(dept, "name") }')
                 div(hide='{ !!pin.assigned_department }')
                   div ยังไม่มีหน่วยงาน
               .control(show='{ isEditing("department") }')
@@ -110,7 +123,7 @@ issue-view-page
                 div(show='{ !!pin.assigned_users.length }')
                   ul.selected-list
                     li(each='{ staff, i in pin.assigned_users }')
-                      profile-image.is-round-box(name='{ _.get(staff, "name") }', subtitle='{ _.get(staff, "department.name") }')
+                      profile-image.is-round-box.is-block(name='{ _.get(staff, "name") }', subtitle='{ _.get(staff, "department.name") }')
                 div(hide='{ !!pin.assigned_users.length }')
                   div ยังไม่มีเจ้าหน้าที่
               .control(show='{ isEditing("staff") }')
@@ -140,19 +153,19 @@ issue-view-page
 
         .column.is-3(show='{ isEditing("info") }')
           .issue-photos
-            .field(show='{ issue_form_data.images.length > 0 }')
+            .field(show='{ issue_data.images.length > 0 }')
               .columns.is-wrap
-                .column.is-12.is-mobile(each='{ img, i in issue_form_data.images }')
+                .column.is-12.is-mobile(each='{ img, i in issue_data.images }')
                   figure.image
                     .img-tool
-                      button.delete(onclick='{ removeFormPhoto("issue_form_data")(i) }')
+                      button.delete(onclick='{ removeFormPhoto("issue_data")(i) }')
                     img(src='{ img }')
             .field
               .control
-                form.is-fullwidth(ref='issue_form_photo')
+                form.is-fullwidth(ref='issue_photo_form')
                   label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
                     i.icon.material-icons add_a_photo
-                  input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_form_data", "issue_form_photo", "saving_info_photo") }')
+                  input(show='{ false }', id='issue-photo-input', ref='issue_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_data", "issue_photo_form", "saving_info_photo") }')
 
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
@@ -198,13 +211,17 @@ issue-view-page
             .control
               a.button.is-outlined.is-accent(class='{ "is-loading": saving_info }', onclick='{ updateIssueInfo }') บันทึก
 
+    .section(if='{ child_pins && child_pins.length > 0 }')
+      .title เรื่องร้องเรียนซ้ำซ้อน
+      issue-item.is-compact.is-small.is-plain(each='{ child in child_pins }', item='{ child }')
+
     #progress-section.section(if='{ loaded }')
       .title ความคืบหน้า
       .progress-list
         // offer new post comment editor
         article.media.progress-item.progress-editor.is-block-mobile
           .media-left
-            profile-image.is-round(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
+            profile-image.is-round.is-block(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
           .media-content
             .field
               .control
@@ -222,16 +239,16 @@ issue-view-page
                 .level
                   .level-left
                     .level-item
-                      form.is-fullwidth(ref='comment_form_photo')
+                      form.is-fullwidth(ref='comment_photo_form')
                         label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_progress_photo, "is-disabled": saving_progress }')
                           i.icon.material-icons add_a_photo
-                        input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("progress_data", "comment_form_photo", "saving_progress_photo") }')
+                        input(show='{ false }', id='comment-photo-input', ref='comment_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("progress_data", "comment_photo_form", "saving_progress_photo") }')
                   .level-right
                     button.button.is-accent.is-block(class='{ "is-loading": saving_progress, "is-disabled": saving_progress_photo }', onclick='{ submitComment }') ส่งความคืบหน้า
         // previous posts
         article.media.progress-item.is-block-mobile(show='{ comments && comments.length > 0 }', each='{ comment, i in comments }')
           .media-left
-            profile-image.is-round(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
+            profile-image.is-round.is-block(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
           .media-content
             .content.pre.is-marginless
               profile-image.is-round.is-small(show='{ comment.type === "meta" }', initial='{ comment.user }')
@@ -298,8 +315,10 @@ issue-view-page
     self.default_thumbnail = util.site_url('/public/img/issue_dummy.png');
     self.loaded = false;
     self.pin = null;
+    self.parent_pin = null;
+    self.child_pins = [];
     // pin info
-    self.issue_form_data = { photos: [], images: [] };
+    self.issue_data = { photos: [], images: [] };
     self.editing_info = false;
     self.saving_info = false;
     self.saving_info_photo = false;
@@ -318,22 +337,27 @@ issue-view-page
       reopen_issue: false
     };
 
-    self.create_issue_menu_list = () => [
-      {
-        id: 'edit-issue-btn',
-        name: 'แก้ไขข้อมูล',
-        url: '#',
-        target: '',
-        onclick: (e) => { self.toggleEdit('info')(); }
-      },
-      {
-        id: 'merge-issue-btn',
-        name: 'แจ้งรายงานซ้ำ',
-        url: util.site_url('merge/') + self.id,
-        target: '',
-        onclick: (e) => { console.log('Merge'); }
+    self.create_issue_menu_list = () => {
+      const menu = [
+        {
+          id: 'edit-issue-btn',
+          name: 'แก้ไขข้อมูล',
+          url: '#',
+          target: '',
+          onclick: (e) => { self.toggleEdit('info')(); }
+        }
+      ];
+      if (self.pin && !self.pin.is_merged) {
+        menu.push({
+          id: 'merge-issue-btn',
+          name: 'แจ้งเรื่องซ้ำซ้อน',
+          url: util.site_url('merge/') + self.id,
+          target: '',
+          onclick: (e) => { console.log('Merge'); }
+        });
       }
-    ];
+      return menu;
+    };
 
     self.close_issue_form = {
       type: [
@@ -378,8 +402,8 @@ issue-view-page
       .then(data => {
         self.loaded = true;
         self.pin = data;
-        self.issue_form_data.photos = _.clone(self.pin.photos);
-        self.issue_form_data.images = _.clone(self.pin.photos);
+        self.issue_data.photos = _.clone(self.pin.photos);
+        self.issue_data.images = _.clone(self.pin.photos);
         self.update();
 
         self.initSelectDepartment();
@@ -388,6 +412,24 @@ issue-view-page
         self.initSelectTag();
         self.initSelectPriority();
         self.loadPinActivities();
+
+        // if this has parent pin (a.k.a. this pin is a duplicate)
+        if (self.pin.is_merged) {
+          api.getPin(self.pin.merged_parent_pin)
+          .then(data => {
+            self.parent_pin = data;
+            riot.mount(self.refs.parent_issue, 'issue-item', { item: self.parent_pin });
+            self.update();
+          });
+        }
+        // if this has child pins
+        if ((self.pin.merged_children_pins || []).length > 0) {
+          api.getPins({ merged_parent_pin: self.pin._id })
+          .then(data => {
+            self.child_pins = data.data;
+            self.update();
+          });
+        }
 
         // contact menu
         if (self.refs.owner_contact_menu && self.pin.owner) {
@@ -438,7 +480,7 @@ issue-view-page
         render: {
           option: function(item, escape) {
             var name = item.name || '';
-            return '<profile-image class="is-round-box is-small" name="' + escape(name) + '"></profile-image>';
+            return '<profile-image class="is-round-box is-small is-block" name="' + escape(name) + '"></profile-image>';
           }
         },
         load: function(query, callback) {
@@ -481,7 +523,7 @@ issue-view-page
           option: function(item, escape) {
             var name = item.name || item.email;
             var department = item.department ? item.department.name : 'ไม่มีหน่วยงาน';
-            return '<profile-image class="is-round is-small" name="' + escape(name) + '" subtitle="' + escape(department) + '"></profile-image>';
+            return '<profile-image class="is-round is-small is-block" name="' + escape(name) + '" subtitle="' + escape(department) + '"></profile-image>';
           }
         },
         load: function(query, callback) {
@@ -580,8 +622,8 @@ issue-view-page
       });
     }
 
-    self.chooseFormPhoto = (data_name = '', form_ref = '', uploading_flag = '') => (e) => {
-      if (!data_name) return;
+    self.chooseFormPhoto = (group_name = '', form_ref = '', uploading_flag = '') => (e) => {
+      if (!group_name) return;
       const file_input = e.currentTarget;
       if (!(window.FileList && file_input && file_input.files instanceof window.FileList)) {
         return Promise.resolve([]);
@@ -599,10 +641,8 @@ issue-view-page
         })
         .then(response => response.json())
         .then(photo_data => {
-          self[data_name].photos.push(photo_data.url);
-          self[data_name].images.push(photo_blob_url);
-          //- self.progress_data.photos.push(photo_data.url);
-          //- self.progress_data.images.push(photo_blob_url);
+          self[group_name].photos.push(photo_data.url);
+          self[group_name].images.push(photo_blob_url);
           return photo_data.url;
         })
         .catch(err =>
@@ -612,16 +652,14 @@ issue-view-page
       .then(() => {
         if (form_ref && self.refs[form_ref]) self.refs[form_ref].reset();
         if (uploading_flag) self[uploading_flag] = false;
-        //- self.refs.comment_form_photo.reset();
-        //- self.saving_progress_photo = false;
         self.update();
       });
     };
 
-    self.removeFormPhoto = (data_name ='') => (index) => (e) => {
-      if (!data_name) return;
-      self[data_name].photos.splice(index, 1);
-      self[data_name].images.splice(index, 1);
+    self.removeFormPhoto = (group_name ='') => (index) => (e) => {
+      if (!group_name) return;
+      self[group_name].photos.splice(index, 1);
+      self[group_name].images.splice(index, 1);
       self.update();
     };
 
@@ -649,7 +687,7 @@ issue-view-page
       })
       .then(response => {
         self.refs.comment_form_detail.reset();
-        self.refs.comment_form_photo.reset();
+        self.refs.comment_photo_form.reset();
         self.progress_data.photos = [];
         self.progress_data.images = [];
         self.progress_data.detail = '';
@@ -666,17 +704,15 @@ issue-view-page
 
     self.updateIssueInfo = (e) => {
       const update = {
-        //- $set: {
-          detail: self.refs.description_input.value,
-          photos: self.issue_form_data.photos,
-          neighborhood: _.compact([self.refs.neighborhood_input.value]),
-          //- 'location.coordinates': [
-          //-   self.refs.location_lat_input.value,
-          //-   self.refs.location_long_input.value
-          //- ],
-          categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
-          tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
-        //- }
+        detail: self.refs.description_input.value,
+        photos: self.issue_data.photos,
+        neighborhood: _.compact([self.refs.neighborhood_input.value]),
+        //- 'location.coordinates': [
+        //-   self.refs.location_lat_input.value,
+        //-   self.refs.location_long_input.value
+        //- ],
+        categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
+        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
       }
       console.log('update:', update);
       self.saving_info = true;

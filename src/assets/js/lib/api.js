@@ -67,7 +67,7 @@ api.getNewIssues = (cb) => {
 api.getRecentActivities = (cb) => {
   let opts = {
     $sort: '-timestamp',
-    $limit: 10
+    $limit: 30
   };
 
   // Admin can see all activities from every department

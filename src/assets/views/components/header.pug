@@ -105,7 +105,7 @@ header#header
 
 nav#mobile-nav.modal
   .site-title
-    .right
+    .is-pulled-right
       a.close-btn.modal-close(href='#!')
         //- i.icon.material-icons close
     a.site-logo(href=site_url('/'))
@@ -130,7 +130,22 @@ nav#mobile-nav.modal
       - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
       li(class={ active: is_active })
         a(href=site_url(nav.href))
+          i.icon.material-icons #{ nav.icon }
           | #{__(nav.name)}
+
+        for child in nav.children
+          - nav_route = child.name.replace(/^sitenav\./, '');
+          - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === child.href;
+          - if( user && !child.authorized_roles.find( r => r == user.role ) ) { continue; }
+          li(class={ active: is_active, 'sub-menu': true })
+            a(href=site_url(child.href))
+              i.icon.material-icons #{ child.icon }
+              | #{__(child.name)}
+
+    li.department-info
+      .title
+        i.icon.material-icons contacts
+        | #{user.dept && user.dept.name}
 
   .service-container
     .row
@@ -138,7 +153,7 @@ nav#mobile-nav.modal
         .profile-container
           if user
             a.link.center(href=site_url('', null, { 'logout': '1' }))
-              .image.profile-image(style='background-image: url("' + user.image + '")')
+              //- .image.profile-image(style='background-image: url("' + user.image + '")')
               .profile-name.center #{ user.name }
               .center #{__('action.logout')}
 

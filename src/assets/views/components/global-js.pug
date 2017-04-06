@@ -47,11 +47,11 @@ script.
   $(function() {
     $('body')
     .on('click', '#mobile-nav-btn', function(e) {
-      $('#mobile-nav').openModal();
+      $('#mobile-nav').show();
       $('body').addClass('mobile-nav-active');
     })
     .on('click', '#mobile-nav .modal-close', function(e) {
-      $('#mobile-nav').closeModal();
+      $('#mobile-nav').hide();
       $('body').removeClass('mobile-nav-active');
     });
 
