@@ -16,10 +16,15 @@
   // .selectize-dropdown,
   .selectize-input,
   .selectize-input input {
+    vertical-align: top;
     background-image: none;
     background-color: $cl-white;
     border: 1px solid $cl-border;
     box-shadow: none;
+    // height: 2.25em;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: $fs-md;
   }
 }
 .selectize-input,

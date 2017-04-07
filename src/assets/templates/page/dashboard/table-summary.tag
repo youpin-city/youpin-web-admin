@@ -1,7 +1,7 @@
 dashboard-table-summary
   h1.page-title Overview
 
-  #big-number-table(show='{ status_list.length > 0 }')
+  #big-number-table.opaque-bg(show='{ status_list.length > 0 }')
     .level
       .level-item.has-text-centered(each='{ s in status_list }')
         div
@@ -10,12 +10,12 @@ dashboard-table-summary
 
   .spacing
 
-  div.performance-table.opaque-bg.content-padding
+  div.performance-table.opaque-bg
     ul.duration-selector
       li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
           div {dur.name}
 
-    table.summary
+    table.table.is-striped.is-narrow.summary
       tr
         th.team Team
         //- th.pending.has-text-right Pending

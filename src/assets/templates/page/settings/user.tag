@@ -13,7 +13,7 @@ setting-user
           a.button.is-accent(onclick="{createUser}")
             | สร้างบัญชีเจ้าหน้าที่
 
-  .opaque-bg.content-padding.is-overflow-auto
+  .is-overflow-auto
     table.table.is-striped
       thead
         tr

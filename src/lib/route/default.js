@@ -43,15 +43,8 @@ router.get('/auth/failure', (req, res, next) => {
 });
 
 router.get('/issue', auth({ deny: ['public_relations'] }), (req, res, next) => {
-  // getPins()
-  req.api('/pins')
-  .then(result => {
-    res.locals.pins = result.data || [];
-    res.render('issue');
-  })
-  .catch(err => {
-    next(err);
-  });
+  res.locals.query = req.query;
+  res.render('issue');
 });
 
 router.get('/issue/new', auth({ deny: ['public_relations'] }), (req, res, next) => {
@@ -86,6 +79,14 @@ router.get('/search', auth({ deny: ['public_relations'] }), (req, res, next) => 
 
 router.get('/merge/:id', auth({ deny: ['public_relations'] }), (req, res, next) => {
   res.locals.pin_id = req.params.id;
+  res.locals.parent_id = req.query.parent;
+  res.locals.q = req.query.q;
+  res.render('merge');
+});
+
+router.get('/merge', auth({ deny: ['public_relations'] }), (req, res, next) => {
+  res.locals.pin_id = req.params.id || req.query.pin;
+  res.locals.parent_id = req.query.parent;
   res.locals.q = req.query.q;
   res.render('merge');
 });

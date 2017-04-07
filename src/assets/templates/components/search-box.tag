@@ -48,7 +48,7 @@ search-box(class='{ open: open }')
     self.placeholder = opts.placeholder;
 
     let prevQuery = queryString.parse(location.search).q;
-    if( prevQuery ) {
+    if (prevQuery) {
       self.open = true;
       $(self.q).val(prevQuery);
       $('body').addClass('global-search-active');

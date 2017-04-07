@@ -1,41 +1,42 @@
 merge-page
-  nav.level.is-mobile.is-wrap
-    .level-left
-      .level-item
-        .title แจ้งเรื่องซ้ำซ้อน
-    .level-right
-      .level-item
+  .container
+    nav.level.is-mobile.is-wrap
+      .level-left
+        .level-item
+          .title แจ้งเรื่องซ้ำซ้อน
+      .level-right
+        .level-item
+          .control
+            button.merge-issue-btn.button(class='{ "is-loading": saving_merge_pin, "is-disabled": !(pin && parent_pin), "is-accent": pin && parent_pin }', onclick="{ commitMerge }")
+              | ปิดและรวมกับเรื่องหลัก
+    .full-container
+      .field
+        label.section-title
+          i.icon.material-icons.is-small content_copy
+          span เรื่องที่ซ้ำซ้อน
         .control
-          button.merge-issue-btn.button(class='{ "is-loading": saving_merge_pin, "is-disabled": !(pin && parent_pin), "is-accent": pin && parent_pin }', onclick="{ commitMerge }")
-            | ปิดและรวมกับเรื่องหลัก
-  .full-container
-    .field
-      label.section-title
-        i.icon.material-icons.is-small content_copy
-        span เรื่องที่ซ้ำซ้อน
-      .control
-        input(type='text', id='select_child_pin', ref='select_child_pin', placeholder='เลือกเรื่องร้องเรียนที่ซ้ำซ้อน')
+          input(type='text', id='select_child_pin', ref='select_child_pin', placeholder='เลือกเรื่องร้องเรียนที่ซ้ำซ้อน')
 
-    .field
-      .has-text-centered(style='margin: 1rem 0;')
-        i.icon.material-icons arrow_downward
+      .field
+        .has-text-centered(style='margin: 1rem 0;')
+          i.icon.material-icons arrow_downward
 
-    .field
-      label.section-title
-        i.icon.material-icons.is-small next_week
-        span นำไปรวมกับเรื่องหลัก
-      .control
-        input(type='text', id='select_parent_pin', ref='select_parent_pin', placeholder='เลือกเรื่องร้องเรียนหลัก')
-
-
-  .spacing
-  nav.level.is-mobile.is-wrap
-    .level-left
-    .level-right
-      .level-item
+      .field
+        label.section-title
+          i.icon.material-icons.is-small next_week
+          span นำไปรวมกับเรื่องหลัก
         .control
-          button.merge-issue-btn.button(class='{ "is-loading": saving_merge_pin, "is-disabled": !(pin && parent_pin), "is-accent": pin && parent_pin }', onclick="{ commitMerge }")
-            | ปิดและรวมกับเรื่องหลัก
+          input(type='text', id='select_parent_pin', ref='select_parent_pin', placeholder='เลือกเรื่องร้องเรียนหลัก')
+
+
+    .spacing
+    nav.level.is-mobile.is-wrap
+      .level-left
+      .level-right
+        .level-item
+          .control
+            button.merge-issue-btn.button(class='{ "is-loading": saving_merge_pin, "is-disabled": !(pin && parent_pin), "is-accent": pin && parent_pin }', onclick="{ commitMerge }")
+              | ปิดและรวมกับเรื่องหลัก
 
   script.
     let self = this;

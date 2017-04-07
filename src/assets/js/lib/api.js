@@ -44,6 +44,9 @@ api.getSummary = (start, end, cb) => {
 
 api.getNewIssues = (cb) => {
   let opts = {
+    status: {
+      $nin: ['resolved', 'rejected']
+    },
     $sort: '-created_time',
     $limit: 5
   };

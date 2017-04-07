@@ -1,5 +1,5 @@
 issue-list
-  .lavel.menu-bar
+  .level.menu-bar
     .level-left
       .level-item
         span พบทั้งหมด { total } รายการ
@@ -8,13 +8,12 @@ issue-list
       .level-item
         .list-or-map
           span(onclick="{showMapView(false)}", class="{ active: !isShowingMap }")
-            i.icon.material-icons view_list
+            i.icon.material-icons.is-medium view_list
             //- | รายการ
           //- span.separator /
           span(onclick="{showMapView(true)}", class="{ active: isShowingMap }")
-            i.icon.material-icons map
+            i.icon.material-icons.is-medium map
             //- | แผนที่
-    div.clearfix
 
   div(class="{ hide: isShowingMap, 'list-view': true }")
     ul.issue-list(if='{ pins.length > 0 }')

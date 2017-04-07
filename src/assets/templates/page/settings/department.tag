@@ -13,7 +13,7 @@ setting-department
           a.button.is-accent(onclick="{ createDepartment }")
             | สร้างหน่วยงาน
 
-  .opaque-bg.content-padding.is-overflow-auto
+  .is-overflow-auto
     table.table.is-striped
       thead
         tr

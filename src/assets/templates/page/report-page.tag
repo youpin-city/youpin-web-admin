@@ -1,79 +1,80 @@
 report-page
-  .report-tool
-    .breadcrumb
-      span
-        strong Report
-    h1.page-title Performance
-    h3.section-title แสดงตามช่วงเวลา
-      | {moment(date['from']).format('DD/MM/YYYY')}
-      | -
-      | {moment(date['to']).format('DD/MM/YYYY')}
+  .container
+    .report-tool.opaque-bg
+      .breadcrumb
+        span
+          strong Report
+      h1.page-title Performance
+      h3.section-title แสดงตามช่วงเวลา
+        | {moment(date['from']).format('DD/MM/YYYY')}
+        | -
+        | {moment(date['to']).format('DD/MM/YYYY')}
 
-    .level.is-mobile
-      .level-left
-        .level-item
-          div
-            label.label ตั้งแต่
-            .control
-              .date-from-picker
-              input.input(type='text', name='date_from', value='{ date["from"] }')
-        .level-item
-          div
-            label.label ถึง
-            .control
-              .date-to-picker
-              input.input(type='text', name='date_to', value='{ date["to"] }')
+      .level.is-mobile
+        .level-left
+          .level-item
+            div
+              label.label ตั้งแต่
+              .control
+                .date-from-picker
+                input.input(type='text', name='date_from', value='{ date["from"] }')
+          .level-item
+            div
+              label.label ถึง
+              .control
+                .date-to-picker
+                input.input(type='text', name='date_to', value='{ date["to"] }')
 
-  .spacing
+    .spacing
 
-  .section
-    h3.section-title เรื่องแยกตามสถานะ
-    .columns
-      .column
-        table.performance-summary
-          tr
-            th.team Team
-            //- th.pending.has-text-right Pending
-            //- th.assigned.has-text-right Assigned
-            //- th.processing.has-text-right Processing
-            //- th.resolved.has-text-right Resolved
-            //- th.rejected.has-text-right Rejected
-            //- th.performance.has-text-right Performance Index
-            th.assigned.has-text-right(style='width: 120px;') เปิด
-            th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
-            th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
-            th.performance.has-text-right(style='width: 120px;') Performance Index
+    .section.opaque-bg
+      h3.section-title เรื่องแยกตามสถานะ
+      .columns
+        .column
+          table.table.is-striped.is-narrow.performance-summary
+            tr
+              th.team Team
+              //- th.pending.has-text-right Pending
+              //- th.assigned.has-text-right Assigned
+              //- th.processing.has-text-right Processing
+              //- th.resolved.has-text-right Resolved
+              //- th.rejected.has-text-right Rejected
+              //- th.performance.has-text-right Performance Index
+              th.assigned.has-text-right(style='width: 120px;') เปิด
+              th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
+              th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
+              th.performance.has-text-right(style='width: 120px;') Performance Index
 
-          tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
-            td.team { name }
-            //- td.numeric-col { summary.pending || 0}
-            //- td.numeric-col { summary.assigned || 0}
-            //- td.numeric-col { summary.processing || 0}
-            td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
-            td.numeric-col { summary.resolved || 0}
-            td.numeric-col { summary.rejected || 0}
-            td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
+            tr(each="{data}", class="{ hide: shouldHideRow(department._id) }")
+              td.team { name }
+              //- td.numeric-col { summary.pending || 0}
+              //- td.numeric-col { summary.assigned || 0}
+              //- td.numeric-col { summary.processing || 0}
+              td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
+              td.numeric-col { summary.resolved || 0}
+              td.numeric-col { summary.rejected || 0}
+              td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
 
-  .spacing
+    .spacing
 
-  .section(show='{ category_list.length > 0 }')
-    h3.section-title แยกตามหมวด
-    .big-number-table.category-table
-      .columns(each='{ row in category_row }')
-        .column.is-3.has-text-centered(each='{ c in row }')
-          div
-            .container.clearfix
-              p.heading
-                strong { c.name }
-            .container.clearfix
-              p.subtitle.left ทั้งหมด
-              p.title.has-text-right { c.total }
-            .container.clearfix
-              p.subtitle.left แก้ไขสำเร็จ
-              p.title.has-text-right.success-number { c.resolved }
-            .container.clearfix
-              p.subtitle.left ปิดกรณีอื่น
-              p.title.has-text-right.error-number { c.rejected }
+    .section.opaque-bg(show='{ category_list.length > 0 }')
+      h3.section-title แยกตามหมวด
+      .big-number-table.category-table
+        .columns(each='{ row in category_row }')
+          .column.is-3.has-text-centered(each='{ c in row }')
+            div
+              .container.clearfix
+                p.heading
+                  strong { c.name }
+              .container.clearfix
+                p.subtitle.left ทั้งหมด
+                p.title.has-text-right { c.total }
+              .container.clearfix
+                p.subtitle.left แก้ไขสำเร็จ
+                p.title.has-text-right.success-number { c.resolved }
+              .container.clearfix
+                p.subtitle.left ปิดกรณีอื่น
+                p.title.has-text-right.error-number { c.rejected }
 
   script.
     let self = this;
