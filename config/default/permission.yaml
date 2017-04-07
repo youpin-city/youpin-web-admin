@@ -14,14 +14,6 @@ role:
     name: 'ผู้ดูแลระบบ'
 
 permission:
-  create_issue:
-    allow:
-      - user
-      - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
   view_my_issue:
     allow:
       - user
@@ -32,7 +24,7 @@ permission:
       - super_admin
   view_assigned_issue:
     allow:
-      - user
+      # - user
       - department_officer
       - department_head
       - organization_admin
@@ -40,8 +32,8 @@ permission:
       - super_admin
   view_department_issue:
     allow:
-      - user
-      - department_officer
+      # - user
+      # - department_officer
       - department_head
       - organization_admin
       - public_relations
@@ -78,9 +70,25 @@ permission:
       - organization_admin
       - public_relations
       - super_admin
+  view_comment:
+    allow:
+      # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
   post_comment:
     allow:
       # - user
+      - department_officer
+      - department_head
+      - organization_admin
+      - public_relations
+      - super_admin
+  create_issue:
+    allow:
+      - user
       - department_officer
       - department_head
       - organization_admin
@@ -126,43 +134,43 @@ permission:
       - organization_admin
       # - public_relations
       - super_admin
-  filter_issue_by_department:
-    allow:
-      # - user
-      # - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
-  filter_issue_by_staff:
-    allow:
-      # - user
-      - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
-  filter_issue_by_priority:
-    allow:
-      # - user
-      - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
-  filter_issue_by_category:
-    allow:
-      - user
-      - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
-  filter_issue_by_status:
-    allow:
-      - user
-      - department_officer
-      - department_head
-      - organization_admin
-      - public_relations
-      - super_admin
+  # filter_issue_by_department:
+  #   allow:
+  #     # - user
+  #     # - department_officer
+  #     - department_head
+  #     - organization_admin
+  #     - public_relations
+  #     - super_admin
+  # filter_issue_by_staff:
+  #   allow:
+  #     # - user
+  #     - department_officer
+  #     - department_head
+  #     - organization_admin
+  #     - public_relations
+  #     - super_admin
+  # filter_issue_by_priority:
+  #   allow:
+  #     # - user
+  #     - department_officer
+  #     - department_head
+  #     - organization_admin
+  #     - public_relations
+  #     - super_admin
+  # filter_issue_by_category:
+  #   allow:
+  #     - user
+  #     - department_officer
+  #     - department_head
+  #     - organization_admin
+  #     - public_relations
+  #     - super_admin
+  # filter_issue_by_status:
+  #   allow:
+  #     - user
+  #     - department_officer
+  #     - department_head
+  #     - organization_admin
+  #     - public_relations
+  #     - super_admin

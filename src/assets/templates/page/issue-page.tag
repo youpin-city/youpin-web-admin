@@ -24,11 +24,11 @@ issue-page
 
   .level
     .level-left
-      .level-item
+      .level-item(show='{ can_sort_by_department }')
         .control(style='width: 140px;')
           input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
 
-      .level-item
+      .level-item(show='{ can_sort_by_staff }')
         .control(style='width: 140px;')
           input(type='text', id='select_staff', ref='select_staff', placeholder='แสดงตามเจ้าหน้าที่')
 
@@ -46,9 +46,11 @@ issue-page
 
   script.
     const self = this;
+    self.can_sort_by_staff = util.check_permission('view_department_issue', user.role);
+    self.can_sort_by_department = util.check_permission('view_all_issue', user.role);
     self.query = self.opts.query || {};
-    self.statusesForRole = []
-    const queryOpts = {};
+    //- self.statusesForRole = []
+    //- const queryOpts = {};
 
     //- if( user.role == 'super_admin' || user.role == 'organization_admin' ) {
     //-   this.statusesForRole =  ['pending', 'assigned', 'processing', 'resolved', 'rejected'];
@@ -57,23 +59,31 @@ issue-page
     //-   queryOpts['assigned_department'] = user.department;
     //- }
 
-    self.statuses = [];
-    self.selectedStatus = self.statusesForRole[0];
+    //- self.statuses = [];
+    //- self.selectedStatus = self.statusesForRole[0];
 
-    self.action_menu_list = () => [
-      {
-        id: 'action-menu-new-issue-btn',
-        name: 'สร้างเรื่องร้องเรียน',
-        url: util.site_url('/issue/new'),
-        target: '',
-      },
-      {
-        id: 'action-menu-merge-issue-btn',
-        name: 'แจ้งเรื่องซ้ำซ้อน',
-        url: util.site_url('/merge'),
-        target: '',
+    self.action_menu_list = () => {
+      const menu = [];
+      // create new issue
+      if (util.check_permission('create_issue', user.role)) {
+        menu.push({
+          id: 'action-menu-new-issue-btn',
+          name: 'สร้างเรื่องร้องเรียน',
+          url: util.site_url('/issue/new'),
+          target: '',
+        });
       }
-    ];
+      // mark this issue as duplicate
+      if (util.check_permission('merge_issue', user.role)) {
+        menu.push({
+          id: 'action-menu-merge-issue-btn',
+          name: 'แจ้งเรื่องซ้ำซ้อน',
+          url: util.site_url('/merge'),
+          target: '',
+        });
+      }
+      return menu;
+    }
 
     //- function getStatusesCount() {
     //-   Promise.map( self.statusesForRole, status => {
@@ -237,7 +247,24 @@ issue-page
     });
 
     self.loadPinByFilter = () => {
-      let query = _.merge({}, self.current_filter, {
+      const perm_filter = {};
+      if (util.check_permission('view_all_issue', user.role)) {
+        // no-op
+      } else {
+        perm_filter.$or = [];
+        if (util.check_permission('view_my_issue', user.role)) {
+          perm_filter.$or.push({ owner: user._id });
+        }
+        if (util.check_permission('view_assigned_issue', user.role)) {
+          perm_filter.$or.push({ assigned_users: user._id });
+        }
+        if (util.check_permission('view_department_issue', user.role)) {
+          perm_filter.$or.push({ assigned_department: user.dept._id });
+        }
+        if (perm_filter.$or.length === 0) delete perm_filter.$or;
+      }
+
+      let query = _.merge({}, perm_filter, self.current_filter, {
         $sort: self.current_sort
       });
       self.tags['issue-list'].load(query);
@@ -303,7 +330,7 @@ issue-page
         maxItems: 1,
         valueField: '_id',
         labelField: 'name',
-        //- searchField: 'name',
+        searchField: 'name',
         options: _.compact(status), // all choices
         items: ['all'], // selected choices
         create: false,
@@ -330,26 +357,41 @@ issue-page
 
     self.initSelectStaff = () => {
       const status = [
-        { _id: 'all', name: 'เจ้าหน้าที่ทั้งหมด' }
+        { _id: 'all', name: 'ทั้งหมด' },
+        //- { _id: 'empty', name: 'ยังไม่มีเจ้าหน้าที่' }
       ];
       $(self.refs.select_staff).selectize({
         maxItems: 1,
         valueField: '_id',
         labelField: 'name',
-        //- searchField: 'name',
+        searchField: 'name',
         options: _.compact(status), // all choices
         items: ['all'], // selected choices
         create: false,
-        allowEmptyOption: false,
+        //- allowEmptyOption: false,
         //- hideSelected: true,
         preload: true,
         load: function(query, callback) {
           //- if (!query.length) return callback();
-          api.getUsers({
-            name: {
-              $regex: query
-            }
-          })
+          // @permission
+          const perm_filter = {};
+          if (util.check_permission([
+              'view_all_issue',
+              'view_all_staff'
+            ], user.role)) {
+            //- perm_filter.department = _.get(user, 'dept._id');
+          } else if (util.check_permission([
+              'view_department_issue',
+              'view_department_staff'
+            ], user.role)) {
+            perm_filter.department = _.get(user, 'dept._id');
+          } else {
+            perm_filter.not_allow = true;
+          }
+
+          api.getUsers(_.merge({}, perm_filter, {
+            name: { $regex: query }
+          }))
           .then(result => {
             callback(result.data);
           });

@@ -32,7 +32,7 @@ report-department-page
       h3.section-title เรื่องแยกตามเจ้าหน้าที่
       .columns
         .column
-          table.performance-summary
+          table.table.is-striped.is-narrow.performance-summary
             tr
               th.team Team
               //- th.pending.has-text-right Pending

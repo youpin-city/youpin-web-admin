@@ -21,7 +21,7 @@ issue-view-page
         .level-item(if='{ pin }')
           a#issue-more-menu-btn(href='#')
             i.icon.material-icons settings
-          dropdown-menu(target='#issue-more-menu-btn', position='bottom right', menu='{ create_issue_menu_list }')
+          dropdown-menu(target='#issue-more-menu-btn', position='bottom right', menu='{ action_menu_list }')
 
     article.message.is-warning(if='{ pin && pin.is_merged }')
       .message-body
@@ -94,7 +94,7 @@ issue-view-page
 
         #edit-issue-panel.column.is-4(hide='{ isEditing("info") }')
           // assigned department
-          .section
+          .section(show='{ util.check_permission("edit_issue_department", user.role) }')
             .field
               label.label หน่วยงานรับผิดชอบ
                 .is-pulled-right
@@ -111,7 +111,7 @@ issue-view-page
                 input(type='text', id='select_department', ref='select_department', placeholder='เลือกหน่วยงาน')
 
           //- assigned staff
-          .section
+          .section(show='{ util.check_permission("edit_issue_staff", user.role) }')
             .field
               label.label เจ้าหน้าที่รับผิดชอบ
                 .is-pulled-right
@@ -142,7 +142,7 @@ issue-view-page
           //-         //- option(if='{ !!pin.assigned_department }', value='{ pin.assigned_department._id }', selected) { pin.assigned_department.name }
 
           //- close issue
-          .section
+          .section(show='{ util.check_permission("close_issue", user.role) }')
             hr
             .action
               button.button.is-outlined.is-accent.is-block(show='{ !isClosed() }', onclick='{ toggleCloseIssueModal }')
@@ -219,7 +219,7 @@ issue-view-page
       .title ความคืบหน้า
       .progress-list
         // offer new post comment editor
-        article.media.progress-item.progress-editor.is-block-mobile
+        article.media.progress-item.progress-editor.is-block-mobile(show='{ util.check_permission("post_comment", user.role) }')
           .media-left
             profile-image.is-round.is-block(name='{ user.name }', subtitle='{ user.dept && user.dept.name }')
           .media-content
@@ -246,7 +246,7 @@ issue-view-page
                   .level-right
                     button.button.is-accent.is-block(class='{ "is-loading": saving_progress, "is-disabled": saving_progress_photo }', onclick='{ submitComment }') ส่งความคืบหน้า
         // previous posts
-        article.media.progress-item.is-block-mobile(show='{ comments && comments.length > 0 }', each='{ comment, i in comments }')
+        article.media.progress-item.is-block-mobile(show='{ util.check_permission("view_comment", user.role) && comments && comments.length > 0 }', each='{ comment, i in comments }')
           .media-left
             profile-image.is-round.is-block(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
           .media-content
@@ -337,21 +337,25 @@ issue-view-page
       reopen_issue: false
     };
 
-    self.create_issue_menu_list = () => {
-      const menu = [
-        {
+    self.action_menu_list = () => {
+      const menu = [];
+      // create new issue
+      if (util.check_permission('edit_issue', user.role)) {
+        menu.push({
           id: 'edit-issue-btn',
           name: 'แก้ไขข้อมูล',
           url: '#',
           target: '',
           onclick: (e) => { self.toggleEdit('info')(); }
-        }
-      ];
-      if (self.pin && !self.pin.is_merged) {
+        });
+      }
+      // mark this issue as duplicate
+      if (self.pin && !self.pin.is_merged
+        && util.check_permission('merge_issue', user.role)) {
         menu.push({
           id: 'merge-issue-btn',
           name: 'แจ้งเรื่องซ้ำซ้อน',
-          url: util.site_url('merge/') + self.id,
+          url: util.site_url('/merge/') + self.id,
           target: '',
           onclick: (e) => { console.log('Merge'); }
         });

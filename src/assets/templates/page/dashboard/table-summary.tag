@@ -29,7 +29,7 @@ dashboard-table-summary
         th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
         th.performance.has-text-right(style='width: 120px;') Performance Index
 
-      tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
+      tr(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
         //- td.numeric-col { summary.pending || 0}
         //- td.numeric-col { summary.assigned || 0}
@@ -163,7 +163,7 @@ dashboard-table-summary
           queryOpts,
           {
             '$limit': 1,
-            is_archived: false,
+            //- is_archived: false,
             status: status
           }
         );

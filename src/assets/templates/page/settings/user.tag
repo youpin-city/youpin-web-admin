@@ -181,6 +181,7 @@ setting-user
 
     self.confirmEditUser = () => {
       let patch = {
+        name: self.$editUserModal.find('input[name="name"]').val(),
         role: self.$roleSelector.val(),
         department: _.compact([self.$departmentSelector.val()]),
         email: self.$editUserModal.find('input[name="email"]').val(),
