@@ -13,7 +13,7 @@ setting-user
           a.button.is-accent(onclick="{createUser}")
             | สร้างบัญชีเจ้าหน้าที่
 
-  .opaque-bg.content-padding.is-overflow-auto
+  .is-overflow-auto
     table.table.is-striped
       thead
         tr
@@ -181,6 +181,7 @@ setting-user
 
     self.confirmEditUser = () => {
       let patch = {
+        name: self.$editUserModal.find('input[name="name"]').val(),
         role: self.$roleSelector.val(),
         department: _.compact([self.$departmentSelector.val()]),
         email: self.$editUserModal.find('input[name="email"]').val(),

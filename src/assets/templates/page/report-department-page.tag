@@ -1,59 +1,59 @@
 report-department-page
-  .report-tool
-    .breadcrumb
-      span
-        strong Report
-    h1.page-title Department
-      | : { user && user.dept && user.dept.name}
-    h3.section-title แสดงตามช่วงเวลา
-      | {moment(date['from']).format('DD/MM/YYYY')}
-      | -
-      | {moment(date['to']).format('DD/MM/YYYY')}
+  .container
+    .report-tool.opaque-bg
+      .breadcrumb
+        span
+          strong Report
+      h1.page-title Department
+        | : { user && user.dept && user.dept.name}
+      h3.section-title แสดงตามช่วงเวลา
+        | {moment(date['from']).format('DD/MM/YYYY')}
+        | -
+        | {moment(date['to']).format('DD/MM/YYYY')}
 
-    .level.is-mobile
-      .level-left
-        .level-item
-          div
-            label.label ตั้งแต่
-            .control
-              .date-from-picker
-              input.input(type='text', name='date_from', value='{ date["from"] }')
-        .level-item
-          div
-            label.label ถึง
-            .control
-              .date-to-picker
-              input.input(type='text', name='date_to', value='{ date["to"] }')
+      .level.is-mobile
+        .level-left
+          .level-item
+            div
+              label.label ตั้งแต่
+              .control
+                .date-from-picker
+                input.input(type='text', name='date_from', value='{ date["from"] }')
+          .level-item
+            div
+              label.label ถึง
+              .control
+                .date-to-picker
+                input.input(type='text', name='date_to', value='{ date["to"] }')
 
-  .spacing-small
+    .spacing-small
 
-  .section
-    h3.section-title เรื่องแยกตามเจ้าหน้าที่
-    .columns
-      .column
-        table.performance-summary
-          tr
-            th.team Team
-            //- th.pending.has-text-right Pending
-            //- th.assigned.has-text-right Assigned
-            th.assigned.has-text-right(style='width: 120px;') เปิด
-            th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
-            th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
-            th.performance.has-text-right(style='width: 120px;') Performance Index
+    .section.opaque-bg
+      h3.section-title เรื่องแยกตามเจ้าหน้าที่
+      .columns
+        .column
+          table.table.is-striped.is-narrow.performance-summary
+            tr
+              th.team Team
+              //- th.pending.has-text-right Pending
+              //- th.assigned.has-text-right Assigned
+              th.assigned.has-text-right(style='width: 120px;') เปิด
+              th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
+              th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
+              th.performance.has-text-right(style='width: 120px;') Performance Index
 
-          tr.row(each="{ data }", class="{ hide: shouldHideRow(department._id) }")
-            td.name
-              //- .is-pulled-right
-              //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
-              profile-image.is-round.is-small(name='{ name }')
-            //- td.team { name }
-            //- td.numeric-col { summary.pending || 0}
-            //- td.numeric-col { summary.assigned || 0}
-            td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
-            td.numeric-col { summary.resolved || 0 }
-            td.numeric-col { summary.rejected || 0 }
-            td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
-
+            tr(each="{ data }", class="{ hide: shouldHideRow(department._id) }")
+              td.name
+                //- .is-pulled-right
+                //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
+                profile-image.is-round.is-small(name='{ name }')
+              //- td.team { name }
+              //- td.numeric-col { summary.pending || 0}
+              //- td.numeric-col { summary.assigned || 0}
+              td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
+              td.numeric-col { summary.resolved || 0 }
+              td.numeric-col { summary.rejected || 0 }
+              td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
 
   script.
     let self = this;

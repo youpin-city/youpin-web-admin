@@ -6,4 +6,4 @@ append content
 
 append app_script
   script.
-    riot.mount('issue-page');
+    riot.mount('issue-page', { query: !{JSON.stringify(query)} });

@@ -42,28 +42,6 @@ api.getSummary = (start, end, cb) => {
   return fetch(url).then(response => response.json()).then(cb);
 };
 
-api.getNewIssues = (cb) => {
-  let opts = {
-    $sort: '-created_time',
-    $limit: 5
-  };
-
-  if (!user.is_superuser) {
-    if (user.department) {
-      // non-admin role can request only his/her department
-      opts = _.extend(opts, {
-        assigned_department: user.department
-      });
-    } else {
-      // non-admin role cannot request any departments
-      opts.$limit = 0;
-    }
-  }
-
-  const url = api._buildEndpoint('pins', opts);
-  return fetch(url).then(response => response.json()).then(cb);
-};
-
 api.getRecentActivities = (cb) => {
   let opts = {
     $sort: '-timestamp',
@@ -189,19 +167,13 @@ api.getPin = (pin_id) => {
   .then(item => normalize_pin(item));
 };
 
-api.getPins = (status, opts) => {
-  if (typeof status === 'object') {
-    opts = status;
-    status = undefined;
-  }
-  opts = _.extend({
+api.getPins = (query) => {
+  const queryOpts = _.extend({
     $sort: '-created_time',
     $limit: 10
-  }, opts);
+  }, query);
 
-  if (status) opts.status = status;
-
-  const url = api._buildEndpoint('pins', opts);
+  const url = api._buildEndpoint('pins', queryOpts);
   return fetch(url, { mode: 'cors' })
   .then(response => response.json());
 };

@@ -243,11 +243,16 @@ function parse_tags(str) {
   return str.replace(hash_regex, '<a href="#tags/$1">#$1</a>');
 }
 
-function check_permission(perm_name, role) {
-  if (!perm_name || !role) return false;
-  const perm = app.config.permission[perm_name];
-  if (!perm) return false;
-  return perm.allow && perm.allow.indexOf(role) >= 0;
+function check_permission(perm_names, role) {
+  if (!perm_names || !role) return false;
+  if (!_.isArray(perm_names)) perm_names = [perm_names];
+  for (let i = 0; i < perm_names.length; i++) {
+    const name = perm_names[i];
+    const perm = app.config.permission[name];
+    if (!perm) return false;
+    if (!(perm.allow && perm.allow.indexOf(role) >= 0)) return false;
+  }
+  return true;
 }
 
 function t(type, id, prop = null) {

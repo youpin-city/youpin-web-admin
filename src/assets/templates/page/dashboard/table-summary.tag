@@ -1,7 +1,7 @@
 dashboard-table-summary
   h1.page-title Overview
 
-  #big-number-table(show='{ status_list.length > 0 }')
+  #big-number-table.opaque-bg(show='{ status_list.length > 0 }')
     .level
       .level-item.has-text-centered(each='{ s in status_list }')
         div
@@ -10,12 +10,12 @@ dashboard-table-summary
 
   .spacing
 
-  div.performance-table.opaque-bg.content-padding
+  div.performance-table.opaque-bg
     ul.duration-selector
       li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
           div {dur.name}
 
-    table.summary
+    table.table.is-striped.is-narrow.summary
       tr
         th.team Team
         //- th.pending.has-text-right Pending
@@ -29,7 +29,7 @@ dashboard-table-summary
         th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
         th.performance.has-text-right(style='width: 120px;') Performance Index
 
-      tr.row(each="{data}", class="{ hide: shouldHideRow(department._id) }")
+      tr(each="{data}", class="{ hide: shouldHideRow(department._id) }")
         td.team { name }
         //- td.numeric-col { summary.pending || 0}
         //- td.numeric-col { summary.assigned || 0}
@@ -163,7 +163,7 @@ dashboard-table-summary
           queryOpts,
           {
             '$limit': 1,
-            is_archived: false,
+            //- is_archived: false,
             status: status
           }
         );

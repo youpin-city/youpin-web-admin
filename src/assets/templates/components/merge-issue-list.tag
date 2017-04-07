@@ -83,7 +83,7 @@ merge-issue-list
     this.loadMore = () => {
       return () => {
         let opts = _.extend( {}, self.currentQueryOpts, { '$skip': self.pins.length });
-        api.getPins( self.selectedStatus, opts ).then( res => {
+        api.getPins(opts).then( res => {
           self.pins = self.pins.concat(res.data)
           self.updateHasMoreButton(res);
           self.update();
