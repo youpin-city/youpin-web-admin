@@ -22,7 +22,7 @@ issue-page
           i.icon.material-icons more_horiz
         dropdown-menu(target='#more-action-menu-btn', position='bottom right', menu='{ action_menu_list }')
 
-  .level
+  .level.is-hidden-mobile
     .level-left
       .level-item(show='{ can_sort_by_department }')
         .control(style='width: 140px;')

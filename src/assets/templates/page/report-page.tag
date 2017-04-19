@@ -10,7 +10,7 @@ report-page
         | -
         | {moment(date['to']).format('DD/MM/YYYY')}
 
-      .level.is-mobile
+      .level
         .level-left
           .level-item
             div

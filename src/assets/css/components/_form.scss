@@ -3,6 +3,11 @@ form {
   &.is-fullwidth { width: 100%; }
 }
 
+.control {
+  &.is-fullwidth { width: 100%; }
+}
+
+
 .field {
   &.is-inline {
     display: inline-block;

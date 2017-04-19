@@ -1,5 +1,5 @@
 issue-list
-  .level.menu-bar
+  .level.is-mobile.menu-bar
     .level-left
       .level-item
         span พบทั้งหมด { total } รายการ
