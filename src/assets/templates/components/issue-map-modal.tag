@@ -108,16 +108,12 @@ issue-map-modal
       self.mapView = L.map(self.mapViewId, self.mapOptions);
       self.mapView.setView( app.config.service.map.initial_location, 17);
 
-      // HERE Maps
-      // @see https://developer.here.com/rest-apis/documentation/enterprise-map-tile/topics/resource-base-maptile.html
+      // OpenStreetMap Maps
       // https: also suppported.
-      const HERE_normalDay = L.tileLayer(app.config.service.leaflet.url, _.extend(app.config.service.leaflet.options, {
-        app_id: app.get('service.here.app_id'),
-        app_code: app.get('service.here.app_code'),
-        scheme: 'ontouchstart' in window ? 'normal.day.mobile' : 'normal.day',
-        ppi: 'devicePixelRatio' in window && window.devicePixelRatio >= 2 ? '250' : '72'
-      }));
-      self.mapView.addLayer(HERE_normalDay);
+      const OpenStreetMap_Mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      });
+      self.mapView.addLayer(OpenStreetMap_Mapnik);
     }
 
     //- self.loadMap = () => {
