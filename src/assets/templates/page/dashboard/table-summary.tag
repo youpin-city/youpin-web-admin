@@ -163,7 +163,6 @@ dashboard-table-summary
           queryOpts,
           {
             '$limit': 1,
-            //- is_archived: false,
             status: status
           }
         );

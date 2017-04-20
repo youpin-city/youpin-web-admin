@@ -56,10 +56,6 @@ router.get('/issue/:id', auth(), (req, res, next) => {
   res.render('issue_view');
 });
 
-router.get('/archive', auth(), (req, res, next) => {
-  res.render('archive');
-});
-
 router.get('/report', auth(), (req, res, next) => {
   res.redirect('report/performance');
 });

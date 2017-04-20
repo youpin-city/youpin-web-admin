@@ -231,7 +231,6 @@ report-page
           queryOpts,
           {
             '$limit': 1,
-            //- is_archived: false,
             categories: cat.id
           }
         );

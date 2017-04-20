@@ -19,10 +19,6 @@ sitemap:
       - department_head
       - department_officer
       - public_relations
-  # - name: sitenav.archive
-  #   href: "/archive"
-  #   icon: archive
-  #   children: []
   - name: sitenav.report
     href: "/report"
     icon: pie_chart
