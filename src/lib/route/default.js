@@ -12,7 +12,7 @@ module.exports = router;
 
 router.get('/', auth(), (req, res, next) => {
   if (req.user.role === 'public_relations') {
-    res.redirect('archive');
+    res.redirect('issue');
     return;
   }
   res.render('dashboard');
@@ -42,16 +42,16 @@ router.get('/auth/failure', (req, res, next) => {
   res.send('Something went wrong. Try again.');
 });
 
-router.get('/issue', auth({ deny: ['public_relations'] }), (req, res, next) => {
+router.get('/issue', auth(), (req, res, next) => {
   res.locals.query = req.query;
   res.render('issue');
 });
 
-router.get('/issue/new', auth({ deny: ['public_relations'] }), (req, res, next) => {
+router.get('/issue/new', auth(), (req, res, next) => {
   res.render('issue_create');
 });
 
-router.get('/issue/:id', auth({ deny: ['public_relations'] }), (req, res, next) => {
+router.get('/issue/:id', auth(), (req, res, next) => {
   res.locals.id = req.params.id;
   res.render('issue_view');
 });
