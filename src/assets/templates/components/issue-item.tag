@@ -11,7 +11,9 @@ issue-item(class='{ classes }')
       // closed status
       .is-pulled-right
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }')
-        | \#{ item._id.slice(-4) }
+        .field.is-inline(show='{ item.is_featured }')
+          i.icon.material-icons.is-accent star
+        span \#{ item._id.slice(-4) }
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
         .field.is-inline(show='{ item.status === "rejected" }')
