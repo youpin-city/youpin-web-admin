@@ -73,10 +73,11 @@ issue-view-page
                   tr
                     th สถานที่
                     td
+                      .field.is-inline(show='{ !pin.neighborhood.length && !pin.has_location }') ไม่ระบุ
                       .field.is-inline(show='{ pin.neighborhood && pin.neighborhood.length }') { pin.neighborhood.join(', ') }
-                      a#map-view-btn.field.is-inline.button.is-tiny(show='{ !!pin.location }', href='#', data-lat='{ pin.location.coordinates[0] }', data-long='{ pin.location.coordinates[1] }')
+                      a#map-view-btn.field.is-inline.button.is-tiny(show='{ pin.has_location }', href='#', data-lat='{ pin.location.coordinates[0] }', data-long='{ pin.location.coordinates[1] }')
                         | ดูบนแผนที่
-                      issue-map-modal(data-id='{ id }', name='{ _.get(pin, "neighborhood.0") }', location='{ _.get(pin, "location.coordinates", []).join(",") }', target='#map-view-btn')
+                      issue-map-modal(show='{ pin.has_location }', data-id='{ id }', name='{ _.get(pin, "neighborhood.0") }', location='{ _.get(pin, "location.coordinates", []).join(",") }', target='#map-view-btn')
                   tr
                     th ประเภท
                     td
@@ -153,19 +154,19 @@ issue-view-page
 
         .column.is-3(show='{ isEditing("info") }')
           .issue-photos
-            .field(show='{ issue_data.images.length > 0 }')
+            .field(show='{ update_data.images.length > 0 }')
               .columns.is-wrap
-                .column.is-12.is-mobile(each='{ img, i in issue_data.images }')
+                .column.is-12.is-mobile(each='{ img, i in update_data.images }')
                   figure.image
                     .img-tool
-                      button.delete(onclick='{ removeFormPhoto("issue_data")(i) }')
+                      button.delete(onclick='{ removeFormPhoto("update_data")(i) }')
                     img(src='{ img }')
             .field
               .control
                 form.is-fullwidth(ref='issue_photo_form')
                   label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
                     i.icon.material-icons add_a_photo
-                  input(show='{ false }', id='issue-photo-input', ref='issue_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("issue_data", "issue_photo_form", "saving_info_photo") }')
+                  input(show='{ false }', id='issue-photo-input', ref='issue_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("update_data", "issue_photo_form", "saving_info_photo") }')
 
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
@@ -318,7 +319,7 @@ issue-view-page
     self.parent_pin = null;
     self.child_pins = [];
     // pin info
-    self.issue_data = { photos: [], images: [] };
+    self.update_data = { photos: [], images: [] };
     self.editing_info = false;
     self.saving_info = false;
     self.saving_info_photo = false;
@@ -405,13 +406,24 @@ issue-view-page
         && ["resolved", "rejected"].indexOf(self.pin.status) >= 0;
     };
 
+    self.parseIssue = (pin) => {
+      pin.neighborhood = _.compact(pin.neighborhood);
+      if (!pin.location || !pin.location.coordinates
+        || (pin.location.coordinates[0] === 0 && pin.location.coordinates[1] === 0)) {
+        pin.has_location = false;
+      } else {
+        pin.has_location = true;
+      }
+      return pin;
+    };
+
     self.loadPin = () => {
       return api.getPin(self.id)
       .then(data => {
         self.loaded = true;
-        self.pin = data;
-        self.issue_data.photos = _.clone(self.pin.photos);
-        self.issue_data.images = _.clone(self.pin.photos);
+        self.pin = self.parseIssue(data);
+        self.update_data.photos = _.clone(self.pin.photos);
+        self.update_data.images = _.clone(self.pin.photos);
         self.update();
 
         self.initSelectDepartment();
@@ -425,7 +437,7 @@ issue-view-page
         if (self.pin.is_merged) {
           api.getPin(self.pin.merged_parent_pin)
           .then(data => {
-            self.parent_pin = data;
+            self.parent_pin = self.parseIssue(data);
             riot.mount(self.refs.parent_issue, 'issue-item', { item: self.parent_pin });
             self.update();
           });
@@ -713,7 +725,7 @@ issue-view-page
     self.updateIssueInfo = (e) => {
       const update = {
         detail: self.refs.description_input.value,
-        photos: self.issue_data.photos,
+        photos: self.update_data.photos,
         neighborhood: _.compact([self.refs.neighborhood_input.value]),
         //- 'location.coordinates': [
         //-   self.refs.location_lat_input.value,
