@@ -110,10 +110,14 @@ issue-create-page
           self.refs.location_long_input.value
         ]
       } : null;
+      // for role below organization_admin, auto assign his department
+      const dept = util.check_permission('view_all_issue', user && user.role)
+        ? null : _.get(user, 'dept._id');
       const update = {
         provider: user._id,
         owner: user._id,
         organization: _.get(app, 'config.organization.id'),
+        assigned_department: dept,
         detail: self.refs.description_input.value,
         photos: [],
         level: '2', // normal
@@ -121,7 +125,8 @@ issue-create-page
         tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag)),
         neighborhood: _.compact([self.refs.neighborhood_input.value]),
         location: pin_location
-      }
+      };
+
       self.saving_info = true;
       api.createPin(update)
       .then(response => {
