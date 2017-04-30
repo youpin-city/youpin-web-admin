@@ -121,7 +121,6 @@ issue-create-page
         provider: user._id,
         owner: user._id,
         organization: _.get(app, 'config.organization.id'),
-        assigned_department: assigned_department,
         assigned_users: assigned_users,
         detail: self.refs.description_input.value,
         photos: [],
@@ -132,10 +131,21 @@ issue-create-page
         location: pin_location
       };
 
+      let new_issue_id;
       self.saving_info = true;
       api.createPin(update)
       .then(response => {
-        location.href = util.site_url('/issue/' + response._id);
+        new_issue_id = response._id;
+        if (!assigned_department) return true;
+        // force state change to assigned
+        // when assign department for the first time
+        return api.postTransition(new_issue_id, {
+          state: 'assigned',
+          assigned_department: assigned_department
+        });
+      })
+      .then(() => {
+        location.href = util.site_url('/issue/' + new_issue_id);
       })
       .catch(err => {
         Materialize.toast(err.message, 8000, 'dialog-error large')

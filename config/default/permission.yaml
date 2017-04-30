@@ -79,6 +79,15 @@ permission:
       - executive_admin
       - public_relations
       - super_admin
+  view_department:
+    allow:
+      # - user
+      # - department_officer
+      # - department_head
+      - organization_admin
+      - executive_admin
+      - public_relations
+      - super_admin
   view_comment:
     allow:
       # - user
