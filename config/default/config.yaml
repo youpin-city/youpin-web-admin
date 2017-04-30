@@ -78,7 +78,7 @@ issue:
       name: ห้องเรียน
       selected: false
     - id: safety
-      name: ปลอดภัย
+      name: ความปลอดภัย
       selected: false
     - id: sanitary
       name: ความสะอาด

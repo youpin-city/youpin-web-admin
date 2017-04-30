@@ -46,6 +46,8 @@ issue-item(class='{ classes }')
         i.icon.material-icons chat_bubble
         span { item.progresses.length }
 
+    div(show='{ item.owner }') รายงานโดย { _.get(item, 'owner.name') }
+
     div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
 
   .issue-compact
