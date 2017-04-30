@@ -94,6 +94,13 @@ permission:
       - organization_admin
       - public_relations
       - super_admin
+  create_issue_auto_assign_department:
+    allow:
+      - department_officer
+      - department_head
+  create_issue_auto_assign_self:
+    allow:
+      - department_officer
   edit_issue:
     allow:
       # - user

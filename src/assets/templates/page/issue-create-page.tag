@@ -110,10 +110,19 @@ issue-create-page
           self.refs.location_long_input.value
         ]
       } : null;
+      // auto assign own's department if permission allowed
+      const assigned_department = util.check_permission('create_issue_auto_assign_department', user && user.role)
+        ? _.get(user, 'dept._id') : null;
+      // auto assign self if permission allowed
+      const assigned_users = util.check_permission('create_issue_auto_assign_self', user && user.role)
+        ? [_.get(user, '_id')] : [];
+      // new issue data
       const update = {
         provider: user._id,
         owner: user._id,
         organization: _.get(app, 'config.organization.id'),
+        assigned_department: assigned_department,
+        assigned_users: assigned_users,
         detail: self.refs.description_input.value,
         photos: [],
         level: '2', // normal
@@ -121,7 +130,8 @@ issue-create-page
         tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag)),
         neighborhood: _.compact([self.refs.neighborhood_input.value]),
         location: pin_location
-      }
+      };
+
       self.saving_info = true;
       api.createPin(update)
       .then(response => {
