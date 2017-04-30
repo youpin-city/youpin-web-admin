@@ -151,6 +151,18 @@ utility.page_info = function (req, path = '', title, options) {
   });
 };
 
+utility.check_permission = function (perm_names, role) {
+  if (!perm_names || !role) return false;
+  if (!_.isArray(perm_names)) perm_names = [perm_names];
+  for (let i = 0; i < perm_names.length; i++) {
+    const name = perm_names[i];
+    const perm = conf.get('permission.' + name);
+    if (!perm) return false;
+    if (!(perm.allow && perm.allow.indexOf(role) >= 0)) return false;
+  }
+  return true;
+};
+
 // @see http://stackoverflow.com/a/24660323
 const promiseFor = Promise.method((condition, action, value) => {
   if (!condition(value)) return value;

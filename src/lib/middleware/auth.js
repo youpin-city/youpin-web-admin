@@ -9,6 +9,7 @@ const cookie_auth_name = 'feathers-jwt';
 const cookie_user_info = 'user';
 const staff_roles = [
   'super_admin',
+  'executive_admin',
   'organization_admin',
   'department_head',
   'department_officer',
@@ -16,6 +17,7 @@ const staff_roles = [
 ];
 const superuser_roles = [
   'super_admin',
+  'executive_admin',
   'organization_admin'
 ];
 

@@ -10,6 +10,8 @@ role:
     name: 'สารบรรณ'
   - id: public_relations
     name: 'ประชาสัมพันธ์'
+  - id: executive_admin
+    name: ผู้บริหาร
   - id: super_admin
     name: 'ผู้ดูแลระบบ'
 
@@ -20,6 +22,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_assigned_issue:
@@ -28,6 +31,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_department_issue:
@@ -36,6 +40,7 @@ permission:
       # - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_all_issue:
@@ -44,6 +49,7 @@ permission:
       # - department_officer
       # - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_department_staff:
@@ -52,6 +58,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_all_staff:
@@ -60,6 +67,7 @@ permission:
       # - department_officer
       # - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_user:
@@ -68,6 +76,7 @@ permission:
       # - department_officer
       # - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   view_comment:
@@ -76,6 +85,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   post_comment:
@@ -84,6 +94,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   create_issue:
@@ -92,6 +103,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
   create_issue_auto_assign_department:
@@ -107,6 +119,7 @@ permission:
       # - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       # - public_relations
       - super_admin
   edit_issue_department:
@@ -115,6 +128,7 @@ permission:
       # - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       # - public_relations
       - super_admin
   edit_issue_staff:
@@ -123,6 +137,7 @@ permission:
       - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       # - public_relations
       - super_admin
   close_issue:
@@ -131,6 +146,7 @@ permission:
       # - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       # - public_relations
       - super_admin
   merge_issue:
@@ -139,6 +155,7 @@ permission:
       # - department_officer
       - department_head
       - organization_admin
+      - executive_admin
       # - public_relations
       - super_admin
   mark_featured_issue:
@@ -147,14 +164,37 @@ permission:
       # - department_officer
       # - department_head
       - organization_admin
+      - executive_admin
       - public_relations
       - super_admin
+  edit_staff_role:
+    allow:
+      - organization_admin
+      - executive_admin
+      - super_admin
+  edit_staff_department:
+    allow:
+      - organization_admin
+      - executive_admin
+      - super_admin
+  edit_department:
+    allow:
+      - organization_admin
+      - executive_admin
+      - super_admin
+  supervisor:
+    allow:
+      - organization_admin
+      - executive_admin
+      - super_admin
+
   # filter_issue_by_department:
   #   allow:
   #     # - user
   #     # - department_officer
   #     - department_head
   #     - organization_admin
+  #     - executive_admin
   #     - public_relations
   #     - super_admin
   # filter_issue_by_staff:
@@ -163,6 +203,7 @@ permission:
   #     - department_officer
   #     - department_head
   #     - organization_admin
+  #     - executive_admin
   #     - public_relations
   #     - super_admin
   # filter_issue_by_priority:
@@ -171,6 +212,7 @@ permission:
   #     - department_officer
   #     - department_head
   #     - organization_admin
+  #     - executive_admin
   #     - public_relations
   #     - super_admin
   # filter_issue_by_category:
@@ -179,6 +221,7 @@ permission:
   #     - department_officer
   #     - department_head
   #     - organization_admin
+  #     - executive_admin
   #     - public_relations
   #     - super_admin
   # filter_issue_by_status:
@@ -187,5 +230,6 @@ permission:
   #     - department_officer
   #     - department_head
   #     - organization_admin
+  #     - executive_admin
   #     - public_relations
   #     - super_admin
