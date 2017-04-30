@@ -125,9 +125,10 @@ issue-page
         { id: 'all', name: 'สถานะทั้งหมด' },
         { id: 'open', name: 'เปิด' },
         { id: 'closed', name: 'ปิด' },
-        //- { id: 'resolved', name: 'ปิดและแก้ไขสำเร็จ' },
-        //- { id: 'rejected', name: 'ปิดและไม่แก้ไข' },
-        //- { id: 'spam', name: 'ปิดและสเปม' }
+        { id: 'resolved', name: 'ปิด (สำเร็จ)' },
+        { id: 'rejected', name: 'ปิด (ไม่แก้ไข)' },
+        //- { id: 'spam', name: 'ปิดและสเปม' },
+        { id: 'featured', name: 'จัดแสดง' }
       ];
       $(self.refs.select_status).selectize({
         maxItems: 1,
@@ -144,6 +145,7 @@ issue-page
           //- const filter = _.find(status, ['id', value]);
           delete self.current_filter.status;
           delete self.current_filter.closed_reason;
+          delete self.current_filter.is_featured;
 
           switch (value) {
             case 'all':
@@ -159,11 +161,14 @@ issue-page
               break;
             case 'rejected':
               self.current_filter.status = 'rejected';
-              self.current_filter.closed_reason = 'rejected';
+              //- self.current_filter.closed_reason = 'rejected';
               break;
-            case 'spam':
-              self.current_filter.status = { $in: ['resolved', 'rejected'] };
-              self.current_filter.closed_reason = 'spam';
+            //- case 'spam':
+            //-   self.current_filter.status = { $in: ['resolved', 'rejected'] };
+            //-   self.current_filter.closed_reason = 'spam';
+            //-   break;
+            case 'featured':
+              self.current_filter.is_featured = true;
               break;
           }
 

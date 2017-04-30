@@ -2,6 +2,8 @@ issue-view-page
   .container
     nav.level.is-mobile
       .level-left.content-padding
+        .level-item(show='{ isFeatured() }')
+          i.icon.material-icons.is-accent star
         .level-item
           .issue-title.title \#{ id.slice(-4) }
         .level-item(show='{ isClosed() }')
@@ -150,6 +152,16 @@ issue-view-page
                 span.text ปิดเรื่อง
               button.button.is-outlined.is-block(show='{ isClosed() }', onclick='{ toggleReopenIssueModal }')
                 span.text เปิดเรื่องอีกครั้ง
+
+          //- mark issue as featured on homepage
+          .section(show='{ util.check_permission("mark_featured_issue", user.role) }')
+            .action
+              button.button.is-outlined.is-accent.is-block(show='{ !isFeatured() }', onclick='{ setIssueAsFeatured }')
+                i.icon.material-icons star_border
+                span.text จัดแสดงเรื่องนี้
+              button.button.is-accent.is-block(show='{ isFeatured() }', onclick='{ unsetIssueAsFeatured }')
+                i.icon.material-icons star
+                span.text จัดแสดงอยู่
 
 
         .column.is-3(show='{ isEditing("info") }')
@@ -404,6 +416,10 @@ issue-view-page
     self.isClosed = () => {
       return self.pin && self.pin.status
         && ["resolved", "rejected"].indexOf(self.pin.status) >= 0;
+    };
+
+    self.isFeatured = () => {
+      return self.pin && self.pin.is_featured;
     };
 
     self.parseIssue = (pin) => {
@@ -895,7 +911,7 @@ issue-view-page
       .then(response => self.loadPin())
       .then(() => {
         self.toggleCloseIssueModal();
-      })
+      });
     };
 
     self.toggleReopenIssueModal = () => {
@@ -917,4 +933,22 @@ issue-view-page
       .then(() => {
         self.toggleReopenIssueModal();
       })
+    };
+
+    self.setIssueAsFeatured = (e) => {
+      const update_pin = { is_featured: true };
+      api.patchPin(self.id, update_pin)
+      .catch(err =>
+        Materialize.toast(err.message, 8000, 'dialog-error large')
+      )
+      .then(response => self.loadPin());
+    };
+
+    self.unsetIssueAsFeatured = (e) => {
+      const update_pin = { is_featured: false };
+      api.patchPin(self.id, update_pin)
+      .catch(err =>
+        Materialize.toast(err.message, 8000, 'dialog-error large')
+      )
+      .then(response => self.loadPin());
     };
