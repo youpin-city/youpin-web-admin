@@ -154,7 +154,8 @@ issue-view-page
                 span.text เปิดเรื่องอีกครั้ง
 
           //- mark issue as featured on homepage
-          .section(show='{ util.check_permission("mark_featured_issue", user.role) }')
+          //- show when issue is resolved and permission granted
+          .section(show='{ pin.status === "resolved" && util.check_permission("mark_featured_issue", user.role) }')
             .action
               button.button.is-outlined.is-accent.is-block(show='{ !isFeatured() }', onclick='{ setIssueAsFeatured }')
                 i.icon.material-icons star_border
@@ -369,9 +370,7 @@ issue-view-page
         menu.push({
           id: 'merge-issue-btn',
           name: 'แจ้งเรื่องซ้ำซ้อน',
-          url: util.site_url('/merge/') + self.id,
-          target: '',
-          onclick: (e) => { console.log('Merge'); }
+          url: util.site_url('/merge/') + self.id
         });
       }
       if (menu.length > 0) {
@@ -521,7 +520,14 @@ issue-view-page
         },
         load: function(query, callback) {
           //- if (!query.length) return callback();
-          api.getDepartments({ })
+          let opts;
+          if (util.check_permission('view_department', user && user.role)) {
+            opts = {};
+          } else {
+            opts = { _id: _.get(user, 'dept._id') };
+          }
+
+          api.getDepartments(opts)
           .then(result => {
             callback(result.data);
           });
@@ -529,11 +535,21 @@ issue-view-page
         onChange: function(value) {
           const update = value ? { assigned_department: value }
             : { assigned_department: null };
-          api.patchPin(self.id, update)
+          // force state change to assigned
+          // when assign department for the first time
+          // (when it's still 'pending')
+          const should_change_state = !!value && self.pin.status === 'pending';
+          if (should_change_state) {
+            update.state = 'assigned';
+          }
+
+          (should_change_state
+          ? api.postTransition(self.id, update)
+          : api.patchPin(self.id, update))
           .catch(err =>
             Materialize.toast(err.message, 8000, 'dialog-error large')
           )
-          .then(response => self.loadPin());
+          .then(() => self.loadPin());
         }
       });
     }
@@ -568,7 +584,7 @@ issue-view-page
           if (util.check_permission('view_all_staff', user && user.role)) {
             opts = {};
           } else if (util.check_permission('view_department_staff', user && user.role)) {
-            opts = { department: user.department._id };
+            opts = { department: _.get(user, 'dept._id') };
           }
           if (!opts) return;
 
@@ -704,7 +720,6 @@ issue-view-page
       const files = self.refs.comment_photo_input.files;
       //- self.progress_data.photos = _.map(files || [], file => window.URL.createObjectURL(file));
       self.progress_data.detail = self.refs.comment_input.value;
-      console.log('process update:', self.progress_data);
       if (!self.progress_data.detail && self.progress_data.photos.length === 0) {
         Materialize.toast('พิมพ์ข้อความหรือเลือกรูป อธิบายความคืบหน้า', 8000, 'large')
         return;
@@ -750,7 +765,6 @@ issue-view-page
         categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
         tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
       }
-      console.log('update:', update);
       self.saving_info = true;
       api.patchPin(self.id, update)
       .catch(err =>
@@ -774,6 +788,7 @@ issue-view-page
     };
 
     const _field_term = {
+      is_featured: 'การจัดแสดง',
       assigned_department: 'หน่วยงาน',
       assigned_users: 'เจ้าหน้าที่',
       level: 'ความสำคัญ',
@@ -789,45 +804,59 @@ issue-view-page
         return _field_term[field] || field || 'ข้อมูล';
       }
       function parse_acitivity_text(type, action, log, pin) {
+        const changed_fields = _.filter(_.map(log.changed_fields, (name, i) => {
+          // return null to skip this labelField
+          if (name === 'progresses') return null;
+          if (name === 'closed_reason') return null;
+          const field = {
+            name: name,
+            previous: log.previous_values[i],
+            value: log.updated_values[i]
+          };
+          if (field.previous === field.value) return null;
+          return field;
+        }), field => {
+          const hidden_fields = ['status'];
+          return field !== null && hidden_fields.indexOf(field.name) === -1;
+        });
+
         switch (type) {
           case 'ACTION_TYPE/STATE_TRANSITION':
             const state = action.split('/')[1].toLowerCase();
             if (['resolved', 'resolve'].indexOf(state) >= 0) {
-              let msg = 'ปิดเรื่องร้องเรียน :)'
+              let msg = 'ปิดเรื่องร้องเรียน'
                 //- + '<i class="icon material-icons is-success">check</i>';
               if (pin.closed_reason) {
-                msg += '\n' + pin.closed_reason;
+                msg += ' (' + pin.closed_reason + ')';
+              } else {
+                msg += ' (สำเร็จ)';
               }
               return msg;
             }
             if (['rejected', 'reject'].indexOf(state) >= 0) {
-              let msg = 'ปิดเรื่องร้องเรียน :('
+              let msg = 'ปิดเรื่องร้องเรียน'
                 //- + '<i class="icon material-icons is-danger">error_outline</i>';
               if (pin.closed_reason) {
-                msg += '\n' + pin.closed_reason;
+                msg += ' (' + pin.closed_reason + ')';
               }
               return msg;
             }
-            return 'เปิดเรื่องร้องเรียนใหม่อีกครั้ง';
+            if (['assigned', 'assign'].indexOf(state) >= 0) {
+              if (changed_fields.length === 0) return ''; // empty string = skip
+              return log.user + ' แก้ไข ' + _.map(changed_fields, field => _t(field.name)).join(', ');
+            }
+            if (['pending', 'unassigned', 'unassign'].indexOf(state) >= 0) {
+              return '';
+            }
+            if (['re_open'].indexOf(state) >= 0) {
+              return 'เปิดเรื่องร้องเรียนใหม่อีกครั้ง';
+            }
+            return '';
 
           case 'ACTION_TYPE/METADATA':
-            const changed_fields = _.filter(_.map(log.changed_fields, (name, i) => {
-              // return null to skip this labelField
-              if (name === 'progresses') return null;
-              if (name === 'closed_reason') return null;
-              const field = {
-                name: name,
-                previous: log.previous_values[i],
-                value: log.updated_values[i]
-              };
-              if (field.previous === field.value) return null;
-              return field;
-            }), field => field !== null);
-
-            if (changed_fields.length === 0) {
-              return ''; // empty string = skip
-            }
+            if (changed_fields.length === 0) return ''; // empty string = skip
             return log.user + ' แก้ไข ' + _.map(changed_fields, field => _t(field.name)).join(', ');
+
           default:
             return 'ไม่มีข้อมูล';
         }
@@ -870,7 +899,6 @@ issue-view-page
       }
       self.comments = _.filter(self.comments, comment => comment.text || _.get(comment, 'photos.length', 0) > 0)
       self.comments = _.sortBy(self.comments, c => - new Date(c.timestamp));
-      //- console.log(self.comments, 'comments');
     }
 
     self.toggleCloseIssueModal = () => {
@@ -891,8 +919,9 @@ issue-view-page
       const selected_item = _.find(self.close_issue_form.type, ['selected', true]);
       const next_status = selected_item.value;
       const closed_reason = self.refs.closed_reason_input.value;
-      const reason = closed_reason ? closed_reason
-        : next_status === 'rejected' ? selected_item.id : '';
+      const reason = closed_reason
+        ? closed_reason
+        : (next_status === 'rejected' ? selected_item.id : '');
       if (!next_status) {
         Materialize.toast('ข้อมูลเพื่อปิดเรื่องร้องเรียนไม่สมบูรณ์ โปรดลองอีกครั้ง', 8000, 'dialog-error large')
         return;
