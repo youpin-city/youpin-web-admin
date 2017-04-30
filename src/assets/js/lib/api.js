@@ -170,7 +170,7 @@ api.getPin = (pin_id) => {
 api.getPins = (query) => {
   const queryOpts = _.extend({
     $sort: '-created_time',
-    $limit: 10
+    $limit: 20
   }, query);
 
   const url = api._buildEndpoint('pins', queryOpts);

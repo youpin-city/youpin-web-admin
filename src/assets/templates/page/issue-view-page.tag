@@ -867,7 +867,8 @@ issue-view-page
         type: 'meta',
         text: 'รายงานเรื่องร้องเรียน',
         photos: [],
-        user: _.get(self.pin, 'owner.name', '')
+        user: _.get(self.pin, 'owner.name', ''),
+        timestamp: self.pin.created_time
       }];
       // activity logs
       const normalized_activities = self.activities.map(item => _.merge(_.clone(item), {

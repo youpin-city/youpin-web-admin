@@ -106,7 +106,7 @@ issue-map-modal
         popupAnchor: [0, -51]
       });
       self.mapView = L.map(self.mapViewId, self.mapOptions);
-      self.mapView.setView( app.config.service.map.initial_location, 17);
+      self.mapView.setView( app.config.service.map.initial_location, 18);
 
       // OpenStreetMap Maps
       // https: also suppported.
