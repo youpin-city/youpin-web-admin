@@ -95,10 +95,10 @@ issue-view-page
 
         #edit-issue-panel.column.is-4(hide='{ isEditing("info") }')
           // assigned department
-          .section(show='{ util.check_permission("edit_issue_department", user.role) }')
+          .section
             .field
               label.label หน่วยงานรับผิดชอบ
-                .is-pulled-right
+                .is-pulled-right(show='{ util.check_permission("edit_issue_department", user.role) }')
                   a(hide='{ isEditing("department") }', href='#', onclick='{ toggleEdit("department") }')
                     small แก้ไข
                   a(show='{ isEditing("department") }', href='#', onclick='{ toggleEdit("department") }')
@@ -112,10 +112,10 @@ issue-view-page
                 input(type='text', id='select_department', ref='select_department', placeholder='เลือกหน่วยงาน')
 
           //- assigned staff
-          .section(show='{ util.check_permission("edit_issue_staff", user.role) }')
+          .section
             .field
               label.label เจ้าหน้าที่รับผิดชอบ
-                .is-pulled-right
+                .is-pulled-right(show='{ util.check_permission("edit_issue_staff", user.role) }')
                   a(hide='{ isEditing("staff") }', href='#', onclick='{ toggleEdit("staff") }')
                     small แก้ไข
                   a(show='{ isEditing("staff") }', href='#', onclick='{ toggleEdit("staff") }')
