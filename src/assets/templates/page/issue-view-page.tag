@@ -19,7 +19,7 @@ issue-view-page
           .control
             input(type='text', id='select_priority', ref='select_priority', placeholder='เลือกระดับความสำคัญ')
         .level-item(if='{ pin }')
-          a#issue-more-menu-btn(href='#')
+          a#issue-more-menu-btn(href='#', show='{ show_issue_more_menu_icon }')
             i.icon.material-icons settings
           dropdown-menu(target='#issue-more-menu-btn', position='bottom right', menu='{ action_menu_list }')
 
@@ -337,6 +337,7 @@ issue-view-page
       reopen_issue: false
     };
 
+    self.show_issue_more_menu_icon = false;
     self.action_menu_list = () => {
       const menu = [];
       // create new issue
@@ -359,6 +360,9 @@ issue-view-page
           target: '',
           onclick: (e) => { console.log('Merge'); }
         });
+      }
+      if (menu.length > 0) {
+        self.show_issue_more_menu_icon = true;
       }
       return menu;
     };

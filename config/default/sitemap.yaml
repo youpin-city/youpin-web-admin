@@ -18,13 +18,15 @@ sitemap:
       - organization_admin
       - department_head
       - department_officer
-  # - name: sitenav.archive
-  #   href: "/archive"
-  #   icon: archive
-  #   children: []
+      - public_relations
   - name: sitenav.report
     href: "/report"
     icon: pie_chart
+    authorized_roles:
+      - super_admin
+      - organization_admin
+      - department_head
+      - department_officer
     children:
       - name: sitenav.report_performance
         href: "/report/performance"

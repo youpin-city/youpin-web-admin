@@ -158,24 +158,6 @@ const issueRouter = module.exports = {
           );
         });
 
-        const $archive = $('#archive');
-        if (user.is_superuser && !data.is_archived
-                              && (data.status === 'rejected' || data.status === 'resolved')) {
-          $archive.show();
-        } else {
-          $archive.hide();
-        }
-        $archive.click(() => {
-          api.patchPin(id, {
-            is_archived: true
-          })
-          .then(response => response.json())
-          .then(() => $(modalId).modal('close'))
-          .catch(err =>
-            Materialize.toast(err.message, 8000, 'dialog-error large')
-          );
-        });
-
         const $reject = $modal.find('#reject');
         if ((user.is_superuser && (data.status === 'pending')) ||
             (!user.is_superuser && data.status === 'assigned')) {
