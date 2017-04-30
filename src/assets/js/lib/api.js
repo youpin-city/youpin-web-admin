@@ -49,7 +49,7 @@ api.getRecentActivities = (cb) => {
   };
 
   // Admin can see all activities from every department
-  if (['super_admin', 'organization_admin'].indexOf(user.role) === -1) {
+  if (!util.check_permission('supervisor', user.role)) {
     opts = _.extend(opts, {
       department: user.department
     });

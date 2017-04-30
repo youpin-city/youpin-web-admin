@@ -147,8 +147,9 @@ dashboard-table-summary
       return (summary.resolved || 0) / divider;
     }
 
-    this.shouldHideRow = function(department){
-        return user.role != "organization_admin" && user.department != department;
+    this.shouldHideRow = function(department) {
+      return !util.check_permission('supervisor', user.role)
+        && user.department != department;
     }
 
     self.loadStatusCount = (queryOpts = {}) => {

@@ -80,10 +80,11 @@ header#header
       #team-name= _.startCase(__('team.' + user.team))
 
     ul#site-nav-left-menu.nav-list.hide-on-small-and-down
-      li.department-info
-        .title
-          i.icon.material-icons contacts
-          | #{user.dept && user.dept.name}
+      if user && user.dept
+        li.department-info
+          .title
+            i.icon.material-icons contacts
+            | #{user.dept && user.dept.name}
       for nav in sitemap
         - nav_route = nav.name.replace(/^sitenav\./, '');ref;
         - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
@@ -142,10 +143,11 @@ nav#mobile-nav.modal
               i.icon.material-icons #{ child.icon }
               | #{__(child.name)}
 
-    li.department-info
-      .title
-        i.icon.material-icons contacts
-        | #{user.dept && user.dept.name}
+    if user && user.dept
+      li.department-info
+        .title
+          i.icon.material-icons contacts
+          | #{user.dept && user.dept.name}
 
   .service-container
     .row

@@ -96,26 +96,20 @@ router.get('/settings/department', auth({ admin: true }), (req, res, next) => {
 });
 
 router.get('/settings/user', auth({ admin: true }), (req, res, next) => {
-  if (['super_admin', 'organization_admin'].indexOf(req.user.role) === -1) {
+  const perms = [
+    'view_all_staff',
+    'edit_staff_role',
+    'edit_staff_department'
+  ];
+  if (!util.check_permission(perms, req.user.role)) {
     next(new createError.Unauthorized());
     return;
   }
-  // const availableRoles = [
-  //   { id: 'public_relations', name: 'ประชาสัมพันธ์' },
-  //   { id: 'department_officer', name: 'เจ้าหน้าที่' },
-  //   { id: 'department_head', name: 'หัวหน้าฝ่าย' },
-  //   { id: 'organization_admin', name: 'สารบรรณ' }
-  // ];
-  // if (['super_admin'].indexOf(req.user.role) >= 0) {
-  //   availableRoles.push({ id: 'super_admin', name: 'Super Admin' });
-  // }
-  // res.locals.availableRoles = availableRoles;
   res.locals.department = req.query.dept || '';
   res.render('settings/user');
 });
 
-
 // all other methods, show not found page
-router.all('/*', (req, res, next) => {
+router.all('/*', auth({ admin: true }), (req, res, next) => {
   next(createError(404));
 });

@@ -6,6 +6,7 @@ sitemap:
     children: []
     authorized_roles:
       - super_admin
+      - executive_admin
       - organization_admin
       - department_head
       - department_officer
@@ -15,6 +16,7 @@ sitemap:
     children: []
     authorized_roles:
       - super_admin
+      - executive_admin
       - organization_admin
       - department_head
       - department_officer
@@ -24,6 +26,7 @@ sitemap:
     icon: pie_chart
     authorized_roles:
       - super_admin
+      - executive_admin
       - organization_admin
       - department_head
       - department_officer
@@ -34,6 +37,7 @@ sitemap:
         children: []
         authorized_roles:
           - super_admin
+          - executive_admin
           - organization_admin
           - department_head
       - name: sitenav.report_department
@@ -42,6 +46,7 @@ sitemap:
         children: []
         authorized_roles:
           - super_admin
+          - executive_admin
           - organization_admin
           - department_head
   - name: sitenav.settings
@@ -49,6 +54,7 @@ sitemap:
     icon: settings
     authorized_roles:
       - super_admin
+      - executive_admin
       - organization_admin
     children:
       - name: sitenav.settings_department
@@ -56,12 +62,14 @@ sitemap:
         icon: domain
         authorized_roles:
           - super_admin
+          - executive_admin
           - organization_admin
       - name: sitenav.settings_user
         href: '/settings/user'
         icon: person
         authorized_roles:
           - super_admin
+          - executive_admin
           - organization_admin
 
 footer_link: []
