@@ -152,13 +152,13 @@ nav#mobile-nav.modal
       .col.s12.no-padding
         .profile-container
           if user
-            a.link.center(href=site_url('', null, { 'logout': '1' }))
+            a.link.center(href=site_url('logout'))
               //- .image.profile-image(style='background-image: url("' + user.image + '")')
               .profile-name.center #{ user.name }
               .center #{__('action.logout')}
 
           else
-            a.link.center(href=site_url('', null, { 'login': '1' }))
+            a.link.center(href=site_url('login'))
               i.icon.material-icons person
               | #{__('action.login')}
 
