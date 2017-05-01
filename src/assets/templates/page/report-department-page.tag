@@ -4,8 +4,13 @@ report-department-page
       .breadcrumb
         span
           strong Report
-      h1.page-title Department
-        | : { user && user.dept && user.dept.name}
+      h1.page-title
+        span Department
+        span(hide='{ can_choose_department }') : { user && user.dept && user.dept.name}
+        .field.is-inline(show='{ can_choose_department }', style='vertical-align: middle;')
+          .control(style='width: 200px;')
+            input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
+
       h3.section-title แสดงตามช่วงเวลา
         | {moment(date['from']).format('DD/MM/YYYY')}
         | -
@@ -42,18 +47,19 @@ report-department-page
               th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
               th.performance.has-text-right(style='width: 120px;') Performance Index
 
-            tr(each="{ data }", class="{ hide: shouldHideRow(department._id) }")
+            tr(each="{ row in data }")
               td.name
+                a(href='/issue?staff={row.id}:{row.name}') { row.name }
                 //- .is-pulled-right
                 //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
-                profile-image.is-round.is-small(name='{ name }')
+                //- profile-image.is-round.is-small(name='{ name }')
               //- td.team { name }
               //- td.numeric-col { summary.pending || 0}
               //- td.numeric-col { summary.assigned || 0}
-              td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
-              td.numeric-col { summary.resolved || 0 }
-              td.numeric-col { summary.rejected || 0 }
-              td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
+              td.numeric-col { _.sum(_.pick(row.summary, ['pending', 'assigned', 'processing'])) || 0}
+              td.numeric-col { row.summary.resolved || 0 }
+              td.numeric-col { row.summary.rejected || 0 }
+              td.numeric-col.performance(class="{  positive: row.performance > 0, negative: row.performance < 0 }") { row.performance.toFixed(2) }
 
   script.
     let self = this;
@@ -65,12 +71,15 @@ report-department-page
     };
     self.data = [];
     self.officers = [];
+    self.department_id = user.dept._id;
+    self.can_choose_department = util.check_permission('view_department', user.role);
 
     self.on('mount', () => {
+      self.initSelectDepartment();
+
       self.setupCloseDateCalendar($(self.root).find('.date-from-picker'), 'from');
       self.setupCloseDateCalendar($(self.root).find('.date-to-picker'), 'to');
-      self.loadDepartment()
-      .then(() => self.loadData());
+      self.loadDepartment();
     });
 
     self.loadDepartment = () => {
@@ -78,11 +87,12 @@ report-department-page
       return api.getDepartments()
       .then(result => {
         dept = result;
-        return api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
+        return api.getUsers({ department: self.department_id });
       })
       .then(result => {
         self.officers = result.data || [];
-      });
+      })
+      .then(() => self.loadData());
     }
 
     self.loadData = () => {
@@ -125,6 +135,7 @@ report-department-page
             const data_dept = data[user.dept.name];
             const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
             return {
+              id: officer._id,
               name: officer.name,
               summary: data_officer,
               performance: computePerformance(attributes, data_officer)
@@ -147,6 +158,7 @@ report-department-page
         }, all);
 
         orgSummary = {
+          id: '',
           name: 'All',
           summary: all,
           performance: computePerformance(attributes, all)
@@ -192,3 +204,32 @@ report-department-page
         self.picker[name].adjustPosition();
       });
     };
+
+    self.initSelectDepartment = () => {
+      const status = [
+        { _id: user.dept._id, name: user.dept.name }
+      ];
+      $(self.refs.select_department).selectize({
+        maxItems: 1,
+        valueField: '_id',
+        labelField: 'name',
+        searchField: 'name',
+        options: _.compact(status), // all choices
+        items: [user.dept._id], // selected choices
+        create: false,
+        allowEmptyOption: false,
+        //- hideSelected: true,
+        preload: true,
+        load: function(query, callback) {
+          //- if (!query.length) return callback();
+          api.getDepartments({ })
+          .then(result => {
+            callback(result.data);
+          });
+        },
+        onChange: function(value) {
+          self.department_id = value;
+          self.loadDepartment();
+        }
+      });
+    }
