@@ -177,7 +177,7 @@ issue-view-page
             .field
               .control
                 form.is-fullwidth(ref='issue_photo_form')
-                  label.button.is-accent.is-block(for='comment-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
+                  label.button.is-accent.is-block(for='issue-photo-input', class='{ "is-loading": saving_info_photo, "is-disabled": saving_info }')
                     i.icon.material-icons add_a_photo
                   input(show='{ false }', id='issue-photo-input', ref='issue_photo_input', type='file', accept='image/*', multiple, onchange='{ chooseFormPhoto("update_data", "issue_photo_form", "saving_info_photo") }')
 
@@ -675,16 +675,17 @@ issue-view-page
     }
 
     self.chooseFormPhoto = (group_name = '', form_ref = '', uploading_flag = '') => (e) => {
-      if (!group_name) return;
+      if (!group_name) return Promise.reject(false);
       const file_input = e.currentTarget;
       if (!(window.FileList && file_input && file_input.files instanceof window.FileList)) {
         return Promise.resolve([]);
       }
       if (uploading_flag) self[uploading_flag] = true;
       //- self.saving_progress_photo = true;
-      return Promise.resolve(file_input.files)
-      .map(file => window.URL.createObjectURL(file))
-      .map((photo_blob_url, index) => fetch(photo_blob_url)
+      return Promise.resolve(_.toArray(file_input.files))
+      .map(file => {
+        const photo_blob_url = window.URL.createObjectURL(file);
+        return fetch(photo_blob_url)
         .then(response => response.blob())
         .then(blob => {
           const form = new FormData();
@@ -700,8 +701,8 @@ issue-view-page
         .catch(err =>
           Materialize.toast(err.message, 8000, 'dialog-error large')
         )
-      )
-      .then(() => {
+      })
+      .then(result => {
         if (form_ref && self.refs[form_ref]) self.refs[form_ref].reset();
         if (uploading_flag) self[uploading_flag] = false;
         self.update();
@@ -717,7 +718,7 @@ issue-view-page
 
     self.submitComment = (e) => {
       if (e && e.preventDefault) e.preventDefault();
-      const files = self.refs.comment_photo_input.files;
+      //- const files = self.refs.comment_photo_input.files;
       //- self.progress_data.photos = _.map(files || [], file => window.URL.createObjectURL(file));
       self.progress_data.detail = self.refs.comment_input.value;
       if (!self.progress_data.detail && self.progress_data.photos.length === 0) {
