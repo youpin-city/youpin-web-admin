@@ -42,18 +42,19 @@ report-department-page
               th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
               th.performance.has-text-right(style='width: 120px;') Performance Index
 
-            tr(each="{ data }", class="{ hide: shouldHideRow(department._id) }")
+            tr(each="{ row in data }")
               td.name
+                a(href='/issue?staff={row.id}:{row.name}') { row.name }
                 //- .is-pulled-right
                 //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
-                profile-image.is-round.is-small(name='{ name }')
+                //- profile-image.is-round.is-small(name='{ name }')
               //- td.team { name }
               //- td.numeric-col { summary.pending || 0}
               //- td.numeric-col { summary.assigned || 0}
-              td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
-              td.numeric-col { summary.resolved || 0 }
-              td.numeric-col { summary.rejected || 0 }
-              td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") { performance.toFixed(2) }
+              td.numeric-col { _.sum(_.pick(row.summary, ['pending', 'assigned', 'processing'])) || 0}
+              td.numeric-col { row.summary.resolved || 0 }
+              td.numeric-col { row.summary.rejected || 0 }
+              td.numeric-col.performance(class="{  positive: row.performance > 0, negative: row.performance < 0 }") { row.performance.toFixed(2) }
 
   script.
     let self = this;
@@ -78,7 +79,7 @@ report-department-page
       return api.getDepartments()
       .then(result => {
         dept = result;
-        return api.getUsers((user.department) ? { department: user.department } : undefined) // role: 'department_officer',
+        return api.getUsers((user.dept) ? { department: user.dept._id } : undefined) // role: 'department_officer',
       })
       .then(result => {
         self.officers = result.data || [];
@@ -125,6 +126,7 @@ report-department-page
             const data_dept = data[user.dept.name];
             const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
             return {
+              id: officer._id,
               name: officer.name,
               summary: data_officer,
               performance: computePerformance(attributes, data_officer)
@@ -147,6 +149,7 @@ report-department-page
         }, all);
 
         orgSummary = {
+          id: '',
           name: 'All',
           summary: all,
           performance: computePerformance(attributes, all)

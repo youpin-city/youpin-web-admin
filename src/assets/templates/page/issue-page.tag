@@ -76,9 +76,16 @@ issue-page
     self.current_filter = {
       status: { $in: ['pending', 'assigned', 'processing'] }
     };
+    // query keyword ?q=
     if (self.query.q) {
       self.current_filter.detail = { $regex: self.query.q };
     }
+    // query staff ?staff=
+    if (self.query.staff) {
+      const staff = self.query.staff.split(':');
+      self.current_filter.assigned_users = staff[0];
+    }
+    // default sort
     self.current_sort = '-updated_time';
 
     self.on('before-mount', () => {
@@ -98,6 +105,7 @@ issue-page
 
     self.loadPinByFilter = () => {
       const perm_filter = {};
+
       if (util.check_permission('view_all_issue', user.role)) {
         // no-op
       } else {
@@ -204,7 +212,6 @@ issue-page
           if (value && value !== 'all') {
             self.current_filter.assigned_department = value;
           }
-          console.log(self.current_filter, 'filter dept');
           self.loadPinByFilter();
         }
       });
@@ -215,13 +222,19 @@ issue-page
         { _id: 'all', name: 'ทั้งหมด' },
         //- { _id: 'empty', name: 'ยังไม่มีเจ้าหน้าที่' }
       ];
+      let selected_items = ['all'];
+      if (self.query.staff) {
+        const staff = self.query.staff.split(':');
+        status.push({ _id: staff[0], name: staff[1] });
+        selected_items = [staff[0]];
+      }
       $(self.refs.select_staff).selectize({
         maxItems: 1,
         valueField: '_id',
         labelField: 'name',
         searchField: 'name',
         options: _.compact(status), // all choices
-        items: ['all'], // selected choices
+        items: selected_items, // selected choices
         create: false,
         //- allowEmptyOption: false,
         //- hideSelected: true,
@@ -256,7 +269,6 @@ issue-page
           if (value && value !== 'all') {
             self.current_filter.assigned_users = value;
           }
-          console.log(self.current_filter, 'filter staff');
           self.loadPinByFilter();
         }
       });
