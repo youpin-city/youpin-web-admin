@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.6.1 (26313) - http://www.bohemiancoding.com/sketch -->
+    <title>loader</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="canvas" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="life">
+            <g id="group">
+                <rect id="rect" x="0" y="0" width="100" height="100"></rect>
+                <path d="M90,51 C90,73.09139 72.09139,91 50,91 C31.7972033,91 16.4342551,78.8411631 11.5897872,62.2021212 C10.5548823,58.6475869 9.9140625,55.8275581 9.9140625,51.9389648 C9.9140625,50.9298001 10.185976,45.4021542 15.0263672,45.027832 C19.3325195,44.6948242 21.1684473,46.6996907 21.4594727,51.2978516 C22.1767578,62.6308594 24.2074108,72.3025494 34.2001953,78.9443359 C39.1435547,82.2299805 43.598728,85 50,85 C71.0822253,85 88.3550921,68.6901978 89.8891941,48 C89.9626286,48.9903991 90,49.9908353 90,51 Z" id="primary" fill="#1890B9"></path>
+            </g>
+        </g>
+    </g>
+</svg>

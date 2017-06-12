@@ -67,6 +67,14 @@ $activity-width: 320px;
     }
   }
 
+  .date-range {
+    padding: 1rem;
+    label {
+      color: $cl-primary;
+      font-weight: $fw-bold;
+      margin-right: 2rem;
+    }
+  }
   .summary {
     border-bottom: $ps-xxs solid $cl-verylightgray;
 
@@ -139,6 +147,75 @@ $activity-width: 320px;
   .performance-table {
     padding-top: 0;
     overflow: auto;
+  }
+
+  .performance-summary {
+    border-bottom: $ps-xxs solid $cl-verylightgray;
+
+    th {
+      border-left: solid $ps-xs;
+      background: $cl-verylightgray;
+      vertical-align: top;
+
+      &.team {
+        // border-left-color: $cl-darkgreen;
+      }
+
+      &.assigned {
+        border-left-color: $cl-blue;
+      }
+
+      &.processing {
+        border-left-color: $cl-orange;
+      }
+
+      &.resolved {
+        border-left-color: $cl-green;
+      }
+
+      &.rejected {
+        border-left-color: $cl-red;
+      }
+
+      &.performance {
+        border: none;
+      }
+
+    }
+
+    tr {
+      // border-bottom: 1px solid $cl-verylightgray;
+
+      .team {
+        color: $cl-primary;
+        width: 20%;
+      }
+
+      .performance {
+        background:  $cl-lightgray;
+        width: 15%;
+
+        &.positive::before {
+          float: left;
+          color: $cl-green;
+          content: '▲'
+        }
+        &.negative::left {
+          float: right;
+          color: $cl-red;
+          content: '▼';
+        }
+      }
+
+      .numeric-col {
+         text-align: right;
+         padding-right: $ps-small;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
   }
 
   .recent-activity {

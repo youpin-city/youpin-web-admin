@@ -11,11 +11,16 @@ dashboard-table-summary
   .spacing
 
   div.performance-table.opaque-bg
-    ul.duration-selector
+    ul.duration-selector.clearfix
       li(each="{ dur, i in durationSelectors}", class="{ highlight: activeSelector == i }", onclick="{ selectDuration(i) }", title="{dur.start}-today")
           div {dur.name}
 
-    table.table.is-striped.is-narrow.summary
+    div.date-range
+      label ระยะเวลา
+      span ตั้งแต่ { date.from } ถึง { date.to }
+      span(show='{ is_loading }')
+        loading-icon
+    table.table.is-striped.is-narrow.performance-summary
       tr
         th.team Team
         th.assigned(style='width: 120px;')
@@ -24,128 +29,188 @@ dashboard-table-summary
           .has-text-right แก้ไขสำเร็จ
         th.rejected(style='width: 120px;')
           .has-text-right ปิดกรณีอื่น
-        th.performance(style='width: 160px;')
+        th.performance(style='width: 120px;')
           .has-text-right Performance Index
 
-      tr(each="{data}", class="{ hide: shouldHideRow(department._id) }")
-        td.team { name }
-        td.numeric-col { _.sum(_.pick(summary, ['pending', 'assigned', 'processing'])) || 0}
-        td.numeric-col { summary.resolved || 0}
-        td.numeric-col { summary.rejected || 0}
-        td.numeric-col.performance(class="{  positive: performance > 0, negative: performance < 0 }") {  performance.toFixed(2) }
+      tr(each="{row in data_by_department}", class="{ hide: shouldHideRow(row._id) }")
+        td.team { row.name }
+        td.numeric-col { row.count.open || 0}
+        td.numeric-col { row.count.resolved || 0}
+        td.numeric-col { row.count.rejected || 0}
+        td.numeric-col.performance(class="{  positive: row.performance > 0, negative: row.performance < 0 }") { row.performance.toFixed(2) }
 
   script.
-
-    let self = this;
-    let ymd = 'YYYY-MM-DD';
-    let end_date = moment().add(1,'day').format(ymd);
-
+    const self = this;
+    const ymd = 'YYYY-MM-DD';
+    self.date = {
+      from: moment().add(-1, 'week').add(1, 'day').format('YYYY-MM-DD'),
+      to: moment().format('YYYY-MM-DD')
+    };
+    self.data_by_department = [];
+    self.is_loading = false;
     self.status_list = [];
     self.activeSelector = 0;
-
     self.durationSelectors = [
-      { name: 'week', start: generateStartDate('week', 'day', 1) },
-      { name: '1 months', start: generateStartDate('month', 'month', 0) },
-      { name: '2 months', start: generateStartDate('month', 'month', -1) },
-      { name: '6 months', start: generateStartDate('month', 'month', -5) }
+      { name: 'This Week', start: generateStartDate(1, 'week') },
+      { name: 'Last 1 Month', start: generateStartDate(1, 'month') },
+      { name: 'Last 2 Months', start: generateStartDate(2, 'month') },
+      { name: 'Last 6 Months', start: generateStartDate(6, 'month') }
     ];
 
     self.on('mount', () => {
       // Initialize selector
-      self.selectDuration(0)();
+      self.loadDepartment()
+      .then(() => self.setDateRange(0));
+
       self.loadStatusCount();
     });
 
-    self.selectDuration = function(selectorIdx) {
-      return function(){
+    function generateStartDate(unit, period) {
+      return moment().add(-unit, period).add(1, 'day').format(ymd);
+    }
+    //- function generateStartDate(period, unit, adjPeriod) {
+    //-   return moment().isoWeekday(1).startOf(period).add(unit, adjPeriod).format(ymd);
+    //- }
+
+    self.setDateRange = function (index) {
+      self.date['from'] = self.durationSelectors[index].start;
+      self.date['to'] = moment().format('YYYY-MM-DD'); // moment().add(1, 'day').format('YYYY-MM-DD')
+      self.loadData();
+    }
+
+    self.selectDuration = function (selectorIdx) {
+      return function (e) {
         self.activeSelector = selectorIdx;
-
-        let start_date = self.durationSelectors[selectorIdx].start;
-
-        api.getDepartments()
-        .then(departments => {
-          api.getUsers((user.dept) ? { department: user.dept._id } : undefined) // role: 'department_officer',
-          .then(officers => {
-            departments = departments.data.map(d => d.name);
-            departments.sort(); // Sort department by name.
-            departments.push('None'); // Add 'None' departments for non-assigned pins
-
-            api.getSummary( start_date, end_date, (data) => {
-              let available_departments = Object.keys(data);
-              let attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
-
-              let summaries = [];
-              if (user.is_superuser) { // Department summary
-                summaries = _.map( departments, dept => {
-                  const data_dept = (data[dept]) ? data[dept].total : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-                  return {
-                    name: dept,
-                    summary: data_dept,
-                    performance: computePerformance(attributes, data_dept)
-                  }
-                });
-              } else { // Officer summary
-                summaries = _.map( officers.data, officer => {
-                  const data_dept = data[user.dept.name];
-                  const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-                  return {
-                    name: officer.name,
-                    summary: data_officer,
-                    performance: computePerformance(attributes, data_officer)
-                  }
-                });
-              }
-
-              let all = _.reduce( attributes, (acc,attr) => {
-                acc[attr] = 0;
-                return acc;
-              }, {} );
-
-              all = _.reduce( summaries, (acc, dept) => {
-                 _.each( attributes, attr => {
-                    acc[attr] += dept['summary'][attr];
-                });
-                return acc;
-              }, all);
-
-              let orgSummary = {
-                name: 'All',
-                summary: all,
-                performance: computePerformance(attributes, all)
-              };
-
-              self.data = user.is_superuser ? [ orgSummary ] : [];
-              self.data = self.data.concat(summaries);
-
-              self.update();
-            });
-          });
-        });
+        self.setDateRange(selectorIdx);
       }
     }
 
-    function generateStartDate(period, adjPeriod, unit ){
-      return moment().isoWeekday(1).startOf(period).add(unit,adjPeriod).format(ymd);
+    self.loadDepartment = () => {
+      let dept;
+      return api.getDepartments()
+      .then(result => {
+        dept = result;
+        return api.getUsers((user.department) ? { department: user.department } : undefined)
+      })
+      .then(result => {
+        self.departments = dept.data || [];
+        _.sortBy(self.departments, ['name', '_id']);
+        // create unassign row
+        self.departments = [{
+          _id: '',
+          name: 'None'
+        }].concat(self.departments);
+      });
     }
 
-    function computePerformance( attributes, summary){
-      let total = _.reduce( attributes, (acc, attr) => {
-          acc += (summary[attr] || 0);
-          return acc;
-        }, 0);
-
-      let divider = total - ((summary.pending || 0 ) + (summary.rejected || 0 ));
-      if( divider === 0 ) {
-        return 0;
-      }
-
-      return (summary.resolved || 0) / divider;
-    }
-
-    this.shouldHideRow = function(department) {
+    self.shouldHideRow = function(department) {
       return !util.check_permission('supervisor', user.role)
         && user.department != department;
     }
+
+    function computePerformance(performance_data) {
+      if (performance_data.prev_active_pins + performance_data.current_new_pins === 0) {
+        return 0.0;
+      } else {
+        return performance_data.current_resolved_pin / (performance_data.prev_active_pins + performance_data.current_new_pins);
+      }
+    }
+
+    self.loadData = () => {
+      self.is_loading = true;
+      const start_date = self.date['from'];
+      const end_date = self.date['to'];
+      let summaries = [];
+      let orgSummary = [];
+      let total_performance_data = {
+        current_resolved_pin: 0,
+        prev_active_pins: 0,
+        current_new_pins: 0
+      };
+      let attributes = [
+        'pending',
+        'assigned',
+        'processing',
+        'rejected',
+        'resolved'
+      ];
+      return Promise.resolve({}).then(() =>
+        api.getSummary( start_date, end_date, (status_table) => {
+          return Promise.all(self.departments)
+          .map(dept => {
+            const name = dept.name;
+            // set dept's count to status_table
+            // or create zero table if dept is not in status_table
+            if (status_table[name]) {
+              dept.count = status_table[name].total;
+              // rename 'None' to 'Unassigned' for better readability
+              if (!dept._id) dept.name = 'Unassigned';
+            } else {
+              dept.count = attributes.reduce((acc, cur) => {
+                acc[cur] = 0;
+                return acc;
+              }, {});
+            }
+            return dept;
+          })
+          .map(sum => {
+            if (!sum._id) {
+              // Unassigned row
+              sum.performance = 0;
+              return sum;
+            }
+            // Department rows
+            return api.getPerformance(self.date.from, self.date.to, { department: sum._id })
+            .then(result => {
+              // calculate performance of this department over this period
+              sum.performance = computePerformance(result);
+              // accumulate performance data
+              total_performance_data.current_resolved_pin += result.current_resolved_pin || 0;
+              total_performance_data.prev_active_pins += result.prev_active_pins || 0;
+              total_performance_data.current_new_pins += result.current_new_pins || 0;
+              return sum;
+            });
+          })
+          .then(result => {
+            summaries = result;
+          });
+        })
+      )
+      .then(() => {
+        if (!user.is_superuser) return [];
+        // for admin, calculate total from all departments
+        let all = _.reduce( attributes, (acc,attr) => {
+          acc[attr] = 0;
+          return acc;
+        }, {} );
+
+        all = _.reduce(summaries, (acc, dept) => {
+           _.each( attributes, attr => {
+              acc[attr] += dept['count'][attr] || 0;
+          });
+          return acc;
+        }, all);
+        orgSummary = {
+          name: 'All Departments',
+          count: all,
+          performance: computePerformance(total_performance_data)
+        };
+        return [orgSummary];
+      })
+      .then(admin_summary => admin_summary.concat(summaries))
+      .map(summary => {
+        // calculate virtual 'open' status
+        summary.count.open = summary.count.pending
+          + summary.count.assigned
+          + summary.count.processing;
+        return summary;
+      })
+      .then(result => {
+        self.data_by_department = result;
+        self.is_loading = false;
+        self.update();
+      });
+    };
 
     self.loadStatusCount = (queryOpts = {}) => {
       const status_keys = [

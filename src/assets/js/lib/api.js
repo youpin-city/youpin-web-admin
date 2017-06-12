@@ -216,17 +216,25 @@ api.getPinActivities = (pin_id) => {
 // 2. {{host}}/pins?created_time[$lte]=2017-01-09&status[$in]=pending&status[$in]=assigned&status[$in]=processing
 // 3. {{host}}/pins?created_time[$gte]=2017-01-09&created_time[$lte]=2017-01-15&status[$in]=pending&status[$in]=assigned&status[$in]=processing
 // api.getPerformance = (input_date, duration = 7, department) => {
-api.getPerformance = (start_date, end_date, department) => {
+api.getPerformance = (start_date, end_date, options = {}) => {
   // const end_date = moment(input_date).add(1, 'days').format('YYYY-MM-DD');
   // const start_date = moment(input_date).subtract(duration, 'days').format('YYYY-MM-DD');
   let current_resolved_pin = 0;
+  let current_rejected_pin = 0;
   let current_new_pins = 0;
   let prev_active_pins = 0;
   let queryOpts = {};
-  if (department) {
+  if (options.department) {
     queryOpts = {
       assigned_department: {
-        $in: department.split(',')
+        $in: options.department.split(',')
+      }
+    };
+  }
+  if (options.category) {
+    queryOpts = {
+      categories: {
+        $in: options.category.split(',')
       }
     };
   }
@@ -244,6 +252,22 @@ api.getPerformance = (start_date, end_date, department) => {
     return fetch(url).then(response => response.json())
     .then(result => {
       current_resolved_pin = _.get(result, 'total', 0);
+      return result;
+    });
+  }
+  // 1. current_rejected_pin
+  function get_current_rejected_pin(start_date, end_date, queryOpts) {
+    const opts = _.extend(queryOpts, {
+      updated_time: {
+        $gte: start_date,
+        $lte: end_date,
+      },
+      status: 'rejected'
+    });
+    const url = api._buildEndpoint('pins', opts);
+    return fetch(url).then(response => response.json())
+    .then(result => {
+      current_rejected_pin = _.get(result, 'total', 0);
       return result;
     });
   }
@@ -285,13 +309,13 @@ api.getPerformance = (start_date, end_date, department) => {
 
   return Promise.resolve({})
   .then(() => get_current_resolved_pin(start_date, end_date, queryOpts))
+  .then(() => get_current_rejected_pin(start_date, end_date, queryOpts))
   .then(() => get_prev_active_pins(start_date, queryOpts))
   .then(() => get_current_new_pins(start_date, end_date, queryOpts))
-  .then(() => {
-    return {
-      current_resolved_pin,
-      prev_active_pins,
-      current_new_pins
-    };
-  });
+  .then(() => ({
+    current_resolved_pin,
+    current_rejected_pin,
+    prev_active_pins,
+    current_new_pins
+  }));
 };
