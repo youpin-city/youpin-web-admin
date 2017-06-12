@@ -264,9 +264,9 @@ issue-view-page
           .media-left
             profile-image.is-round.is-block(show='{ !!comment.user && comment.type === "comment" }', name='{ comment.user }')
           .media-content
-            .content.pre.is-marginless
+            .content.pre-line.is-marginless
               profile-image.is-round.is-small(show='{ comment.type === "meta" }', initial='{ comment.user }')
-              span(style='padding-left: 0.5rem;') { comment.text }
+              span.break-word(style='padding-left: 0.5rem;') { comment.text }
             div(show='{ comment.annotation }')
               small { comment.annotation }
             .datetime
