@@ -57,16 +57,16 @@ sitemap:
       - executive_admin
       - organization_admin
     children:
-      - name: sitenav.settings_department
-        href: '/settings/department'
-        icon: domain
+      - name: sitenav.settings_user
+        href: '/settings/user'
+        icon: person
         authorized_roles:
           - super_admin
           - executive_admin
           - organization_admin
-      - name: sitenav.settings_user
-        href: '/settings/user'
-        icon: person
+      - name: sitenav.settings_department
+        href: '/settings/department'
+        icon: domain
         authorized_roles:
           - super_admin
           - executive_admin

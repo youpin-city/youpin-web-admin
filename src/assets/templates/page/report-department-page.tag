@@ -40,22 +40,18 @@ report-department-page
           table.table.is-striped.is-narrow.performance-summary
             tr
               th.team Team
-              //- th.pending.has-text-right Pending
-              //- th.assigned.has-text-right Assigned
-              th.assigned.has-text-right(style='width: 120px;') เปิด
-              th.resolved.has-text-right(style='width: 120px;') แก้ไขสำเร็จ
-              th.rejected.has-text-right(style='width: 120px;') ปิดกรณีอื่น
-              th.performance.has-text-right(style='width: 120px;') Performance Index
+              th.assigned(style='width: 120px;')
+                .has-text-right เปิด
+              th.resolved(style='width: 120px;')
+                .has-text-right แก้ไขสำเร็จ
+              th.rejected(style='width: 120px;')
+                .has-text-right ปิดกรณีอื่น
+              th.performance(style='width: 120px;')
+                .has-text-right Performance Index
 
             tr(each="{ row in data }")
               td.name
                 a(href='/issue?staff={row.id}:{row.name}') { row.name }
-                //- .is-pulled-right
-                //-   a(href='{ util.site_url("/issue?user=" + _id + ":" + name) }') ดูเรื่องที่รับผิดชอบ
-                //- profile-image.is-round.is-small(name='{ name }')
-              //- td.team { name }
-              //- td.numeric-col { summary.pending || 0}
-              //- td.numeric-col { summary.assigned || 0}
               td.numeric-col { _.sum(_.pick(row.summary, ['pending', 'assigned', 'processing'])) || 0}
               td.numeric-col { row.summary.resolved || 0 }
               td.numeric-col { row.summary.rejected || 0 }

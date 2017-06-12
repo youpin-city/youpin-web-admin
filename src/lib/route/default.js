@@ -61,10 +61,12 @@ router.get('/report', auth(), (req, res, next) => {
 });
 
 router.get('/report/performance', auth(), (req, res, next) => {
+  res.locals.page = util.page_info(req, 'report/performance');
   res.render('report');
 });
 
 router.get('/report/department', auth(), (req, res, next) => {
+  res.locals.page = util.page_info(req, 'report/department');
   res.render('report_department');
 });
 
@@ -92,6 +94,7 @@ router.get('/settings', auth({ admin: true }), (req, res, next) => {
 });
 
 router.get('/settings/department', auth({ admin: true }), (req, res, next) => {
+  res.locals.page = util.page_info(req, 'settings/department');
   res.render('settings/department');
 });
 
@@ -106,6 +109,7 @@ router.get('/settings/user', auth({ admin: true }), (req, res, next) => {
     return;
   }
   res.locals.department = req.query.dept || '';
+  res.locals.page = util.page_info(req, 'settings/user');
   res.render('settings/user');
 });
 

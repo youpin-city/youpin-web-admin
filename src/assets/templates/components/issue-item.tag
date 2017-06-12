@@ -31,11 +31,12 @@ issue-item(class='{ classes }')
           a.tag.is-small.is-primary(href='#{ cat }') { util.t('cat', cat, 'name') }
 
       .field.is-inline(show='{ Number(item.level) > 0 }')
-        .button.is-outlined.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
-        .button.is-outlined.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
-        .button.is-outlined.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
+        .button.is-tiny.is-danger(show='{ item.level >= 3 }') เร่งด่วน
+        .button.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
+        .button.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
 
   .issue-info.is-hidden-mobile
+    div(show='{ item.status === "pending" }') ยังไม่รับเรื่อง
     div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
 
     div(show='{ item.assigned_users && item.assigned_users.length }')
@@ -49,6 +50,24 @@ issue-item(class='{ classes }')
     div(show='{ item.owner }') รายงานโดย { _.get(item, 'owner.name') }
 
     div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
+
+    div
+      ul.issue-timespan(if='{ item.status === "pending" }')
+        li.label ส่งเรื่อง
+        li.value { total_timespan }
+
+      ul.issue-timespan(if='{ item.status === "assigned" }')
+        li.label ส่งเรื่อง
+        li.value { assign_timespan }
+        li.label รับเรื่อง
+        li.value { total_timespan }
+
+      ul.issue-timespan(if='{ item.status === "resolved" || item.status === "resolved" }')
+        li.label ส่งเรื่อง
+        li.value { assign_timespan }
+        li.label รับเรื่อง
+        li.value { total_timespan }
+        li.label ปิด
 
   .issue-compact
     div.issue-title
@@ -90,6 +109,22 @@ issue-item(class='{ classes }')
       self.toggleSelection = self.opts.selector;
     } else {
       self.toggleSelection = _.noop;
+    }
+
+    // calculate timespan
+    if (self.item.resolved_time) {
+      self.total_timespan = moment(self.item.assigned_time).from(self.item.resolved_time, true);
+    } else if (self.rejected_time) {
+      self.total_timespan = moment(self.item.assigned_time).from(self.item.rejected_time, true);
+    } else if (self.assigned_time) {
+      self.total_timespan = moment(self.item.assigned_time).fromNow(true);
+    } else {
+      self.total_timespan = moment(self.item.created_time).fromNow(true);
+    }
+    if (self.item.assigned_time) {
+      self.assign_timespan = moment(self.item.created_time).from(self.item.assigned_time, true);
+    } else {
+      self.assign_timespan = moment(self.item.created_time).fromNow(true);
     }
 
     // thumbnail class

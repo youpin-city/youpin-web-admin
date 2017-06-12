@@ -68,6 +68,27 @@ issue-view-page
                     th รายงานเมื่อ
                     td
                       .field.is-inline { moment(pin.created_time).format(app.config.format.datetime_full) }
+
+                  tr
+                    th ระยะเวลา
+                    td
+                      ul.issue-timespan(if='{ pin.status === "pending" }')
+                        li.label ส่งเรื่อง
+                        li.value { total_timespan }
+
+                      ul.issue-timespan(if='{ pin.status === "assigned" }')
+                        li.label ส่งเรื่อง
+                        li.value { assign_timespan }
+                        li.label รับเรื่อง
+                        li.value { total_timespan }
+
+                      ul.issue-timespan(if='{ pin.status === "resolved" || pin.status === "resolved" }')
+                        li.label ส่งเรื่อง
+                        li.value { assign_timespan }
+                        li.label รับเรื่อง
+                        li.value { total_timespan }
+                        li.label ปิด
+
             hr
             .issue-more-detail
               table.table.is-borderless.is-narrow.is-static
@@ -428,6 +449,22 @@ issue-view-page
         pin.has_location = false;
       } else {
         pin.has_location = true;
+      }
+
+      // calculate timespan
+      if (pin.resolved_time) {
+        self.total_timespan = moment(pin.assigned_time).from(pin.resolved_time, true);
+      } else if (self.rejected_time) {
+        self.total_timespan = moment(pin.assigned_time).from(pin.rejected_time, true);
+      } else if (self.assigned_time) {
+        self.total_timespan = moment(pin.assigned_time).fromNow(true);
+      } else {
+        self.total_timespan = moment(pin.created_time).fromNow(true);
+      }
+      if (pin.assigned_time) {
+        self.assign_timespan = moment(pin.created_time).from(pin.assigned_time, true);
+      } else {
+        self.assign_timespan = moment(pin.created_time).fromNow(true);
       }
       return pin;
     };

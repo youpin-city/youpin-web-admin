@@ -87,9 +87,10 @@ header#header
             | #{user.dept && user.dept.name}
       for nav in sitemap
         - nav_route = nav.name.replace(/^sitenav\./, '');ref;
-        - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
+        - path_match = page.logical_path === nav.href;
+        - route_match = site_nav_active == nav_route;
         - if( nav.authorized_roles && user && !nav.authorized_roles.find( r => r == user.role ) ) { continue; }
-        li(class={ active: is_active })
+        li.level-1(class={ active: path_match, 'active-child': route_match })
           a(href=site_url(nav.href))
             i.icon.material-icons #{ nav.icon }
             | #{__(nav.name)}
@@ -98,7 +99,7 @@ header#header
           - nav_route = child.name.replace(/^sitenav\./, '');
           - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === child.href;
           - if( user && !child.authorized_roles.find( r => r == user.role ) ) { continue; }
-          li(class={ active: is_active, 'sub-menu': true })
+          li.level-2(class={ active: is_active })
             a(href=site_url(child.href))
               i.icon.material-icons #{ child.icon }
               | #{__(child.name)}
@@ -128,8 +129,10 @@ nav#mobile-nav.modal
   ul.site-nav.nav-list.clearfix
     for nav in sitemap
       - nav_route = nav.name.replace(/^sitenav\./, '');
+      - path_match = page.logical_path === nav.href;
+      - route_match = site_nav_active == nav_route;
       - is_active = site_nav_active == nav_route || page.logical_path === nav.href;
-      li(class={ active: is_active })
+      li.level-1(class={ active: path_match, 'active-child': route_match })
         a(href=site_url(nav.href))
           i.icon.material-icons #{ nav.icon }
           | #{__(nav.name)}
@@ -138,7 +141,7 @@ nav#mobile-nav.modal
           - nav_route = child.name.replace(/^sitenav\./, '');
           - is_active = site_nav_active == nav_route || ('/' + page.fullpath) === child.href;
           - if( user && !child.authorized_roles.find( r => r == user.role ) ) { continue; }
-          li(class={ active: is_active, 'sub-menu': true })
+          li.level-2(class={ active: is_active })
             a(href=site_url(child.href))
               i.icon.material-icons #{ child.icon }
               | #{__(child.name)}

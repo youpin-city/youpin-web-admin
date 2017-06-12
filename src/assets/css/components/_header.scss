@@ -195,6 +195,8 @@ header#header {
           height: $nav-left-menu-height;
           line-height: $nav-left-menu-height;
           transition: color .2s ease-out;
+          padding-right: 1rem;
+          padding-left: 1rem;
           .icon {
             margin-right: 0.5rem;
             line-height: $nav-left-menu-height;
@@ -213,8 +215,10 @@ header#header {
           }
         }
 
-        &.sub-menu {
-            margin-left: $ps-default;
+        &.level-2 {
+          > a {
+            padding-left: 3rem;
+          }
         }
 
         &.department-info {
@@ -472,7 +476,7 @@ body.global-search-active {
   ul {
     > li {
       line-height: 1;
-      a,
+      > a,
       .text {
         display: block;
         height: auto;
@@ -483,8 +487,10 @@ body.global-search-active {
         margin-right: 0.5rem;
       }
 
-      &.sub-menu {
-        margin-left: 2rem;
+      &.level-2 {
+        > a {
+          padding-left: 3rem;
+        }
       }
       &.department-info {
         color: $cl-white;
