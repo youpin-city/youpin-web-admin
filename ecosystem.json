@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "icare-web-admin",
+      "name": "chula-web-admin",
       "script": "index.js",
       "args": [],
       "no-daemon": false,
