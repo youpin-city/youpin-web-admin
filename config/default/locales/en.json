@@ -1,9 +1,9 @@
 {
   "site": {
-    "name": "iCare Web Admin",
-    "fullname": "iCare Web Admin",
+    "name": "CU Solving Center Web Admin",
+    "fullname": "CU Solving Center Web Admin",
     "description": "",
-    "copyright": "© 2017 iCare Chula Engineering."
+    "copyright": "© 2017 CU Solving Center x YouPin."
   },
   "format": {
     "date_full": "D MMMM YYYY",
