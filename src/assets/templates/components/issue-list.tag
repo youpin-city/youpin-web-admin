@@ -122,7 +122,7 @@ issue-list
 
     self.initMap = () => {
       self.mapView = L.map('issue-map', self.mapOptions);
-      self.mapView.setView( app.config.service.map.initial_location, 18);
+      self.mapView.setView( app.config.service.map.initial_location, 15);
 
       // OpenStreetMap Maps
       // https: also suppported.
