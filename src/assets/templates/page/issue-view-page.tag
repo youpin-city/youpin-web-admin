@@ -757,8 +757,8 @@ issue-view-page
       //- const files = self.refs.comment_photo_input.files;
       //- self.progress_data.photos = _.map(files || [], file => window.URL.createObjectURL(file));
       self.progress_data.detail = self.refs.comment_input.value;
-      if (!self.progress_data.detail && self.progress_data.photos.length === 0) {
-        Materialize.toast('พิมพ์ข้อความหรือเลือกรูป อธิบายความคืบหน้า', 8000, 'large')
+      if (!self.progress_data.detail) {
+        Materialize.toast('พิมพ์ข้อความอธิบาย เพื่อส่งความคืบหน้า', 8000, 'large')
         return;
       }
 
