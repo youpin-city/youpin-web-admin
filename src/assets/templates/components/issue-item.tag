@@ -35,23 +35,7 @@ issue-item(class='{ classes }')
         .button.is-tiny.is-warning(show='{ item.level == 2 }') ปานกลาง
         .button.is-tiny.is-success(show='{ item.level <= 1 }') เล็กน้อย
 
-  .issue-info.is-hidden-mobile
-    div(show='{ item.status === "pending" }') ยังไม่รับเรื่อง
-    div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
-
-    div(show='{ item.assigned_users && item.assigned_users.length }')
-      | เจ้าหน้าที่
-      .field.is-inline(each='{ staff in item.assigned_users }')
-        profile-image.is-round.is-small(title='{ staff.name }', initial='{ staff.name[0].toUpperCase() }')
-      .field.is-inline.is-pulled-right(show='{ item.progresses && item.progresses.length }')
-        i.icon.material-icons chat_bubble
-        span { item.progresses.length }
-
-    div(show='{ item.owner }') รายงานโดย { _.get(item, 'owner.name') }
-
-    div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
-
-    div
+    div.issue-timespan
       ul.issue-timespan(if='{ item.status === "pending" }')
         li.label ส่งเรื่อง
         li.value { total_timespan }
@@ -68,6 +52,23 @@ issue-item(class='{ classes }')
         li.label รับเรื่อง
         li.value { total_timespan }
         li.label ปิด
+
+
+  .issue-info.is-hidden-mobile
+    div(show='{ item.status === "pending" }') ยังไม่รับเรื่อง
+    div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
+
+    div(show='{ item.assigned_users && item.assigned_users.length }')
+      | เจ้าหน้าที่
+      .field.is-inline(each='{ staff in item.assigned_users }')
+        profile-image.is-round.is-small(title='{ staff.name }', initial='{ staff.name[0].toUpperCase() }')
+      .field.is-inline.is-pulled-right(show='{ item.progresses && item.progresses.length }')
+        i.icon.material-icons chat_bubble
+        span { item.progresses.length }
+
+    div(show='{ item.owner }') รายงานโดย { _.get(item, 'owner.name') }
+
+    div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
 
   .issue-compact
     div.issue-title

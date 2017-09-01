@@ -3,8 +3,8 @@ env: development
 port: 11100
 site:
   protocol: http
-  hostname: admin.icare.youpin.city
+  hostname: dev-admin.chula.youpin.city
 debug: true
 service:
   api:
-    url: https://api.icare.eng.chula.ac.th/
+    url: https://dev-api.chula.youpin.city/

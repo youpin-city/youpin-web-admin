@@ -509,7 +509,7 @@ issue-view-page
             {
               id: 'contact-owner-email-btn',
               name: 'Email: ' + self.pin.owner.email,
-              url: `mailto:${self.pin.owner.email}?subject=[iCare #${self.id.slice(-4)}] ${self.pin.detail}`,
+              url: `mailto:${self.pin.owner.email}?subject=[CU Solving Center #${self.id.slice(-4)}] ${self.pin.detail}`,
               target: ''
             }
           ]);

@@ -74,7 +74,7 @@ report-page
                 p.title.has-text-right.error-number { c.rejected }
 
   script.
-    let self = this;
+    const self = this;
 
     self.picker = {};
     self.date = {
@@ -95,14 +95,9 @@ report-page
     });
 
     self.loadDepartment = () => {
-      let dept;
       return api.getDepartments()
       .then(result => {
-        dept = result;
-        return api.getUsers((user.department) ? { department: user.department } : undefined)
-      })
-      .then(result => {
-        self.departments = dept.data || [];
+        self.departments = result.data || [];
         _.sortBy(self.departments, ['name', '_id']);
         // create unassign row
         self.departments = [{
@@ -110,7 +105,7 @@ report-page
           name: 'None'
         }].concat(self.departments);
       });
-    }
+    };
 
     self.shouldHideRow = function(department) {
       return false;

@@ -20,9 +20,9 @@ describe('First page', () => {
     // server.close(done);
   });
 
-  it('should have the right title', () => {
-    browser.url('/');
-    const title = browser.getTitle();
-    expect(title.toLowerCase()).to.contain('icare');
-  });
+  // it('should have the right title', () => {
+  //   browser.url('/');
+  //   const title = browser.getTitle();
+  //   expect(title.toLowerCase()).to.contain('icare');
+  // });
 });

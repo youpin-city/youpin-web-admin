@@ -79,7 +79,7 @@ const conf = convict({
     title: {
       doc: 'Website name',
       format: String,
-      default: 'iCare Web Admin',
+      default: 'Powered by YouPin',
       env: 'SITE_TITLE'
     },
     subtitle: {
@@ -114,7 +114,7 @@ const conf = convict({
   service: {
     api: {
       url: {
-        doc: 'iCare API endpoint URL.',
+        doc: 'YouPin API endpoint URL.',
         format: String,
         default: '',
         env: 'SERVICE_API_URL'
