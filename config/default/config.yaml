@@ -1,5 +1,7 @@
 ---
 env: local
+site:
+  title: 'CU Solving Center'
 logger:
   console:
     level: 'debug'
@@ -59,7 +61,7 @@ service:
         Do not reply to this email. This is an automated response email.
 
 organization:
-  id: '583ddb7a3db23914407f9b58'
+  id: '599e4c473bdb57013db8d77d'
 issue:
   categories:
     - id: physical

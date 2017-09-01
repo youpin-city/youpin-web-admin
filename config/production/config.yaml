@@ -1,10 +1,10 @@
 ---
 env: production
-port: 11200
+port: 11300
 site:
   protocol: https
-  hostname: admin.icare.eng.chula.ac.th
+  hostname: admin.chula.youpin.city
 debug: true
 service:
   api:
-    url: https://api.icare.eng.chula.ac.th/
+    url: https://api.chula.youpin.city/
