@@ -49,121 +49,149 @@ report-department-page
               th.performance(style='width: 120px;')
                 .has-text-right Performance Index
 
-            tr(each="{ row in data }")
+            tr(each="{row in data_by_user}")
               td.name
                 a(href='/issue?staff={row.id}:{row.name}') { row.name }
-              td.numeric-col { _.sum(_.pick(row.summary, ['pending', 'assigned', 'processing'])) || 0}
-              td.numeric-col { row.summary.resolved || 0 }
-              td.numeric-col { row.summary.rejected || 0 }
+              td.numeric-col { row.count.open || 0}
+              td.numeric-col { row.count.resolved || 0}
+              td.numeric-col { row.count.rejected || 0}
               td.numeric-col.performance(class="{  positive: row.performance > 0, negative: row.performance < 0 }") { row.performance.toFixed(2) }
 
   script.
-    let self = this;
+    const self = this;
 
     self.picker = {};
     self.date = {
       from: moment().subtract(30, 'days').format('YYYY-MM-DD'),
       to: moment().format('YYYY-MM-DD')
     };
-    self.data = [];
+    self.data_by_user = [];
     self.officers = [];
     self.department_id = user.dept._id;
     self.can_choose_department = util.check_permission('view_department', user.role);
+    self.is_loading = false;
 
     self.on('mount', () => {
       self.initSelectDepartment();
 
       self.setupCloseDateCalendar($(self.root).find('.date-from-picker'), 'from');
       self.setupCloseDateCalendar($(self.root).find('.date-to-picker'), 'to');
-      self.loadDepartment();
+      self.loadDepartment()
+      .then(() => self.loadData());
     });
 
     self.loadDepartment = () => {
-      let dept;
-      return api.getDepartments()
-      .then(result => {
-        dept = result;
-        return api.getUsers({ department: self.department_id });
-      })
+      return api.getUsers({ department: self.department_id })
       .then(result => {
         self.officers = result.data || [];
-      })
-      .then(() => self.loadData());
+      });
+    };
+
+    function computePerformance(performance_data) {
+      if (performance_data.prev_active_pins + performance_data.current_new_pins === 0) {
+        return 0.0;
+      } else {
+        return performance_data.current_resolved_pin / (performance_data.prev_active_pins + performance_data.current_new_pins);
+      }
     }
 
     self.loadData = () => {
-      function computePerformance( attributes, summary){
-        let total = _.reduce( attributes, (acc, attr) => {
-            acc += (summary[attr] || 0);
-            return acc;
-          }, 0);
-
-        let divider = total - ((summary.pending || 0 ) + (summary.rejected || 0 ));
-        if( divider === 0 ) {
-          return 0;
-        }
-
-        return (summary.resolved || 0) / divider;
-      }
-
+      self.is_loading = true;
+      self.update();
       const start_date = self.date['from'];
       const end_date = self.date['to'];
-
       let summaries = [];
       let orgSummary = [];
-      let available_departments = [];
-      let attributes = [];
-
-      return Promise.resolve({})
-      .then(() =>
-        api.getPerformance(self.date.from, self.date.to)
-        .then(result => {
-          console.log('Perf:', result);
-        })
-      )
-      .then(() =>
-        api.getSummary( start_date, end_date, (data) => {
-          available_departments = Object.keys(data);
-          attributes = available_departments.length > 0 ? Object.keys( data[available_departments[0]] ) : [];
-
-          // Officer summary
-          summaries = _.map( self.officers, officer => {
-            const data_dept = data[user.dept.name];
+      let total_performance_data = {
+        current_resolved_pin: 0,
+        prev_active_pins: 0,
+        current_new_pins: 0
+      };
+      let attributes = [
+        'pending',
+        'assigned',
+        'processing',
+        'rejected',
+        'resolved'
+      ];
+      return Promise.resolve({}).then(() =>
+        api.getSummary( start_date, end_date, (status_table) => {
+          return Promise.all(self.officers)
+          .map(officer => {
+            const dept_name = user.dept.name;
+            const data_dept = status_table[dept_name];
             const data_officer = (data_dept && data_dept[officer.name]) ? data_dept[officer.name] : attributes.reduce((acc, cur) => { acc[cur] = 0; return acc; }, {});
-            return {
-              id: officer._id,
-              name: officer.name,
-              summary: data_officer,
-              performance: computePerformance(attributes, data_officer)
+            officer.id = officer._id;
+            const name = officer.name;
+            // set dept's count to status_table
+            // or create zero table if dept is not in status_table
+            if (data_dept && data_dept[dept_name]) {
+              officer.count = data_dept[dept_name].total;
+              // rename 'None' to 'Unassigned' for better readability
+              //- if (!officer._id) officer.name = 'Unassigned';
+            } else {
+              officer.count = attributes.reduce((acc, cur) => {
+                acc[cur] = 0;
+                return acc;
+              }, {});
             }
+            return officer;
+          })
+          .map(sum => {
+            if (!sum._id) {
+              // Unassigned row
+              sum.performance = 0;
+              return sum;
+            }
+            // Department rows
+            return api.getPerformance(self.date.from, self.date.to, { user: sum._id })
+            .then(result => {
+              // calculate performance of this department over this period
+              sum.performance = computePerformance(result);
+              // accumulate performance data
+              total_performance_data.current_resolved_pin += result.current_resolved_pin || 0;
+              total_performance_data.prev_active_pins += result.prev_active_pins || 0;
+              total_performance_data.current_new_pins += result.current_new_pins || 0;
+              return sum;
+            });
+          })
+          .then(result => {
+            summaries = result;
           });
-
         })
       )
       .then(() => {
+        if (!user.is_superuser) return [];
+        // for admin, calculate total from all departments
         let all = _.reduce( attributes, (acc,attr) => {
           acc[attr] = 0;
           return acc;
         }, {} );
 
-        all = _.reduce( summaries, (acc, dept) => {
+        all = _.reduce(summaries, (acc, dept) => {
            _.each( attributes, attr => {
-              acc[attr] += dept['summary'][attr] || 0;
+              acc[attr] += dept['count'][attr] || 0;
           });
           return acc;
         }, all);
-
         orgSummary = {
-          id: '',
-          name: 'All',
-          summary: all,
-          performance: computePerformance(attributes, all)
+          name: 'All Users',
+          count: all,
+          performance: computePerformance(total_performance_data)
         };
+        return [orgSummary];
       })
-      .then(() => {
-        self.data = user.is_superuser ? [ orgSummary ] : [];
-        self.data = self.data.concat(summaries);
-
+      .then(admin_summary => admin_summary.concat(summaries))
+      .map(summary => {
+        // calculate virtual 'open' status
+        summary.count.open = summary.count.pending
+          + summary.count.assigned
+          + summary.count.processing;
+        return summary;
+      })
+      .then(result => {
+        self.data_by_user = result;
+        self.is_loading = false;
         self.update();
       });
     };

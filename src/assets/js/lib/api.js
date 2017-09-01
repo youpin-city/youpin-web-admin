@@ -223,19 +223,18 @@ api.getPerformance = (start_date, end_date, options = {}) => {
   let current_rejected_pin = 0;
   let current_new_pins = 0;
   let prev_active_pins = 0;
-  let queryOpts = {};
+  const queryOpts = {};
   if (options.department) {
-    queryOpts = {
-      assigned_department: {
-        $in: options.department.split(',')
-      }
+    queryOpts.assigned_department = {
+      $in: options.department.split(',')
     };
   }
+  if (options.user) {
+    queryOpts.assigned_users = options.user;
+  }
   if (options.category) {
-    queryOpts = {
-      categories: {
-        $in: options.category.split(',')
-      }
+    queryOpts.categories = {
+      $in: options.category.split(',')
     };
   }
 
