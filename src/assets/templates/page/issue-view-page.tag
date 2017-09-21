@@ -5,7 +5,7 @@ issue-view-page
         .level-item(show='{ isFeatured() }')
           i.icon.material-icons.is-accent star
         .level-item
-          .issue-title.title \#{ id.slice(-4) }
+          .issue-title.title อ { pin.issue_id }/60
         .level-item(show='{ isClosed() }')
           .tag.is-large.is-danger(title='{  _.startCase(_.get(pin, "closed_reason", "")) }') ปิดเรื่อง
         .level-item(show='{ isClosed() }')
@@ -56,13 +56,23 @@ issue-view-page
             .issue-report-detail
               table.table.is-borderless.is-narrow.is-static
                 tbody
-                  tr(show='{ pin.owner }')
-                    th รายงานโดย
+                  tr(show='{ pin.reporter.name }')
+                    th ชื่อผู้ร้อง
                     td
-                      .field.is-inline { pin.owner.name }
-                      a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
-                        span ติดต่อกลับ
-                      dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
+                      .field.is-inline { pin.reporter.name }
+
+                  tr(show='{ pin.reporter.line }')
+                    th ชื่อ Line
+                    td
+                      .field.is-inline { pin.reporter.line }
+
+                  //- tr(show='{ pin.owner }')
+                  //-   th รายงานโดย
+                  //-   td
+                  //-     .field.is-inline { pin.owner.name }
+                  //-     a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
+                  //-       span ติดต่อกลับ
+                  //-     dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
 
                   tr(if='{ pin.created_time }')
                     th รายงานเมื่อ
@@ -115,6 +125,14 @@ issue-view-page
                       ul.tag-list
                         li(each='{ tag, i in pin.tags }')
                           a.tag.is-small.is-primary(href='#{ tag }') { tag }
+
+                  tr(show='{ pin.owner }')
+                    th นำเข้าโดย
+                    td
+                      .field.is-inline { pin.owner.name }
+                      //- a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
+                      //-   span ติดต่อกลับ
+                      //- dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
 
         #edit-issue-panel.column.is-4(hide='{ isEditing("info") }')
           // assigned department
