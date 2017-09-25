@@ -259,12 +259,12 @@ issue-create-page
       api.createPin(update)
       .then(response => {
         new_issue_id = response._id;
-        if (!assigned_department) return true;
+        if (!response.assigned_department) return true;
         // force state change to assigned
         // when assign department for the first time
         return api.postTransition(new_issue_id, {
           state: 'assigned',
-          assigned_department: assigned_department
+          assigned_department: response.assigned_department
         });
       })
       .then(() => {
