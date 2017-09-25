@@ -6179,8 +6179,8 @@ slick-carousel@^1.6.0:
     jquery ">=1.7.2"
 
 slick-lightbox@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/slick-lightbox/-/slick-lightbox-0.2.0.tgz#506ccfbf72f9e46454f9a634f845edf8f22f309e"
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/slick-lightbox/-/slick-lightbox-0.2.10.tgz#80f617783f420cb96d961aea24099ff8e6153390"
 
 slick@1.12.2:
   version "1.12.2"
