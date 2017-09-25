@@ -13,7 +13,7 @@ issue-item(class='{ classes }')
       a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }')
         .field.is-inline(show='{ item.is_featured }')
           i.icon.material-icons.is-accent star
-        span \#{ item._id.slice(-4) }
+        span อ { item.issue_id }/60
         .field.is-inline(show='{ ["resolved", "rejected"].indexOf(item.status) >= 0 }')
           .tag.is-small.is-danger ปิดเรื่อง
         .field.is-inline(show='{ item.status === "rejected" }')
@@ -81,10 +81,10 @@ issue-item(class='{ classes }')
           i.icon.material-icons.is-success check
       //- collapsible-content(interactive='false', height='3.6rem', default='collapsed')
       //- a(href='{ util.site_url("/issue/" + item._id) }') { item.detail }
-      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') \#{ item._id.slice(-4) }
+      a.title.is-plain.is-4(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }') อ { item.issue_id }/60
     div.issue-desc
       a.is-plain(href='{ util.site_url("/issue/" + item._id) }' data-id='{ item._id }')
-        strong \#{ item._id.slice(-4) }&nbsp;
+        strong อ { item.issue_id }/60&nbsp;
         | { item.detail }
     div.issue-meta
       ul.tag-list(show='{ item.categories && item.categories.length }')
