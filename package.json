@@ -1,7 +1,7 @@
 {
-  "name": "bma-web-admin",
+  "name": "mafueng-web-admin",
   "version": "0.0.0",
-  "description": "BMA Web Admin",
+  "description": "Mafueng Web Admin",
   "main": "index.js",
   "scripts": {
     "start": "node bin/start.js && npm run build && parallelshell 'pm2 logs' 'npm run watch'",

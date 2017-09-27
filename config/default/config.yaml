@@ -16,7 +16,7 @@ service:
     maxAge: 2592000000
     httpOnly: true
   api:
-    url: 'http://localhost:9400'
+    url: 'http://localhost:9100'
     app_username: 'web@mafueng.city'
     app_password: 'web_mafueng'
   map:
@@ -62,72 +62,30 @@ organization:
   id: '583ddb7a3db23914407f9b58'
 issue:
   categories:
-    - id: building
-      name: อาคาร
+    - id: repair
+      name: แจ้งซ่อม
       selected: false
-    - id: footpath
-      name: บาทวิถี
+    - id: service
+      name: บริการ
       selected: false
-    - id: road
-      name: ถนน
+    - id: it
+      name: IT
       selected: false
-    - id: bridge
-      name: สะพาน
+    - id: suggestion
+      name: เสนอแนะ
       selected: false
-    - id: canal
-      name: เขื่อน คูคลอง
+    - id: classroom
+      name: ห้องเรียน
       selected: false
-    - id: drain
-      name: ท่อระบายน้ำ
+    - id: safety
+      name: ความปลอดภัย
       selected: false
-    - id: bus_stop
-      name: ที่พักผู้โดยสาร
-      selected: false
-    - id: electricity
-      name: ไฟฟ้า
-      selected: false
-    - id: water
-      name: ประปา
-      selected: false
-    - id: phone_booth
-      name: โทรศัพท์
-      selected: false
-    - id: garbage
-      name: ขยะและสิ่งปฎิกูล
-      selected: false
-    - id: flood
-      name: น้ำท่วม
-      selected: false
-    - id: park
-      name: ต้นไม้ สวนสาธารณะ
-      selected: false
-    - id: pollution
-      name: สภาพแวดล้อมเป็นพิษ
-      selected: false
-    - id: violention_public
-      name: กระทำผิดในที่สาธารณะ
+    - id: sanitary
+      name: ความสะอาด
       selected: false
     - id: traffic
-      name: ปัญหาจราจร
-      selected: false
-    - id: hr
-      name: การบริหารงานบุคคล
-      selected: false
-    - id: consumer_protection
-      name: คุ้มครองผู้บริโภค
-      selected: false
-    - id: violention_family
-      name: ปัญหาความรุนแรงในครอบครัว
-      selected: false
-    - id: drug
-      name: ยาเสพติด
-      selected: false
-    - id: annoy
-      name: เหตุเดือดร้อนรำคาญ
-      selected: false
-    - id: emergency
-      name: เรื่องฉุกเฉิน
+      name: จราจร
       selected: false
     - id: others
-      name: เรื่องร้องทุกข์ประเภทอื่นๆ
+      name: อื่น ๆ
       selected: false
