@@ -64,7 +64,7 @@ issue-create-page
                     td
                       .field
                         .control
-                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='ตึก ห้อง')
+                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
                       .field
                         .control
                           input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')

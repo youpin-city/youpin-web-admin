@@ -4,13 +4,20 @@ issue-page
       .level-item
         .title เรื่องร้องเรียน
       .level-item
-        .control(style='width: 140px;')
-          input(type='text', id='select_status', ref='select_status', placeholder='แสดงตามสถานะ')
+        .control(style='width: 170px; margin-left: 10px;')
+          a.waves-effect.waves-light.btn(href='/issue/new')
+            i.material-icons.right
+              |add
+            |สร้างเรื่องใหม่
+            
+      //- .level-item
+      //-   .control(style='width: 140px;')
+      //-     input(type='text', id='select_status', ref='select_status', placeholder='แสดงตามสถานะ')
 
     .level-right
-      .level-item
-        .control(style='width: 140px;')
-          input(type='text', id='select_sort', ref='select_sort', placeholder='เรียง')
+      //- .level-item
+      //-   .control(style='width: 140px;')
+      //-     input(type='text', id='select_sort', ref='select_sort', placeholder='เรียง')
 
       //- .level-item
       //-   .control
@@ -24,13 +31,29 @@ issue-page
 
   .level.is-hidden-mobile
     .level-left
+      .level-item
+        .control(style='width: 140px;')
+          label
+            |สถานะ
+          input(type='text', id='select_status', ref='select_status', placeholder='แสดงตามสถานะ')
+
       .level-item(show='{ can_sort_by_department }')
         .control(style='width: 140px;')
+          label
+            |หน่วยงาน
           input(type='text', id='select_department', ref='select_department', placeholder='แสดงตามหน่วยงาน')
 
       .level-item(show='{ can_sort_by_staff }')
         .control(style='width: 140px;')
+          label
+            |เจ้าหน้าที่
           input(type='text', id='select_staff', ref='select_staff', placeholder='แสดงตามเจ้าหน้าที่')
+
+      .level-item
+        .control(style='width: 140px;')
+          label
+            |เวลา
+          input(type='text', id='select_sort', ref='select_sort', placeholder='เรียง')
 
     .level-right
       .level-item
@@ -38,9 +61,11 @@ issue-page
           form(onsubmit='{ submitSearch }')
             .field.has-addons
               .control
-                input.input(ref='search_keyword_input', type='text', name='q', value='{ query.q || "" }', placeholder='', onblur='{ clickToggleSearch }', tabindex='-1')
+                input.input(ref='search_keyword_input', type='text', name='q', value='{ query.q || "" }', placeholder='คำค้น เช่น ทางเท้า', onblur='{ clickToggleSearch }', tabindex='-1')
               .control
-                button.button.is-accent Search
+                button.button.is-accent 
+                  i.material-icons
+                    |search
 
   issue-list
 
