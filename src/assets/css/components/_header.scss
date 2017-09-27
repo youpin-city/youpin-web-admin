@@ -209,6 +209,7 @@ header#header {
         }
 
         &.active {
+          background-color: $cl-blue;
           // background-color: transparent;
           > a {
             font-weight: $fw-bold;
