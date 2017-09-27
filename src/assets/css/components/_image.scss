@@ -129,28 +129,15 @@ profile-image {
   }
 }
 
-issue-create-page {
-  figure
-    .img-tool {
-      position: absolute;
-      top: 0;
-      left: auto;
-      right: 0;
-      &.top-left { top: 0; left: 0; right: auto; }
-      &.top-right { top: 0; left: auto; right: 0; }
-      &.bottom-left { top: auto; bottom: 0; left: 0; right: auto; }
-      &.bottom-right { top: auto; bottom: 0; left: auto; right: 0; }
-    }
 
-  figure.image {
-    width: 100px;
-    height: 100px;
+figure
+  .img-tool {
+    position: absolute;
+    top: 0;
+    left: auto;
+    right: 0;
+    &.top-left { top: 0; left: 0; right: auto; }
+    &.top-right { top: 0; left: auto; right: 0; }
+    &.bottom-left { top: auto; bottom: 0; left: 0; right: auto; }
+    &.bottom-right { top: auto; bottom: 0; left: auto; right: 0; }
   }
-
-  .issue-photos {
-    .is-12 {
-      width: 100px;
-      margin-right: 10px;
-    }
-  }
-}

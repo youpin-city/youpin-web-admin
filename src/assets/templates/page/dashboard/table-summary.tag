@@ -144,7 +144,7 @@ dashboard-table-summary
             if (status_table[name]) {
               dept.count = status_table[name].total;
               // rename 'None' to 'Unassigned' for better readability
-              //- if (!dept._id) dept.name = 'Unassigned'; // Bug
+              if (!dept._id) dept.name = 'Unassigned';
             } else {
               dept.count = attributes.reduce((acc, cur) => {
                 acc[cur] = 0;
