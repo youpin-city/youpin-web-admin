@@ -1,9 +1,9 @@
 {
   "site": {
-    "name": "iCare Web Admin",
-    "fullname": "iCare Web Admin",
+    "name": "BMA x YouPin",
+    "fullname": "Bangkok Metropolitan Administration x YouPin",
     "description": "",
-    "copyright": "© 2017 iCare Chula Engineering."
+    "copyright": "© 2017 Bangkok Metropolitan Administration x YouPin."
   },
   "format": {
     "date_full": "D MMMM YYYY",

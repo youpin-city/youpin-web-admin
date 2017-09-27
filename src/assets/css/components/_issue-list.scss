@@ -210,6 +210,14 @@
   }
 }
 
+issue-list {
+  span {
+    .hilight-text {
+      color: $cl-blue;
+    }
+  }
+}
+
 issue-list,
 merge-issue-list {
   .menu-bar  {
