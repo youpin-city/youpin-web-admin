@@ -61,7 +61,7 @@ api.getRecentActivities = (cb) => {
 
 api.getDepartments = (opts = {}) => {
   const default_opts = {
-    $limit: 50
+    $limit: 100
   };
   if (typeof opts === 'object') {
     opts = _.extend(default_opts, opts);

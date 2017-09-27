@@ -27,6 +27,7 @@ header#header {
     // top: 0;
     // z-index: 1;
     // box-shadow: none;
+    height: 64px;
 
     a {
       font-family: $ff-header;
@@ -211,7 +212,8 @@ header#header {
           // background-color: transparent;
           > a {
             font-weight: $fw-bold;
-            color: $cl-primary;
+            // color: $cl-primary;
+            color: $cl-white;
           }
         }
 

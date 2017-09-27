@@ -76,10 +76,17 @@ export default function auth(check_auth = true) {
     .then(user => {
       if (!user) return false;
       user.token = jwt;
-      return req.api('/departments/' + user.department)
-      .then(data => {
+
+      let prepare_user;
+      if (user.department) {
+        prepare_user = req.api('/departments/' + user.department);
+      } else {
+        prepare_user = Promise.resolve(null);
+      }
+      return prepare_user
+      .then(dept => {
         // assign to user
-        user.dept = data;
+        if (dept) user.dept = dept;
         req.user = res.locals.user = parse_user(user);
         req.cookies[cookie_user_info] = user;
         res.cookie(cookie_user_info, user, conf.get('service.cookie'));

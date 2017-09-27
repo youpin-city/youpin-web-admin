@@ -2,7 +2,9 @@ issue-list
   .level.is-mobile.menu-bar
     .level-left
       .level-item
-        span พบทั้งหมด { total } รายการ
+        span พบทั้งหมด 
+          span.hilight-text { total } 
+          |รายการ
     //- div.sorting ▾
     .level-right
       .level-item
