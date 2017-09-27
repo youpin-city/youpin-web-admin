@@ -16,7 +16,7 @@ service:
     maxAge: 2592000000
     httpOnly: true
   api:
-    url: 'http://localhost:9100'
+    url: 'http://localhost:9400'
     app_username: 'web@mafueng.city'
     app_password: 'web_mafueng'
   map:
@@ -62,30 +62,72 @@ organization:
   id: '583ddb7a3db23914407f9b58'
 issue:
   categories:
-    - id: repair
-      name: แจ้งซ่อม
+    - id: building
+      name: อาคาร
       selected: false
-    - id: service
-      name: บริการ
+    - id: footpath
+      name: บาทวิถี
       selected: false
-    - id: it
-      name: IT
+    - id: road
+      name: ถนน
       selected: false
-    - id: suggestion
-      name: เสนอแนะ
+    - id: bridge
+      name: สะพาน
       selected: false
-    - id: classroom
-      name: ห้องเรียน
+    - id: canal
+      name: เขื่อน คูคลอง
       selected: false
-    - id: safety
-      name: ความปลอดภัย
+    - id: drain
+      name: ท่อระบายน้ำ
       selected: false
-    - id: sanitary
-      name: ความสะอาด
+    - id: bus_stop
+      name: ที่พักผู้โดยสาร
+      selected: false
+    - id: electricity
+      name: ไฟฟ้า
+      selected: false
+    - id: water
+      name: ประปา
+      selected: false
+    - id: phone_booth
+      name: โทรศัพท์
+      selected: false
+    - id: garbage
+      name: ขยะและสิ่งปฎิกูล
+      selected: false
+    - id: flood
+      name: น้ำท่วม
+      selected: false
+    - id: park
+      name: ต้นไม้ สวนสาธารณะ
+      selected: false
+    - id: pollution
+      name: สภาพแวดล้อมเป็นพิษ
+      selected: false
+    - id: violention_public
+      name: กระทำผิดในที่สาธารณะ
       selected: false
     - id: traffic
-      name: จราจร
+      name: ปัญหาจราจร
+      selected: false
+    - id: hr
+      name: การบริหารงานบุคคล
+      selected: false
+    - id: consumer_protection
+      name: คุ้มครองผู้บริโภค
+      selected: false
+    - id: violention_family
+      name: ปัญหาความรุนแรงในครอบครัว
+      selected: false
+    - id: drug
+      name: ยาเสพติด
+      selected: false
+    - id: annoy
+      name: เหตุเดือดร้อนรำคาญ
+      selected: false
+    - id: emergency
+      name: เรื่องฉุกเฉิน
       selected: false
     - id: others
-      name: อื่น ๆ
+      name: เรื่องร้องทุกข์ประเภทอื่นๆ
       selected: false
