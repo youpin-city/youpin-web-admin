@@ -88,15 +88,19 @@ issue-view-page
 
                       ul.issue-timespan(if='{ pin.status === "assigned" }')
                         li.label ส่งเรื่อง
-                        li.value { assign_timespan }
-                        li.label รับเรื่อง
                         li.value { total_timespan }
+                        //- li.label ส่งเรื่อง
+                        //- li.value { assign_timespan }
+                        //- li.label รับเรื่อง
+                        //- li.value { total_timespan }
 
                       ul.issue-timespan(if='{ pin.status === "resolved" || pin.status === "resolved" }')
                         li.label ส่งเรื่อง
-                        li.value { assign_timespan }
-                        li.label รับเรื่อง
                         li.value { total_timespan }
+                        //- li.label ส่งเรื่อง
+                        //- li.value { assign_timespan }
+                        //- li.label รับเรื่อง
+                        //- li.value { total_timespan }
                         li.label ปิด
 
             hr
@@ -235,7 +239,7 @@ issue-view-page
                     td
                       .field
                         .control
-                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='ตึก ห้อง')
+                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
                       .field
                         .control
                           input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')

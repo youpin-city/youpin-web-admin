@@ -37,7 +37,8 @@ issue-item(class='{ classes }')
 
   .issue-info.is-hidden-mobile
     div(show='{ item.status === "pending" }') ยังไม่รับเรื่อง
-    div(show='{ item.assigned_department }') หน่วยงาน { _.get(item, 'assigned_department.name') }
+    div(show='{ item.assigned_department }') หน่วยงาน 
+      span.hilight-text { _.get(item, 'assigned_department.name') }
 
     div(show='{ item.assigned_users && item.assigned_users.length }')
       | เจ้าหน้าที่
@@ -47,7 +48,8 @@ issue-item(class='{ classes }')
         i.icon.material-icons chat_bubble
         span { item.progresses.length }
 
-    div(show='{ item.owner }') รายงานโดย { _.get(item, 'owner.name') }
+    div(show='{ item.owner }') รายงานโดย 
+      span.hilight-text { _.get(item, 'owner.name') }
 
     div(show='{ item.updated_time }') อัพเดท { moment(item.updated_time).fromNow() }
 
@@ -58,15 +60,19 @@ issue-item(class='{ classes }')
 
       ul.issue-timespan(if='{ item.status === "assigned" }')
         li.label ส่งเรื่อง
-        li.value { assign_timespan }
-        li.label รับเรื่อง
         li.value { total_timespan }
+        //- li.label ส่งเรื่อง
+        //- li.value { assign_timespan }
+        //- li.label รับเรื่อง
+        //- li.value { total_timespan }
 
       ul.issue-timespan(if='{ item.status === "resolved" || item.status === "resolved" }')
         li.label ส่งเรื่อง
-        li.value { assign_timespan }
-        li.label รับเรื่อง
         li.value { total_timespan }
+        //- li.label ส่งเรื่อง
+        //- li.value { assign_timespan }
+        //- li.label รับเรื่อง
+        //- li.value { total_timespan }
         li.label ปิด
 
   .issue-compact
