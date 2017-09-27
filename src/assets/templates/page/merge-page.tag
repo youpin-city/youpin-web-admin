@@ -14,8 +14,19 @@ merge-page
         label.section-title
           i.icon.material-icons.is-small content_copy
           span เรื่องที่ซ้ำซ้อน
-        .control
-          input(type='text', id='select_child_pin', ref='select_child_pin', placeholder='เลือกเรื่องร้องเรียนที่ซ้ำซ้อน')
+        .level
+          .level-left(style='flex: 1 0 0; align-items: start;')
+            .level-item
+              .control(style='width: 140px;')
+                label
+                  | สถานะ
+                input(type='text', id='select_child_status', ref='select_child_status', placeholder='แสดงตามสถานะ')
+
+            .level-item(style='flex: 1 0 0;')
+              .control.is-fullwidth
+                label
+                  | เลือกเรื่องร้องเรียนที่ซ้ำซ้อน
+                input(type='text', id='select_child_pin', ref='select_child_pin', placeholder='เลือกเรื่องร้องเรียนที่ซ้ำซ้อน')
 
       .field
         .has-text-centered(style='margin: 1rem 0;')
@@ -25,9 +36,19 @@ merge-page
         label.section-title
           i.icon.material-icons.is-small next_week
           span นำไปรวมกับเรื่องหลัก
-        .control
-          input(type='text', id='select_parent_pin', ref='select_parent_pin', placeholder='เลือกเรื่องร้องเรียนหลัก')
+        .level
+          .level-left(style='flex: 1 0 0; align-items: start;')
+            .level-item
+              .control(style='width: 140px;')
+                label
+                  | สถานะ
+                input(type='text', id='select_parent_status', ref='select_parent_status', placeholder='แสดงตามสถานะ')
 
+            .level-item(style='flex: 1 0 0;')
+              .control.is-fullwidth
+                label
+                  | เลือกเรื่องร้องเรียนหลัก
+                input(type='text', id='select_parent_pin', ref='select_parent_pin', placeholder='ใส่รายละเอียด')
 
     .spacing
     nav.level.is-mobile.is-wrap
@@ -45,6 +66,9 @@ merge-page
     self.parent_pin = null;
     self.saving_merge_pin = false;
 
+    self.child_filter = {};
+    self.parent_filter = {};
+
     //- self.opposite = {
     //-   'select_child_pin': 'select_parent_pin',
     //-   'select_parent_pin': 'select_child_pin'
@@ -54,20 +78,23 @@ merge-page
       loadPin()
       .then(pin => {
         self.initSelectIssue('pin', 'select_child_pin', {
-          query: (this_selectize) => ({ status: 'pending' }),
+          query: (this_selectize) => { return self.chiild_filter; },
           onChange: (this_selectize) => {
             const selectize = self.refs['select_parent_pin'].selectize;
             selectize.removeOption(this_selectize.getValue());
           }
         });
         self.initSelectIssue('parent_pin', 'select_parent_pin', {
-          query: (this_selectize) => ({ status: 'pending' }),
+          query: (this_selectize) => { return self.parent_filter; },
           onChange: (this_selectize) => {
             const selectize = self.refs['select_child_pin'].selectize;
             selectize.removeOption(this_selectize.getValue());
           }
         });
       });
+
+      self.initSelectStatus('child');
+      self.initSelectStatus('parent');
     });
 
     function loadPin () {
@@ -76,6 +103,56 @@ merge-page
         self.pin = data;
         self.update();
         return self.pin;
+      });
+    }
+
+    self.initSelectStatus = (pin_group = 'parent') => {
+      const status = [
+        { id: 'all', name: 'สถานะทั้งหมด' },
+        //- { id: 'open', name: 'เปิด' },
+        //- { id: 'closed', name: 'ปิด' },
+        //- { id: 'resolved', name: 'ปิด (สำเร็จ)' },
+        //- { id: 'rejected', name: 'ปิด (ไม่แก้ไข)' },
+        //- //- { id: 'spam', name: 'ปิดและสเปม' },
+        //- { id: 'featured', name: 'จัดแสดง' }
+      ];
+      $(self.refs['select_' + pin_group + '_status']).selectize({
+        maxItems: 1,
+        valueField: 'id',
+        labelField: 'name',
+        //- searchField: 'name',
+        options: _.compact(status), // all choices
+        items: ['all'], // selected choices
+        create: false,
+        allowEmptyOption: false,
+        //- hideSelected: true,
+        //- preload: true,
+        onChange: function(value) {
+          const filter = self[pin_group + '_filter'];
+          delete filter.status;
+          delete filter.closed_reason;
+          delete filter.is_featured;
+
+          switch (value) {
+            case 'all':
+              break;
+            case 'open':
+              filter.status = { $in: ['pending', 'assigned', 'processing'] };
+              break;
+            case 'closed':
+              filter.status = { $in: ['resolved', 'rejected'] };
+              break;
+            case 'resolved':
+              filter.status = 'resolved';
+              break;
+            case 'rejected':
+              filter.status = 'rejected';
+              break;
+            case 'featured':
+              filter.is_featured = true;
+              break;
+          }
+        }
       });
     }
 
