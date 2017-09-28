@@ -5,7 +5,7 @@ issue-view-page
         .level-item(show='{ isFeatured() }')
           i.icon.material-icons.is-accent star
         .level-item
-          .issue-title.title อ { pin.issue_id }/60
+          .issue-title.title อ { pin && pin.issue_id }/60
         .level-item(show='{ isClosed() }')
           .tag.is-large.is-danger(title='{  _.startCase(_.get(pin, "closed_reason", "")) }') ปิดเรื่อง
         .level-item(show='{ isClosed() }')
