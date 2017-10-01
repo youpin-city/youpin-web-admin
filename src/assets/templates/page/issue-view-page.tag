@@ -227,6 +227,17 @@ issue-view-page
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
             .field
+              label ชื่อผู้ร้อง
+              .control
+                input.input(type='text', id='reporter_name_input', ref='reporter_name_input', placeholder='', value='{ pin.reporter.name }')
+          .issue-detail
+            .field
+              label ชื่อ LINE ผู้ร้อง
+              .control
+                input.input(type='text', id='reporter_line_name_input', ref='reporter_line_name_input', placeholder='', value='{ pin.reporter.line }')
+          .issue-detail
+            .field
+              label รายละเอียด
               .control
                 textarea.textarea(ref='description_input', placeholder='รายละเอียดปัญหาหรือข้อเสนอแนะที่ถูกรายงานเข้ามา') { pin.detail }
           hr
@@ -242,10 +253,10 @@ issue-view-page
                           input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
                       .field
                         .control
-                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')
+                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat', disabled)
                       .field
                         .control
-                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='long')
+                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='long', disabled)
             .column.is-6
               table.table.is-borderless.is-narrow.is-static
                 tbody
@@ -822,7 +833,11 @@ issue-view-page
         //-   self.refs.location_long_input.value
         //- ],
         categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
-        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
+        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag)),
+        reporter: {
+          name: self.refs.reporter_name_input.value,
+          line: self.refs.reporter_line_name_input.value
+        }
       }
       self.saving_info = true;
       api.patchPin(self.id, update)
