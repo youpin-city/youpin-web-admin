@@ -253,10 +253,10 @@ issue-view-page
                           input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
                       .field
                         .control
-                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat', disabled)
+                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')
                       .field
                         .control
-                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='long', disabled)
+                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='long')
             .column.is-6
               table.table.is-borderless.is-narrow.is-static
                 tbody
@@ -828,10 +828,10 @@ issue-view-page
         detail: self.refs.description_input.value,
         photos: self.update_data.photos,
         neighborhood: _.compact([self.refs.neighborhood_input.value]),
-        //- 'location.coordinates': [
-        //-   self.refs.location_lat_input.value,
-        //-   self.refs.location_long_input.value
-        //- ],
+        'location.coordinates': [
+          self.refs.location_long_input.value,
+          self.refs.location_lat_input.value
+        ],
         categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
         tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag)),
         reporter: {
