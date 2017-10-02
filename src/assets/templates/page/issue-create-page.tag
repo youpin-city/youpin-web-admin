@@ -182,6 +182,7 @@ issue-create-page
         maxItems: 1,
         valueField: 'id',
         labelField: 'name',
+        searchField: 'name',
         options: cat_list, // all choices
         //- items: selected_cat_list, // selected choices
         create: false,
