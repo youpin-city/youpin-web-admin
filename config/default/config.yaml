@@ -63,71 +63,71 @@ organization:
 issue:
   categories:
     - id: building
-      name: อาคาร
+      name: 1. อาคาร
       selected: false
     - id: footpath
-      name: บาทวิถี
+      name: 2. บาทวิถี
       selected: false
     - id: road
-      name: ถนน
+      name: 3. ถนน
       selected: false
     - id: bridge
-      name: สะพาน
+      name: 4. สะพาน
       selected: false
     - id: canal
-      name: เขื่อน คูคลอง
+      name: 5. เขื่อน คูคลอง
       selected: false
     - id: drain
-      name: ท่อระบายน้ำ
+      name: 6. ท่อระบายน้ำ
       selected: false
     - id: bus_stop
-      name: ที่พักผู้โดยสาร
+      name: 7. ที่พักผู้โดยสาร
       selected: false
     - id: electricity
-      name: ไฟฟ้า
+      name: 8. ไฟฟ้า
       selected: false
     - id: water
-      name: ประปา
+      name: 9. ประปา
       selected: false
     - id: phone_booth
-      name: โทรศัพท์
+      name: 10. โทรศัพท์
       selected: false
     - id: garbage
-      name: ขยะและสิ่งปฎิกูล
+      name: 11. ขยะและสิ่งปฎิกูล
       selected: false
     - id: flood
-      name: น้ำท่วม
+      name: 12. น้ำท่วม
       selected: false
     - id: park
-      name: ต้นไม้ สวนสาธารณะ
+      name: 13. ต้นไม้ สวนสาธารณะ
       selected: false
     - id: pollution
-      name: สภาพแวดล้อมเป็นพิษ
+      name: 14. สภาพแวดล้อมเป็นพิษ
       selected: false
     - id: violention_public
-      name: กระทำผิดในที่สาธารณะ
+      name: 15. กระทำผิดในที่สาธารณะ
       selected: false
     - id: traffic
-      name: ปัญหาจราจร
+      name: 16. ปัญหาจราจร
       selected: false
     - id: hr
-      name: การบริหารงานบุคคล
+      name: 17. การบริหารงานบุคคล
       selected: false
     - id: consumer_protection
-      name: คุ้มครองผู้บริโภค
+      name: 19. คุ้มครองผู้บริโภค
       selected: false
     - id: violention_family
-      name: ปัญหาความรุนแรงในครอบครัว
+      name: 20. ปัญหาความรุนแรงในครอบครัว
       selected: false
     - id: drug
-      name: ยาเสพติด
+      name: 21. ยาเสพติด
       selected: false
     - id: annoy
-      name: เหตุเดือดร้อนรำคาญ
+      name: 22. เหตุเดือดร้อนรำคาญ
       selected: false
     - id: emergency
-      name: เรื่องฉุกเฉิน
+      name: 23. เรื่องฉุกเฉิน
       selected: false
     - id: others
-      name: เรื่องร้องทุกข์ประเภทอื่นๆ
+      name: 99. เรื่องร้องทุกข์ประเภทอื่นๆ
       selected: false
