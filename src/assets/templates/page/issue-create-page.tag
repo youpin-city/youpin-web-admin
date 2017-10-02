@@ -67,10 +67,10 @@ issue-create-page
                           input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
                       .field
                         .control
-                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')
+                          input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='Latitude เช่น 13.xxxxxx')
                       .field
                         .control
-                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='long')
+                          input.input(ref='location_long_input', type='text', value='{ _.get(pin, "location.coordinates.1", "") }', placeholder='longitude เช่น 100.xxxxxx')
             .column.is-6
               table.table.is-borderless.is-narrow.is-static
                 tbody
