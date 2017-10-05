@@ -16,11 +16,11 @@ service:
     maxAge: 2592000000
     httpOnly: true
   api:
-    url: 'http://localhost:9100'
+    url: 'http://localhost:9400'
     app_username: 'web@mafueng.city'
     app_password: 'web_mafueng'
   map:
-    initial_location: [13.7365673, 100.5326298]
+    initial_location: [13.753959, 100.501811]
   leaflet:
     url: 'https://{s}.{base}.maps.cit.api.here.com/maptile/2.1/{type}/{mapID}/{scheme}/{z}/{x}/{y}/{size}/{format}?app_id={app_id}&app_code={app_code}&lg={language}&style={style}&ppi={ppi}'
     options:
@@ -62,30 +62,72 @@ organization:
   id: '583ddb7a3db23914407f9b58'
 issue:
   categories:
-    - id: repair
-      name: แจ้งซ่อม
+    - id: building
+      name: 1. อาคาร
       selected: false
-    - id: service
-      name: บริการ
+    - id: footpath
+      name: 2. บาทวิถี
       selected: false
-    - id: it
-      name: IT
+    - id: road
+      name: 3. ถนน
       selected: false
-    - id: suggestion
-      name: เสนอแนะ
+    - id: bridge
+      name: 4. สะพาน
       selected: false
-    - id: classroom
-      name: ห้องเรียน
+    - id: canal
+      name: 5. เขื่อน คูคลอง
       selected: false
-    - id: safety
-      name: ความปลอดภัย
+    - id: drain
+      name: 6. ท่อระบายน้ำ
       selected: false
-    - id: sanitary
-      name: ความสะอาด
+    - id: bus_stop
+      name: 7. ที่พักผู้โดยสาร
+      selected: false
+    - id: electricity
+      name: 8. ไฟฟ้า
+      selected: false
+    - id: water
+      name: 9. ประปา
+      selected: false
+    - id: phone_booth
+      name: 10. โทรศัพท์
+      selected: false
+    - id: garbage
+      name: 11. ขยะและสิ่งปฎิกูล
+      selected: false
+    - id: flood
+      name: 12. น้ำท่วม
+      selected: false
+    - id: park
+      name: 13. ต้นไม้ สวนสาธารณะ
+      selected: false
+    - id: pollution
+      name: 14. สภาพแวดล้อมเป็นพิษ
+      selected: false
+    - id: violention_public
+      name: 15. กระทำผิดในที่สาธารณะ
       selected: false
     - id: traffic
-      name: จราจร
+      name: 16. ปัญหาจราจร
+      selected: false
+    - id: hr
+      name: 17. การบริหารงานบุคคล
+      selected: false
+    - id: consumer_protection
+      name: 18. คุ้มครองผู้บริโภค
+      selected: false
+    - id: violention_family
+      name: 19. ปัญหาความรุนแรงในครอบครัว
+      selected: false
+    - id: drug
+      name: 20. ยาเสพติด
+      selected: false
+    - id: annoy
+      name: 21. เหตุเดือดร้อนรำคาญ
+      selected: false
+    - id: emergency
+      name: 22. เรื่องฉุกเฉิน
       selected: false
     - id: others
-      name: อื่น ๆ
+      name: 23. เรื่องร้องทุกข์ประเภทอื่นๆ
       selected: false

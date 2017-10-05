@@ -66,7 +66,7 @@
   }
 }
 
-#page-issue {
+#page-issue, #page-dashboard {
   h1 {
     border-bottom: solid $ps-xxs $bgc-tap;
     margin-bottom: 0;
@@ -110,5 +110,11 @@
   #photo {
     padding: 2rem 2rem;
     background-color: $cl-veryverylightgray;
+  }
+}
+
+issue-item {
+  .hilight-text {
+    color: $cl-blue;
   }
 }
