@@ -114,20 +114,20 @@ issue:
       name: 17. การบริหารงานบุคคล
       selected: false
     - id: consumer_protection
-      name: 19. คุ้มครองผู้บริโภค
+      name: 18. คุ้มครองผู้บริโภค
       selected: false
     - id: violention_family
-      name: 20. ปัญหาความรุนแรงในครอบครัว
+      name: 19. ปัญหาความรุนแรงในครอบครัว
       selected: false
     - id: drug
-      name: 21. ยาเสพติด
+      name: 20. ยาเสพติด
       selected: false
     - id: annoy
-      name: 22. เหตุเดือดร้อนรำคาญ
+      name: 21. เหตุเดือดร้อนรำคาญ
       selected: false
     - id: emergency
-      name: 23. เรื่องฉุกเฉิน
+      name: 22. เรื่องฉุกเฉิน
       selected: false
     - id: others
-      name: 99. เรื่องร้องทุกข์ประเภทอื่นๆ
+      name: 23. เรื่องร้องทุกข์ประเภทอื่นๆ
       selected: false
