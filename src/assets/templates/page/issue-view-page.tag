@@ -5,7 +5,7 @@ issue-view-page
         .level-item(show='{ isFeatured() }')
           i.icon.material-icons.is-accent star
         .level-item
-          .issue-title.title อ { pin.issue_id }/60
+          .issue-title.title \#{ id.slice(-4) }
         .level-item(show='{ isClosed() }')
           .tag.is-large.is-danger(title='{  _.startCase(_.get(pin, "closed_reason", "")) }') ปิดเรื่อง
         .level-item(show='{ isClosed() }')
@@ -56,23 +56,13 @@ issue-view-page
             .issue-report-detail
               table.table.is-borderless.is-narrow.is-static
                 tbody
-                  tr(show='{ pin.reporter.name }')
-                    th ชื่อผู้ร้อง
+                  tr(show='{ pin.owner }')
+                    th รายงานโดย
                     td
-                      .field.is-inline { pin.reporter.name }
-
-                  tr(show='{ pin.reporter.line }')
-                    th ชื่อ Line
-                    td
-                      .field.is-inline { pin.reporter.line }
-
-                  //- tr(show='{ pin.owner }')
-                  //-   th รายงานโดย
-                  //-   td
-                  //-     .field.is-inline { pin.owner.name }
-                  //-     a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
-                  //-       span ติดต่อกลับ
-                  //-     dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
+                      .field.is-inline { pin.owner.name }
+                      a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
+                        span ติดต่อกลับ
+                      dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
 
                   tr(if='{ pin.created_time }')
                     th รายงานเมื่อ
@@ -88,19 +78,15 @@ issue-view-page
 
                       ul.issue-timespan(if='{ pin.status === "assigned" }')
                         li.label ส่งเรื่อง
+                        li.value { assign_timespan }
+                        li.label รับเรื่อง
                         li.value { total_timespan }
-                        //- li.label ส่งเรื่อง
-                        //- li.value { assign_timespan }
-                        //- li.label รับเรื่อง
-                        //- li.value { total_timespan }
 
                       ul.issue-timespan(if='{ pin.status === "resolved" || pin.status === "resolved" }')
                         li.label ส่งเรื่อง
+                        li.value { assign_timespan }
+                        li.label รับเรื่อง
                         li.value { total_timespan }
-                        //- li.label ส่งเรื่อง
-                        //- li.value { assign_timespan }
-                        //- li.label รับเรื่อง
-                        //- li.value { total_timespan }
                         li.label ปิด
 
             hr
@@ -129,14 +115,6 @@ issue-view-page
                       ul.tag-list
                         li(each='{ tag, i in pin.tags }')
                           a.tag.is-small.is-primary(href='#{ tag }') { tag }
-
-                  tr(show='{ pin.owner }')
-                    th นำเข้าโดย
-                    td
-                      .field.is-inline { pin.owner.name }
-                      //- a#issue-owner-contact-btn.field.is-inline.button.is-tiny(href='#', data-id='{ pin.owner._id }')
-                      //-   span ติดต่อกลับ
-                      //- dropdown-menu(ref='owner_contact_menu', target='#issue-owner-contact-btn', position='bottom left')
 
         #edit-issue-panel.column.is-4(hide='{ isEditing("info") }')
           // assigned department
@@ -227,17 +205,6 @@ issue-view-page
         .issue-edit-info.column.is-9(show='{ isEditing("info") }')
           .issue-detail
             .field
-              label ชื่อผู้ร้อง
-              .control
-                input.input(type='text', id='reporter_name_input', ref='reporter_name_input', placeholder='', value='{ pin.reporter.name }')
-          .issue-detail
-            .field
-              label ชื่อ LINE ผู้ร้อง
-              .control
-                input.input(type='text', id='reporter_line_name_input', ref='reporter_line_name_input', placeholder='', value='{ pin.reporter.line }')
-          .issue-detail
-            .field
-              label รายละเอียด
               .control
                 textarea.textarea(ref='description_input', placeholder='รายละเอียดปัญหาหรือข้อเสนอแนะที่ถูกรายงานเข้ามา') { pin.detail }
           hr
@@ -250,7 +217,7 @@ issue-view-page
                     td
                       .field
                         .control
-                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='จุดสังเกต')
+                          input.input(ref='neighborhood_input', type='text', value='{ _.get(pin, "neighborhood.0", "") }', placeholder='ตึก ห้อง')
                       .field
                         .control
                           input.input(ref='location_lat_input', type='text', value='{ _.get(pin, "location.coordinates.0", "") }', placeholder='lat')
@@ -828,16 +795,12 @@ issue-view-page
         detail: self.refs.description_input.value,
         photos: self.update_data.photos,
         neighborhood: _.compact([self.refs.neighborhood_input.value]),
-        'location.coordinates': [
-          self.refs.location_long_input.value,
-          self.refs.location_lat_input.value
-        ],
+        //- 'location.coordinates': [
+        //-   self.refs.location_lat_input.value,
+        //-   self.refs.location_long_input.value
+        //- ],
         categories: _.compact(self.refs.select_categories.value.split(',')).map(cat => _.trim(cat)),
-        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag)),
-        reporter: {
-          name: self.refs.reporter_name_input.value,
-          line: self.refs.reporter_line_name_input.value
-        }
+        tags: _.compact(self.refs.select_tags.value.split(',')).map(tag => _.trim(tag))
       }
       self.saving_info = true;
       api.patchPin(self.id, update)
