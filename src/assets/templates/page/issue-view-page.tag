@@ -691,6 +691,7 @@ issue-view-page
         maxItems: 3,
         valueField: 'id',
         labelField: 'name',
+        searchField: 'name',
         options: cat_list, // all choices
         items: selected_cat_list, // selected choices
         create: false
