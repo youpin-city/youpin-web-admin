@@ -1,15 +1,5 @@
 ---
 sitemap:
-  - name: sitenav.dashboard
-    href: "/"
-    icon: dashboard
-    children: []
-    authorized_roles:
-      - super_admin
-      - executive_admin
-      - organization_admin
-      - department_head
-      - department_officer
   - name: sitenav.issue
     href: "/issue"
     icon: announcement
@@ -21,6 +11,16 @@ sitemap:
       - department_head
       - department_officer
       - public_relations
+  - name: sitenav.dashboard
+    href: "/"
+    icon: dashboard
+    children: []
+    authorized_roles:
+      - super_admin
+      - executive_admin
+      - organization_admin
+      - department_head
+      - department_officer
   - name: sitenav.report
     href: "/report"
     icon: pie_chart
@@ -79,3 +79,4 @@ footer_link: []
   #   href: "/terms"
   # - name: sitenav.contact
   #   href: "/contact"
+  
