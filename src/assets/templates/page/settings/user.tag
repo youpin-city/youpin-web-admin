@@ -56,7 +56,8 @@ setting-user
         .control
           .select.is-fullwidth
             select.browser-default(name="department")
-              option(each="{ dept in departments }", value="{dept._id}", selected="{ editingUser && dept._id === editingUser.department._id }" ) {dept.name}
+              option(value="", selected="{ editingUser && !editingUser.department }") -
+              option(each="{ dept in departments }", value="{dept._id}", selected="{ editingUser && editingUser.department && dept._id === editingUser.department._id }" ) {dept.name}
 
       .field
         label.label อีเมล
@@ -188,7 +189,7 @@ setting-user
       }
 
       // Super Admin must has no department
-      if( patch.role == "super_admin" ) {
+      if (patch.role === 'super_admin') {
         patch.department = null;
       }
 
